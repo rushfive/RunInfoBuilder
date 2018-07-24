@@ -1,0 +1,51 @@
+- remove TInterface entirely
+- add parser to callback contexts
+- naming conventions for everything
+- move enums to correct locations
+- check and make things internal
+- can probably remove the Abstractions namespaces since this is all in one lib/assembly
+
+Framework Design Guidelines
+- 23 - exceptions should describe both what you did wrong AND how to fix it (not just the former)
+- abstract away the pipeline cycle hook methods into a separate interface
+    - keeps main interface clean, separating regular use case methods with the advanced
+
+	tokenizer for options/arguments parsing, in use in stages and arg type resolver
+
+
+	Process Builder with optional nested Hook builder
+	- make short compounds configurable?
+	- rethink option clashing.. maybe not needed at all?
+	- pipeline should accept a list of OBJECTS, get from build validator
+
+	builders should have sane default values in properties, not assessed durnig Build()
+
+	apply new ProgramArgumentType.Unresolved in all areas (should interact with configured ProcessConfig settings)
+
+	provide public default (empty) constructor for runinfobuilder
+	  - internally, uses the BuilderSetup to return the default
+
+	parser type predicates should be a one to one mapping, and SET/REPLACE instead of add
+
+	processing option stage: check using validationhelper if theres a clash
+
+	helpBuilder should allow a: display help on validation error fail option
+
+	somehow add the default build configuration rules to unit tests:
+	 - maybe just instantiate the objects and check props?
+	 - or use reflection somehow?
+
+	 there should also be build configuration validations on Build(), with a separate
+	 ConfigurationInvalid BuildResultType, to allow users to handle separately from args validations
+
+	 for CONFIGURATIONS:
+	 - calling any method should be SAFE, in no unintended side affects.
+	 - if it SHOULDNT be allowed to be called more than once, make sure to throw InvalidOperationEx
+
+
+
+	 CHANGE config method:
+	 dont manually configure after initializing. Instead, add the configs to DI and just resolve them 
+	 via constructors
+
+	 need to be able to accept double-quote wrapped values for argument types

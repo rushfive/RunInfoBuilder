@@ -1,0 +1,26 @@
+﻿using R5.RunInfoBuilder.Pipeline;
+using System;
+
+namespace R5.RunInfoBuilder.Configuration
+{
+	internal class ProcessHooksConfig<TRunInfo>
+		where TRunInfo : class
+	{
+		internal Action<PreProcessContext<TRunInfo>> PreProcessCallback { get; }
+		internal Action<PostProcessContext<TRunInfo>> PostProcessCallback { get; }
+		internal Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> PreArgumentCallback { get; }
+		internal Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> PostArgumentCallback { get; }
+
+		internal ProcessHooksConfig(
+			Action<PreProcessContext<TRunInfo>> preProcessCallback,
+			Action<PostProcessContext<TRunInfo>> postProcessCallback,
+			Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> preArgumentCallback,
+			Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> postArgumentCallback)
+		{
+			PreProcessCallback = preProcessCallback;
+			PostProcessCallback = postProcessCallback;
+			PreArgumentCallback = preArgumentCallback;
+			PostArgumentCallback = postArgumentCallback;
+		}
+	}
+}
