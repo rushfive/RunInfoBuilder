@@ -8,7 +8,7 @@
 		
 		public CallbackContext(string[] programArguments, TRunInfo runInfo )
 		{
-			ProgramArguments = programArguments;
+			ProgramArguments = (string[])programArguments.Clone();
 			RunInfo = runInfo;
 		}
 	}
