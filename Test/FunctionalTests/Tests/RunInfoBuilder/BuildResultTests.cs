@@ -6,8 +6,32 @@ using Xunit;
 
 namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 {
-    public class SimpleScenarioTests
+    public class BuildResultTests
     {
+		public class NotProcessedTests
+		{
+			[Fact]
+			public void NullOrEmpty_ProgramArguments()
+			{
+				var builder = new RunInfoBuilder<TestRunInfo>();
+
+				BuildResult<TestRunInfo> nullResult = builder.Build(null);
+				BuildResult<TestRunInfo> emptyResult = builder.Build(new string[] { });
+
+				validateResult(nullResult);
+				validateResult(emptyResult);
+
+				void validateResult(BuildResult<TestRunInfo> result)
+				{
+					Assert.Equal(BuildResultType.NotProcessed, result.Type);
+					Assert.Null(result.RunInfo);
+					Assert.Null(result.FailMessage);
+					Assert.Null(result.Exception);
+					Assert.Null(result.ProgramArgumentErrors);
+				}
+			}
+		}
+
 		public class VersionTests
 		{
 			[Fact]

@@ -23,6 +23,7 @@ namespace R5.RunInfoBuilder
 		private IPipelineProcessor<TRunInfo> _pipelineProcessor { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private IVersionManager _versionManager { get; }
+		private BuilderConfig _config { get; }
 
 		private bool _helpEnabled => _helpManager != null;
 		private bool _versionEnabled => _versionManager != null;
@@ -34,7 +35,8 @@ namespace R5.RunInfoBuilder
 			IBuildValidator buildValidator,
 			IHelpManager<TRunInfo> helpManager,
 			RunInfo<TRunInfo> runInfo,
-			IVersionManager versionManager)
+			IVersionManager versionManager,
+			BuilderConfig config)
 		{
 			Parser = parser;
 			Store = store;
@@ -44,6 +46,7 @@ namespace R5.RunInfoBuilder
 			_helpManager = helpManager;
 			_runInfo = runInfo;
 			_versionManager = versionManager;
+			_config = config;
 
 			Console.WriteLine("INITIALIZED FROM IOC");
 		}
@@ -66,6 +69,7 @@ namespace R5.RunInfoBuilder
 			_helpManager = dependencies.HelpManager;
 			_runInfo = dependencies.RunInfo;
 			_versionManager = dependencies.VersionManager;
+			_config = dependencies.Config;
 		}
 
 		public BuildResult<TRunInfo> Build(string[] programArguments)
@@ -99,15 +103,27 @@ namespace R5.RunInfoBuilder
 			}
 			catch (BuilderConfigurationValidationException ex)
 			{
-				return BuildResult<TRunInfo>.ConfigurationValidationFail(ex.Message, ex);
+				if (_config.AlwaysReturnBuildResult)
+				{
+					return BuildResult<TRunInfo>.ConfigurationValidationFail(ex.Message, ex);
+				}
+				throw;
 			}
 			catch (ProgramArgumentsValidationException ex)
 			{
-				return BuildResult<TRunInfo>.ProgramArgumentsValidationFail(ex.Message, ex, ex.Errors);
+				if (_config.AlwaysReturnBuildResult)
+				{
+					return BuildResult<TRunInfo>.ProgramArgumentsValidationFail(ex.Message, ex, ex.Errors);
+				}
+				throw;
 			}
 			catch (Exception ex)
 			{
-				return BuildResult<TRunInfo>.ProcessFail(ex.Message, ex);
+				if (_config.AlwaysReturnBuildResult)
+				{
+					return BuildResult<TRunInfo>.ProcessFail(ex.Message, ex);
+				}
+				throw;
 			}
 		}
 	}

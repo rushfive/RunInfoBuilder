@@ -19,6 +19,8 @@ namespace R5.RunInfoBuilder.Configuration
 		public ProcessConfigBuilder<TRunInfo> Process { get; }
 
 		private TRunInfo _implementation { get; set; }
+		private bool _alwaysReturnBuildResult { get; set; }
+
 		private HelpConfigBuilder<TRunInfo> _helpBuilder { get; set; }
 		private VersionConfigBuilder _versionBuilder { get; set; }
 
@@ -31,6 +33,7 @@ namespace R5.RunInfoBuilder.Configuration
 			Process = new ProcessConfigBuilder<TRunInfo>();
 
 			_implementation = null;
+			_alwaysReturnBuildResult = false;
 
 			// these two are configuration through method calls because they're optional
 			_helpBuilder = null;
@@ -45,6 +48,12 @@ namespace R5.RunInfoBuilder.Configuration
 			}
 
 			_implementation = implementation ?? throw new ArgumentNullException(nameof(implementation), "Run info implementation must be provided.");
+			return this;
+		}
+
+		public BuilderSetup<TRunInfo> AlwaysReturnBuildResult()
+		{
+			_alwaysReturnBuildResult = true;
 			return this;
 		}
 
@@ -105,6 +114,8 @@ namespace R5.RunInfoBuilder.Configuration
 				.AddScoped<OptionConfig>(sp => Options.Build())
 				.AddScoped<ArgumentConfig>(sp => Arguments.Build())
 				.AddScoped<ProcessConfig>(sp => processConfig)
+				.AddScoped<BuilderConfig>(sp => BuildConfig())
+
 				.AddScoped<RunInfo<TRunInfo>>(sp =>
 				{
 					TRunInfo implementation = _implementation ?? (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
@@ -139,45 +150,19 @@ namespace R5.RunInfoBuilder.Configuration
 						dependencies.BuildValidator,
 						dependencies.HelpManager,
 						dependencies.RunInfo,
-						dependencies.VersionManager);
+						dependencies.VersionManager,
+						dependencies.Config);
 				});
 
 			return services;
 		}
-	}
 
-	// TODO: unit tests using reflecting to ensure that all the RunInfoBuilder
-	// constructor parameters are accoutned for via properties in this class
-	internal class RunInfoBuilderDependencies<TRunInfo>
-		where TRunInfo : class
-	{
-		internal IParser Parser { get; }
-		internal IPipelineProcessor<TRunInfo> Pipeline { get; }
-		internal IArgumentStore<TRunInfo> Store { get; }
-		internal IBuildValidator BuildValidator { get; }
-		internal IHelpManager<TRunInfo> HelpManager { get; }
-		internal RunInfo<TRunInfo> RunInfo { get; }
-		internal IVersionManager VersionManager { get; }
-
-		internal RunInfoBuilderDependencies(
-			IParser parser,
-			IPipelineProcessor<TRunInfo> pipeline,
-			IArgumentStore<TRunInfo> store,
-			IBuildValidator buildValidator,
-			IHelpManager<TRunInfo> helpManager,
-			RunInfo<TRunInfo> runInfo,
-			IVersionManager versionManager)
+		private BuilderConfig BuildConfig()
 		{
-			Parser = parser;
-			Pipeline = pipeline;
-			Store = store;
-			BuildValidator = buildValidator;
-			HelpManager = helpManager;
-			RunInfo = runInfo;
-			VersionManager = versionManager;
+			return new BuilderConfig(_alwaysReturnBuildResult);
 		}
 	}
-
+	
 	internal static class BuilderSetupExtensions
 	{
 		public static IServiceCollection AddHelpManager<TRunInfo>(this IServiceCollection services,
@@ -251,6 +236,8 @@ namespace R5.RunInfoBuilder.Configuration
 			var helpManager = provider.GetService<IHelpManager<TRunInfo>>();
 			var runInfoValue = provider.GetRequiredService<RunInfo<TRunInfo>>();
 			var versionManager = provider.GetService<IVersionManager>();
+			var config = provider.GetService<BuilderConfig>();
+
 
 			return new RunInfoBuilderDependencies<TRunInfo>(
 				parser,
@@ -259,7 +246,8 @@ namespace R5.RunInfoBuilder.Configuration
 				buildValidator,
 				helpManager,
 				runInfoValue,
-				versionManager);
+				versionManager,
+				config);
 		}
 	}
 }

@@ -36,7 +36,7 @@ namespace R5.RunInfoBuilder
 			this.Type = resultType;
 			this.FailMessage = failMessage;
 			this.Exception = exception;
-			this.ProgramArgumentErrors = programArgumentErrors ?? new List<ProgramArgumentError>();
+			this.ProgramArgumentErrors = programArgumentErrors;
 		}
 
 		internal static BuildResult<TRunInfo> Success(TRunInfo runInfo)

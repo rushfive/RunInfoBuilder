@@ -17,13 +17,17 @@ namespace R5.RunInfoBuilder.Validators
 
 		protected override Func<string[], bool> _validateFunction => programArguments =>
 		{
-			if (_versionManager == null || programArguments.Length == 1)
+			if (_versionManager == null)
 			{
 				return true;
 			}
 
-			bool hasInvalidTrigger = programArguments.Skip(1).Any(a => _versionManager.IsTrigger(a));
-			return !hasInvalidTrigger;
+			if (programArguments.Length > 1 && programArguments.Any(a => _versionManager.IsTrigger(a)))
+			{
+				return false;
+			}
+
+			return true;
 		};
 	}
 }

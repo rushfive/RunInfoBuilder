@@ -38,7 +38,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Builder.Models
 				Assert.Equal(BuildResultType.ConfigurationValidationFail, result.Type);
 				Assert.Equal(failMessage, result.FailMessage);
 				Assert.Same(exception, result.Exception);
-				Assert.Empty(result.ProgramArgumentErrors);
+				Assert.Null(result.ProgramArgumentErrors);
 			}
 		}
 
@@ -76,7 +76,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Builder.Models
 				Assert.Equal(BuildResultType.ProcessFail, result.Type);
 				Assert.Equal(failMessage, result.FailMessage);
 				Assert.Same(exception, result.Exception);
-				Assert.Empty(result.ProgramArgumentErrors);
+				Assert.Null(result.ProgramArgumentErrors);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Builder.Models
 		{
 			Assert.Null(result.FailMessage);
 			Assert.Null(result.Exception);
-			Assert.Empty(result.ProgramArgumentErrors);
+			Assert.Null(result.ProgramArgumentErrors);
 		}
 	}
 }

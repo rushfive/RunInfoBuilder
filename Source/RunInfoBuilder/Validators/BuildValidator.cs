@@ -68,8 +68,6 @@ namespace R5.RunInfoBuilder.Validators
 
 		public List<ProgramArgumentInfo> ValidateProgramArguments(string[] programArguments)
 		{
-			Debug.Assert(programArguments != null && programArguments.Any());
-
 			ValidateRawProgramArguments(programArguments);
 
 			ProgramArgumentValidationInfo[] argumentInfos = InitializeArgumentInfosFrom(programArguments);
