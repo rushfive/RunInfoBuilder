@@ -17,13 +17,7 @@
 			return this;
 		}
 
-		public CommandConfigBuilder PositionAnywhere()
-		{
-			_positioning = CommandPositioning.Anywhere;
-			return this;
-		}
-
-		public CommandConfigBuilder PositionEnforceAtFront()
+		public CommandConfigBuilder EnforcePositionedAtFront()
 		{
 			_positioning = CommandPositioning.Front;
 			return this;

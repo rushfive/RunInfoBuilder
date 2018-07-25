@@ -27,7 +27,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 					.AddArgument("bool", ri => ri.Bool)
 					.AddArgument("string", ri => ri.String)
 					.AddArgument("datetime", ri => ri.DateTime);
-				
+
 				Assert.Throws<BuilderConfigurationValidationException>(
 					() => builder.Build(new string[] { "bool", "string", "datetime" }));
 			}
@@ -53,49 +53,167 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 
 		public class ProgramArgument_ValidationTests
 		{
-			[Fact]
-			public void DuplicateArguments_Throws()
+			public class RawArgumentValidations
 			{
-				var builder = new RunInfoBuilder<TestRunInfo>();
+				[Fact]
+				public void DuplicateArguments_Throws()
+				{
+					var builder = new RunInfoBuilder<TestRunInfo>();
 
-				Assert.Throws<ProgramArgumentsValidationException>(
-					() => builder.Build(new string[] { "a", "b", "a" }));
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "a", "b", "a" }));
+				}
+
+				[Fact]
+				public void HelpArgument_NotFirst_Throws()
+				{
+					var setup = new BuilderSetup<TestRunInfo>();
+
+					setup.ConfigureHelp(config =>
+					{
+						config
+							.SetTriggers("-help")
+							.SetCallback(context => { });
+					});
+
+					RunInfoBuilder<TestRunInfo> builder = setup.Create();
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "a", "b", "-help" }));
+				}
+
+				[Fact]
+				public void VersionArgument_NotFirst_Throws()
+				{
+					var setup = new BuilderSetup<TestRunInfo>();
+
+					setup.ConfigureVersion(config =>
+					{
+						config
+							.SetTriggers("-version")
+							.SetCallback(() => { });
+					});
+
+					RunInfoBuilder<TestRunInfo> builder = setup.Create();
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "a", "b", "-version" }));
+				}
 			}
 
-			[Fact]
-			public void HelpArgument_NotFirst_Throws()
+			public class ArgumentInfoValidations
 			{
-				var setup = new BuilderSetup<TestRunInfo>();
-
-				setup.ConfigureHelp(config =>
+				[Fact]
+				public void HasUnresolvedArguments_WhenNotAllowed_Throws()
 				{
-					config
-						.SetTriggers("-help")
-						.SetCallback(context => { });
-				});
+					var builder = new RunInfoBuilder<TestRunInfo>();
 
-				RunInfoBuilder<TestRunInfo> builder = setup.Create();
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "a" }));
 
-				Assert.Throws<ProgramArgumentsValidationException>(
-					() => builder.Build(new string[] { "a", "b", "-help" }));
+					builder.Store
+						.AddOption("option", ri => ri.Bool1);
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "--option", "a" }));
+
+					builder.Build(new string[] { "--option" });
+				}
 			}
 
-			[Fact]
-			public void VersionArgument_NotFirst_Throws()
+			public class CommandConfigurationValidations
 			{
-				var setup = new BuilderSetup<TestRunInfo>();
-
-				setup.ConfigureVersion(config =>
+				[Fact]
+				public void MoreThanOneCommand_WhenOnlyOneAllowed_Throws()
 				{
-					config
-						.SetTriggers("-version")
-						.SetCallback(() => { });
-				});
+					var setup = new BuilderSetup<TestRunInfo>();
 
-				RunInfoBuilder<TestRunInfo> builder = setup.Create();
+					setup.Commands.EnforceSingleCommand();
 
-				Assert.Throws<ProgramArgumentsValidationException>(
-					() => builder.Build(new string[] { "a", "b", "-version" }));
+					RunInfoBuilder<TestRunInfo> builder = setup.Create();
+
+					builder.Store
+						.AddCommand("command1", ri => ri.Bool1, true)
+						.AddCommand("command2", ri => ri.Bool1, true);
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "command1", "command2" }));
+				}
+
+				[Fact]
+				public void CommandsNotInFront_WhenExpected_Throws()
+				{
+					var setup = new BuilderSetup<TestRunInfo>();
+
+					setup.Commands.EnforcePositionedAtFront();
+
+					RunInfoBuilder<TestRunInfo> builder = setup.Create();
+
+					builder.Store
+						.AddOption("option", ri => ri.Bool1)
+						.AddCommand("command1", ri => ri.Bool1, true)
+						.AddCommand("command2", ri => ri.Bool1, true);
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "--option", "command1" }));
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "command1", "--option", "command2" }));
+				}
+			}
+
+			public class ArgumentConfigurationValidations
+			{
+				[Fact]
+				public void ArgumentsBeforeCommands_WhenExpectedAfter_Throws()
+				{
+					var setup = new BuilderSetup<TestRunInfo>();
+
+					setup.Arguments.EnforcePositionedAfterCommands();
+
+					RunInfoBuilder<TestRunInfo> builder = setup.Create();
+
+					builder.Parser
+						.SetPredicateForType<bool>(value => (true, default));
+
+					builder.Store
+						.AddArgument<bool>("arg", ri => ri.Bool1)
+						.AddCommand("command1", ri => ri.Bool1, true)
+						.AddCommand("command2", ri => ri.Bool1, true);
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "arg=true", "command1" }));
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "command1", "arg=true", "command2" }));
+				}
+			}
+
+			public class OptionConfigurationValidations
+			{
+				[Fact]
+				public void OptionsBeforeCommands_WhenExpectedAfter_Throws()
+				{
+					var setup = new BuilderSetup<TestRunInfo>();
+
+					setup.Options.EnforcePositionedAfterCommands();
+
+					RunInfoBuilder<TestRunInfo> builder = setup.Create();
+
+					builder.Parser
+						.SetPredicateForType<bool>(value => (true, default));
+
+					builder.Store
+						.AddOption("option", ri => ri.Bool1)
+						.AddCommand("command1", ri => ri.Bool1, true)
+						.AddCommand("command2", ri => ri.Bool1, true);
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "--option", "command1" }));
+
+					Assert.Throws<ProgramArgumentsValidationException>(
+						() => builder.Build(new string[] { "command1", "--option", "command2" }));
+				}
 			}
 		}
 	}

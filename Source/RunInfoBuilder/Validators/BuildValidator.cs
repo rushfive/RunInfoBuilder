@@ -73,9 +73,7 @@ namespace R5.RunInfoBuilder.Validators
 			ProgramArgumentValidationInfo[] argumentInfos = InitializeArgumentInfosFrom(programArguments);
 
 			ValidateFromArgumentInfos(argumentInfos);
-
-			Debug.Assert(argumentInfos.All(i => !i.HasError));
-
+			
 			return argumentInfos
 				.Select(i => new ProgramArgumentInfo(i.Position, i.RawArgumentToken, i.Type))
 				.ToList();

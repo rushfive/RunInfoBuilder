@@ -49,3 +49,7 @@ Framework Design Guidelines
 	 via constructors
 
 	 need to be able to accept double-quote wrapped values for argument types
+
+
+	 UPDATE the programargumentvalidationexceptions to include
+	 a callback that users can use to easily SET a value of the same type!

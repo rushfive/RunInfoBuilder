@@ -8,14 +8,8 @@
 		{
 			_positioning = ArgumentOptionPositioning.Anywhere;
 		}
-		
-		public OptionConfigBuilder PositionAnywhere()
-		{
-			_positioning = ArgumentOptionPositioning.Anywhere;
-			return this;
-		}
 
-		public OptionConfigBuilder PositionEnforceAfterCommands()
+		public OptionConfigBuilder EnforcePositionedAfterCommands()
 		{
 			_positioning = ArgumentOptionPositioning.AfterCommands;
 			return this;
