@@ -66,10 +66,11 @@ namespace R5.RunInfoBuilder.Pipeline
 
 		public void ProcessArgs(List<ProgramArgumentInfo> programArgumentInfos)
 		{
-			var preProcessContext = new PreProcessContext<TRunInfo>(getProgramArguments(), _runInfo.Value);
-			_preProcessCallback?.Invoke(preProcessContext);
-
-			bool killedBuildProcess = false;
+			if (_preProcessCallback != null)
+			{
+				var preProcessContext = new PreProcessContext<TRunInfo>(getProgramArguments(), _runInfo.Value);
+				_preProcessCallback(preProcessContext);
+			}
 
 			for (int i = 0; i < programArgumentInfos.Count; i++)
 			{
@@ -98,26 +99,30 @@ namespace R5.RunInfoBuilder.Pipeline
 					getProgramArguments(), 
 					_runInfo.Value);
 
-				killedBuildProcess = this.ProcessArgumentInPipeline(info.RawArgumentToken, stageContext, ref i);
-				if (killedBuildProcess)
+				(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(info.RawArgumentToken, stageContext, ref i);
+
+				i += skipNext;
+
+				if (afterArgument == AfterProcessingArgument.KillBuild)
 				{
 					break;
 				}
 			}
 
-			var postProcessContext = new PostProcessContext<TRunInfo>(getProgramArguments(), _runInfo.Value, killedBuildProcess);
-			_postProcessCallback?.Invoke(postProcessContext);
-
-			// local functions
-			string[] getProgramArguments()
+			if (_postProcessCallback != null)
 			{
-				return programArgumentInfos
-					.Select(i => i.RawArgumentToken)
-					.ToArray();
+				var postProcessContext = new PostProcessContext<TRunInfo>(getProgramArguments(), _runInfo.Value);
+				_postProcessCallback(postProcessContext);
 			}
+
+			// the program arguments made available to users are essentially "immutable"
+			// by giving a fresh copy at each accessible place
+			string[] getProgramArguments() => programArgumentInfos
+				.Select(i => i.RawArgumentToken)
+				.ToArray();
 		}
 
-		private (int SkipNext, AfterProcessingArgument ProcessResult) ProcessArgumentInPipeline(string argumentToken, 
+		private (int SkipNext, AfterProcessingArgument AfterArgument) ProcessArgumentInPipeline(string argumentToken, 
 			ProcessArgumentContext<TRunInfo> processArgumentContext, ref int i)
 		{
 			int totalSkipNext = 0;

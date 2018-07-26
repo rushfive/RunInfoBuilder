@@ -42,7 +42,6 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 				Assert.Equal(2, context.ProgramArguments.Length);
 				Assert.Equal("command", context.ProgramArguments[0]);
 				Assert.Equal("--option", context.ProgramArguments[1]);
-				Assert.True(context.KilledBuildProcess);
 				// todo: reflection helper for count
 			});
 

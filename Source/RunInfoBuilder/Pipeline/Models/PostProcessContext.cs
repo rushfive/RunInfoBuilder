@@ -5,15 +5,11 @@ namespace R5.RunInfoBuilder
     public class PostProcessContext<TRunInfo> : CallbackContext<TRunInfo>
 		where TRunInfo : class
 	{
-		public bool KilledBuildProcess { get; }
-
 		internal PostProcessContext(
 			string[] programArguments,
-			TRunInfo runInfo,
-			bool killedBuildProcess)
+			TRunInfo runInfo)
 			: base(programArguments, runInfo)
 		{
-			KilledBuildProcess = killedBuildProcess;
 		}
     }
 }
