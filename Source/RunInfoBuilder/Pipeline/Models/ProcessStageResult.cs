@@ -1,10 +1,10 @@
-﻿namespace R5.RunInfoBuilder.Pipeline
+﻿namespace R5.RunInfoBuilder
 {
 	public class ProcessStageResult
 	{
-		public int SkipArgsCount { get; private set; }
-		public bool ContinueArgumentProcessing { get; private set; }
-		public bool KilledBuildProcess { get; private set; }
+		internal int SkipArgsCount { get; private set; }
+		internal bool ContinueArgumentProcessing { get; private set; }
+		internal bool KilledBuildProcess { get; private set; }
 
 		public ProcessStageResult()
 		{
@@ -19,7 +19,7 @@
 			return this;
 		}
 
-		public ProcessStageResult SkipFurtherArgumentProcessing()
+		public ProcessStageResult SkipFurtherProcessingForCurrentArgument()
 		{
 			ContinueArgumentProcessing = false;
 			return this;

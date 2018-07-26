@@ -31,16 +31,18 @@ namespace R5.RunInfoBuilder.Pipeline
 			{
 				case OptionType.Full:
 					ResolveFullOption(fullKey);
-					return new ProcessStageResult();
+					break;
 				case OptionType.Short:
 					ResolveShortOption(shortKeys.Single());
-					return new ProcessStageResult();
+					break;
 				case OptionType.ShortCompound:
 					ResolveShortCompoundOption(shortKeys);
-					return new ProcessStageResult();
+					break;
 				default:
 					throw new ArgumentOutOfRangeException($"'{type}' is not a valid option type.");
 			}
+
+			return new ProcessStageResult();
 		}
 
 		private void ResolveFullOption(string key)

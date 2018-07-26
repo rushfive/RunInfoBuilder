@@ -23,17 +23,20 @@ namespace R5.RunInfoBuilder.Validators
 		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
 		private IParser _parser { get; }
 		private ProcessConfig _processConfig { get; }
+		private IArgumentTypeResolver _argumentTypeResolver { get; }
 
 		public BuildValidator(
 			IValidationRuleSetFactory validationFactory,
 			IArgumentMetadataMaps<TRunInfo> argumentMaps,
 			IParser parser,
-			ProcessConfig processConfig)
+			ProcessConfig processConfig,
+			IArgumentTypeResolver argumentTypeResolver)
 		{
 			_validationFactory = validationFactory;
 			_argumentMaps = argumentMaps;
 			_parser = parser;
 			_processConfig = processConfig;
+			_argumentTypeResolver = argumentTypeResolver;
 		}
 
 		public void ValidateBuilderConfiguration()
@@ -101,6 +104,11 @@ namespace R5.RunInfoBuilder.Validators
 			for (int i = 0; i < programArguments.Length; i++)
 			{
 				validationInfos[i] = new ProgramArgumentValidationInfo(i, programArguments[i]);
+
+				if (_argumentTypeResolver.TryGetArgumentType(programArguments[i], out ProgramArgumentType type))
+				{
+					validationInfos[i].SetType(type);
+				}
 			}
 
 			return validationInfos;

@@ -17,11 +17,7 @@ namespace R5.RunInfoBuilder.Validators
 
 			foreach (ProgramArgumentValidationInfo info in argumentInfos)
 			{
-				if (_argumentTypeResolver.TryGetArgumentType(info.RawArgumentToken, out ProgramArgumentType type))
-				{
-					info.SetType(type);
-				}
-				else
+				if (!_argumentTypeResolver.TryGetArgumentType(info.RawArgumentToken, out ProgramArgumentType type))
 				{
 					allValid = false;
 					info.AddError($"Failed to resolve argument type from token '{info.RawArgumentToken}'.");

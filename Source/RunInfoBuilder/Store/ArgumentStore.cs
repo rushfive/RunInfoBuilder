@@ -86,7 +86,10 @@ namespace R5.RunInfoBuilder.Store
 		{
 			_storeValidator.ValidateCommand(type, key, propertyExpression, mappedValue, callback);
 
-			PropertyInfo propertyInfo = _reflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
+			PropertyInfo propertyInfo = propertyExpression != null
+				? _reflectionHelper.GetPropertyInfoFromExpression(propertyExpression)
+				: null;
+
 			var metadata = new CommandMetadata<TRunInfo>(key, type, description, propertyInfo, mappedValue, callback);
 
 			_argumentMaps.AddCommand(key, metadata);

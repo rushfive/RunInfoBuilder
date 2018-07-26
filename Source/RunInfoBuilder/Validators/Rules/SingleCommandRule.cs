@@ -17,6 +17,11 @@ namespace R5.RunInfoBuilder.Validators
 
 		protected override Func<ProgramArgumentValidationInfo[], bool> _validateFunction => argumentInfos =>
 		{
+			if (!_config.EnforceSingleCommand)
+			{
+				return true;
+			}
+
 			List<ProgramArgumentValidationInfo> commandInfos = argumentInfos
 				.Where(i => i.Type == ProgramArgumentType.Command)
 				.ToList();

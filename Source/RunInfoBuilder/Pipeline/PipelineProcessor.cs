@@ -74,7 +74,8 @@ namespace R5.RunInfoBuilder.Pipeline
 					switch (_processConfig.HandleUnresolvedArgument)
 					{
 						case HandleUnresolvedArgument.NotAllowed:
-							break;
+							// should never reach here due to validation before this
+							throw new InvalidOperationException("Unresolved program arguments are invalid for this configuration.");
 						case HandleUnresolvedArgument.AllowedButThrowOnProcess:
 							throw new RunInfoBuilderException($"Failed to process program argument '{info.RawArgumentToken}' because it's an unknown type.");
 						case HandleUnresolvedArgument.AllowedButSkipOnProcess:

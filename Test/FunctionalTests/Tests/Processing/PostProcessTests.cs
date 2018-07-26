@@ -1,5 +1,6 @@
 ﻿using R5.RunInfoBuilder.Configuration;
 using R5.RunInfoBuilder.FunctionalTests.Models;
+using R5.RunInfoBuilder.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,8 +8,8 @@ using Xunit;
 
 namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 {
-	public class PreProcess
-	{
+    public class PostProcessTests
+    {
 		[Fact]
 		public void Callback_Invoked_WhenConfigured()
 		{
@@ -16,7 +17,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			bool invoked = false;
 
-			setup.Process.Hooks.EnablePreProcessing(context => {
+			setup.Process.Hooks.EnablePostProcessing(context => {
 				invoked = true;
 			});
 
@@ -34,20 +35,25 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 		{
 			var setup = new BuilderSetup<TestRunInfo>();
 
-			var args = new string[] { "--option" };
+			var args = new string[] { "command", "--option" };
 
-			setup.Process.Hooks.EnablePreProcessing(context => {
+			setup.Process.Hooks.EnablePostProcessing((PostProcessContext<TestRunInfo> context) => {
 				Assert.NotNull(context.RunInfo);
-				Assert.Single(context.ProgramArguments);
-				Assert.Equal("--option", context.ProgramArguments[0]);
+				Assert.Equal(2, context.ProgramArguments.Length);
+				Assert.Equal("command", context.ProgramArguments[0]);
+				Assert.Equal("--option", context.ProgramArguments[1]);
+				Assert.True(context.KilledBuildProcess);
 				// todo: reflection helper for count
 			});
 
 			RunInfoBuilder<TestRunInfo> builder = setup.Create();
 
-			builder.Store.AddOption("option", ri => ri.Bool1);
+			builder.Store
+				.AddCommand("command", context => new ProcessStageResult().KillBuildProcess())
+				.AddOption("option", ri => ri.Bool1);
 
-			builder.Build(args);
+			BuildResult<TestRunInfo> result = builder.Build(args);
+			Assert.False(result.RunInfo.Bool1);
 		}
 
 		[Fact]
@@ -59,7 +65,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			setup.UseImplementation(runInfo);
 
-			setup.Process.Hooks.EnablePreProcessing(context => {
+			setup.Process.Hooks.EnablePostProcessing(context => {
 				context.RunInfo.Bool3 = true;
 				Assert.Same(runInfo, context.RunInfo);
 			});
@@ -81,14 +87,14 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 			var setup = new BuilderSetup<TestRunInfo>();
 
 			TestRunInfo referenced = null;
-			setup.Process.Hooks.EnablePreProcessing(context => {
+			setup.Process.Hooks.EnablePostProcessing(context => {
 				referenced = context.RunInfo;
 			});
 
 			RunInfoBuilder<TestRunInfo> builder = setup.Create();
 
 			builder.Store.AddOption("option", ri => ri.Bool1);
-			
+
 			BuildResult<TestRunInfo> result = builder.Build(new string[] { "--option" });
 
 			Assert.NotNull(referenced);
@@ -105,7 +111,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			setup.UseImplementation(runInfo);
 
-			setup.Process.Hooks.EnablePreProcessing(context => {
+			setup.Process.Hooks.EnablePostProcessing(context => {
 				Assert.NotSame(args, context.ProgramArguments);
 				context.ProgramArguments[1] = "invalid";
 			});
@@ -126,7 +132,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 		}
 
 		[Fact]
-		public void Occurs_Before_ProgramArgumentProcessing()
+		public void Occurs_After_ProgramArgumentProcessing()
 		{
 			var runInfo = new TestRunInfo();
 
@@ -136,15 +142,24 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 				.UseImplementation(runInfo)
 				.AlwaysReturnBuildResult();
 
-			setup.Process.Hooks.EnablePreProcessing(context => throw new Exception());
+			long? commandSet = null;
+			long? postProcessSet = null;
+
+			setup.Process.Hooks.EnablePostProcessing(context => postProcessSet = DateTime.UtcNow.Ticks);
 
 			RunInfoBuilder<TestRunInfo> builder = setup.Create();
 
-			builder.Store.AddOption("option", ri => ri.Bool1);
+			builder.Store.AddCommand("command", context =>
+			{
+				commandSet = DateTime.UtcNow.Ticks;
+				return new ProcessStageResult();
+			});
 
-			Assert.False(runInfo.Bool1);
-			builder.Build(new string[] { "--option" });
-			Assert.False(runInfo.Bool1);
+			builder.Build(new string[] { "command" });
+
+			Assert.NotNull(commandSet);
+			Assert.NotNull(postProcessSet);
+			Assert.True(postProcessSet.Value > commandSet.Value);
 		}
 	}
 }
