@@ -14,7 +14,7 @@ namespace R5.RunInfoBuilder.Configuration
 		private List<string> _triggers { get; set; }
 		private bool _invokeOnValidationFail { get; set; }
 
-		public bool IsValid() => _callback != null && _triggers.Any();
+		private bool IsValid() => _callback != null && _triggers.Any();
 
 		internal HelpConfigBuilder()
 		{
@@ -74,6 +74,11 @@ namespace R5.RunInfoBuilder.Configuration
 
 		internal HelpConfig<TRunInfo> Build()
 		{
+			if (!IsValid())
+			{
+				throw new InvalidOperationException("Cannot configure help without specifying triggers and a callback.");
+			}
+
 			return new HelpConfig<TRunInfo>(
 				_programDescription,
 				_callback,

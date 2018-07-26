@@ -19,14 +19,18 @@ namespace R5.RunInfoBuilder.Version
 		private HashSet<string> _triggers { get; set; }
 		private Action _callback { get; set; }
 
-		public VersionManager(IRestrictedKeyValidator keyValidator)
+		public VersionManager(
+			IRestrictedKeyValidator keyValidator,
+			VersionConfig config)
 		{
 			_keyValidator = keyValidator;
 			_triggers = null;
 			_callback = null;
+
+			Configure(config);
 		}
 
-		public VersionManager Configure(VersionConfig config)
+		private void Configure(VersionConfig config)
 		{
 			_callback = config.Callback;
 
@@ -43,10 +47,8 @@ namespace R5.RunInfoBuilder.Version
 			_triggers = new HashSet<string>(config.Triggers, comparer);
 
 			_keyValidator.AddRestrictedKeys(config.Triggers);
-
-			return this;
 		}
-		
+
 		public bool IsTrigger(string trigger)
 		{
 			if (string.IsNullOrWhiteSpace(trigger))

@@ -10,7 +10,7 @@ namespace R5.RunInfoBuilder.Configuration
 		private bool _ignoreCase { get; set; }
 		private List<string> _triggers { get; set; }
 
-		public bool IsValid() => _callback != null && _triggers.Any();
+		private bool IsValid() => _callback != null && _triggers.Any();
 
 		internal VersionConfigBuilder()
 		{
@@ -45,6 +45,10 @@ namespace R5.RunInfoBuilder.Configuration
 
 		internal VersionConfig Build()
 		{
+			if (!IsValid())
+			{
+				throw new InvalidOperationException("Cannot configure version without specifying triggers and a callback.");
+			}
 			return new VersionConfig(_callback, _ignoreCase, _triggers);
 		}
 	}

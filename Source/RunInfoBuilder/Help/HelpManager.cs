@@ -22,7 +22,7 @@ namespace R5.RunInfoBuilder.Help
 		private const string keyPadding = "    ";
 		private const string descriptionPadding = "      ";
 		private const string validationPadding = "        ";
-		
+
 		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 		private HashSet<string> _helpTriggers { get; set; }
@@ -31,13 +31,16 @@ namespace R5.RunInfoBuilder.Help
 
 		public HelpManager(
 			IArgumentMetadataMaps<TRunInfo> argumentMaps,
-			IRestrictedKeyValidator keyValidator)
+			IRestrictedKeyValidator keyValidator,
+			HelpConfig<TRunInfo> config)
 		{
 			_argumentMaps = argumentMaps;
 			_keyValidator = keyValidator;
+
+			Configure(config);
 		}
-		
-		public HelpManager<TRunInfo> Configure(HelpConfig<TRunInfo> config)
+
+		private void Configure(HelpConfig<TRunInfo> config)
 		{
 			_programDescription = config.ProgramDescription;
 			_callback = config.Callback;
@@ -56,8 +59,6 @@ namespace R5.RunInfoBuilder.Help
 
 			_keyValidator.AddRestrictedKeys(config.Triggers);
 			// todo: formatter?
-
-			return this;
 		}
 
 		public bool IsTrigger(string triggerToken)
@@ -100,7 +101,7 @@ namespace R5.RunInfoBuilder.Help
 			if (metadata.Arguments.Any())
 			{
 				sb.AppendLine("Arguments:");
-				foreach(ArgumentHelpInfo argument in metadata.Arguments)
+				foreach (ArgumentHelpInfo argument in metadata.Arguments)
 				{
 					sb.AppendLine($"{keyPadding}{argument.Key}");
 
@@ -122,7 +123,7 @@ namespace R5.RunInfoBuilder.Help
 			if (metadata.Options.Any())
 			{
 				sb.AppendLine("Options:");
-				foreach(OptionHelpInfo option in metadata.Options)
+				foreach (OptionHelpInfo option in metadata.Options)
 				{
 					string optionLabel = "";
 					if (option.ShortKey.HasValue)
@@ -171,7 +172,7 @@ namespace R5.RunInfoBuilder.Help
 			{
 				throw new InvalidOperationException("Trigger callback has not been set.");
 			}
-			
+
 			var callbackContext = new HelpCallbackContext<TRunInfo>(this.GetFormatted(), this.GetMetadata());
 			_callback(callbackContext);
 		}

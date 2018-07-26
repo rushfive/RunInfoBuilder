@@ -33,7 +33,8 @@ namespace R5.RunInfoBuilder.Pipeline
 			RunInfo<TRunInfo> runInfo,
 			IParser parser,
 			IArgumentTokenizer tokenizer,
-			ProcessConfig processConfig)
+			ProcessConfig processConfig,
+			ProcessHooksConfig<TRunInfo> hooksConfig)
 		{
 			_runInfo = runInfo;
 			_processConfig = processConfig;
@@ -44,9 +45,11 @@ namespace R5.RunInfoBuilder.Pipeline
 				new OptionStage<TRunInfo>(argumentMaps, runInfo, tokenizer),
 				new ArgumentStage<TRunInfo>(argumentMaps, runInfo, parser, tokenizer)
 			};
+
+			Configure(hooksConfig);
 		}
 
-		public PipelineProcessor<TRunInfo> Configure(ProcessHooksConfig<TRunInfo> config)
+		private void Configure(ProcessHooksConfig<TRunInfo> config)
 		{
 			_preProcessCallback = config.PreProcessCallback;
 			_postProcessCallback = config.PostProcessCallback;
@@ -60,8 +63,6 @@ namespace R5.RunInfoBuilder.Pipeline
 			{
 				_pipeline.Add(new PostProcessArgumentStage<TRunInfo>(config.PostArgumentCallback));
 			}
-
-			return this;
 		}
 
 		public void ProcessArgs(List<ProgramArgumentInfo> programArgumentInfos)
@@ -124,7 +125,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			}
 		}
 
-		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgumentInfo info, 
+		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgumentInfo info,
 			string[] programArguments, TRunInfo runInfo) => new ProcessArgumentContext<TRunInfo>(
 				info.RawArgumentToken,
 				info.Type,
@@ -132,7 +133,7 @@ namespace R5.RunInfoBuilder.Pipeline
 				programArguments,
 				runInfo);
 
-		private (int SkipNext, AfterProcessingArgument AfterArgument) ProcessArgumentInPipeline(string argumentToken, 
+		private (int SkipNext, AfterProcessingArgument AfterArgument) ProcessArgumentInPipeline(string argumentToken,
 			ProcessArgumentContext<TRunInfo> processArgumentContext)
 		{
 			int totalSkipNext = 0;

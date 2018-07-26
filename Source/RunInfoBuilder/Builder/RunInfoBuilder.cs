@@ -60,7 +60,7 @@ namespace R5.RunInfoBuilder
 
 			RunInfoBuilderDependencies<TRunInfo> dependencies = services
 				.BuildServiceProvider()
-				.GetBuilderDependencies<TRunInfo>();
+				.GetRunInfoBuilderDependencies<TRunInfo>();
 
 			Parser = dependencies.Parser;
 			Store = dependencies.Store;

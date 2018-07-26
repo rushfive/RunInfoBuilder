@@ -14,9 +14,10 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void Parser_CorrectlyResolvesPredicates()
 			{
-				var parser = new Parser();
+				var parserWithoutPredicates = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
-				Assert.False(parser.HandlesType<DateTime>());
+				Assert.False(parserWithoutPredicates.HandlesType<DateTime>());
 
 				var predicates = new List<(Type, Func<string, (bool, object)>)>
 				{
@@ -25,7 +26,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 
 				var config = new ParserConfig(AutoParseEnum.Never, predicates);
 
-				parser.Configure(config);
+				var parser = new Parser(config);
 
 				Assert.True(parser.HandlesType<DateTime>());
 
@@ -37,14 +38,14 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void Parser_AutoParseEnumTrue()
 			{
-				var parser = new Parser();
+				var parserNoAutoParse = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				Assert.Throws<RunInfoBuilderException>(
-					() => parser.TryParseAs(typeof(TestEnum), "ValueA", out _));
-				
-				var config = new ParserConfig(AutoParseEnum.ParseCaseSensitive, null);
+					() => parserNoAutoParse.TryParseAs(typeof(TestEnum), "ValueA", out _));
 
-				parser.Configure(config);
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.ParseCaseSensitive, null));
 
 				bool valid = parser.TryParseAs<TestEnum>("ValueA", out TestEnum parsed);
 				Assert.True(valid);
@@ -54,14 +55,14 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void Parser_AutoParseEnumTrue_IgnoreCase()
 			{
-				var parser = new Parser();
+				var parserCaseSensitive = new Parser(
+					new ParserConfig(AutoParseEnum.ParseCaseSensitive, null));
 
-				Assert.Throws<RunInfoBuilderException>(
-					() => parser.TryParseAs(typeof(TestEnum), "valuea", out _));
+				bool validParse = parserCaseSensitive.TryParseAs(typeof(TestEnum), "valuea", out _);
+				Assert.False(validParse);
 
-				var config = new ParserConfig(AutoParseEnum.ParseCaseInsensitive, null);
-
-				parser.Configure(config);
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.ParseCaseInsensitive, null));
 
 				bool valid = parser.TryParseAs<TestEnum>("valuea", out TestEnum parsed);
 				Assert.True(valid);
@@ -74,7 +75,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void ForNewType_Adds()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				Assert.False(parser.HandlesType<DateTime>());
 
@@ -86,7 +88,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void ForAlreadyExistingType_Replaces()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value => (true, DateTime.MinValue));
 
@@ -107,7 +110,9 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void NullTypeArgument_Throws()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
+
 				Assert.Throws<ArgumentNullException>(
 					() => parser.TryParseAs(null, null, out _));
 			}
@@ -115,7 +120,9 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void NullValueArgument_Throws()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
+
 				Assert.Throws<ArgumentNullException>(
 					() => parser.TryParseAs(typeof(DateTime), null, out _));
 			}
@@ -123,7 +130,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void TypeUnhandled_Throws()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				Assert.Throws<RunInfoBuilderException>(
 					() => parser.TryParseAs(typeof(DateTime), "value", out _));
@@ -132,7 +140,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void ValidParse_ReturnsTrue_With_CorrectOutResult()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value => (true, DateTime.MaxValue));
 
@@ -146,7 +155,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void InvalidParse_ReturnsFalse_With_DefaultOutResult()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value =>
 				{
@@ -169,7 +179,9 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void NullValueArgument_Throws()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
+
 				Assert.Throws<ArgumentNullException>(
 					() => parser.TryParseAs<DateTime>(null, out _));
 			}
@@ -177,7 +189,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void TypeUnhandled_Throws()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				Assert.Throws<RunInfoBuilderException>(
 					() => parser.TryParseAs<DateTime>("value", out _));
@@ -186,7 +199,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void ValidParse_ReturnsTrue_With_CorrectOutResult()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value => (true, DateTime.MaxValue));
 
@@ -200,7 +214,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void InvalidParse_ReturnsFalse_With_DefaultOutResult()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value =>
 				{
@@ -223,7 +238,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void NullTypeArgument_Throws()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				Assert.Throws<ArgumentNullException>(
 					() => parser.HandlesType(null));
@@ -232,7 +248,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void UnhandledType_False()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				bool handles = parser.HandlesType(typeof(DateTime));
 
@@ -242,7 +259,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void HandledType_True()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value => (true, DateTime.MinValue));
 
@@ -257,7 +275,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void UnhandledType_False()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				bool handles = parser.HandlesType<DateTime>();
 
@@ -267,7 +286,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 			[Fact]
 			public void HandledType_True()
 			{
-				var parser = new Parser();
+				var parser = new Parser(
+					new ParserConfig(AutoParseEnum.Never, null));
 
 				parser.SetPredicateForType<DateTime>(value => (true, DateTime.MinValue));
 

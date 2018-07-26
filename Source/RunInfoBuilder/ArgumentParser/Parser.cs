@@ -28,12 +28,16 @@ namespace R5.RunInfoBuilder.ArgumentParser
 		// and parse generically
 		private Dictionary<Type, object> _predicatesMap { get; }
 
-		internal Parser()
+		public Parser(ParserConfig config)
 		{
+			_autoParseEnumTypes = false;
+			_enumParseIgnoreCase = false;
 			_predicatesMap = new Dictionary<Type, object>();
+
+			Configure(config);
 		}
 
-		public Parser Configure(ParserConfig config)
+		private void Configure(ParserConfig config)
 		{
 			if (config.AutoParseEnum == AutoParseEnum.ParseCaseSensitive)
 			{
@@ -54,8 +58,6 @@ namespace R5.RunInfoBuilder.ArgumentParser
 					_predicatesMap.Add(type, predicate);
 				}
 			}
-
-			return this;
 		}
 
 		public IParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)
@@ -70,7 +72,7 @@ namespace R5.RunInfoBuilder.ArgumentParser
 			{
 				_predicatesMap.Add(typeof(T), predicateFunc);
 			}
-			
+
 			return this;
 		}
 
@@ -86,7 +88,7 @@ namespace R5.RunInfoBuilder.ArgumentParser
 			}
 
 			parsed = null;
-			
+
 			if (_autoParseEnumTypes && type.IsEnum)
 			{
 				try
@@ -107,7 +109,7 @@ namespace R5.RunInfoBuilder.ArgumentParser
 			}
 
 			dynamic predicate = _predicatesMap[type];
-			
+
 			var result = predicate.Invoke(value);
 
 			bool valid = result.Item1;
@@ -121,7 +123,7 @@ namespace R5.RunInfoBuilder.ArgumentParser
 
 			return false;
 		}
-		
+
 		public bool TryParseAs<T>(string value, out T parsed)
 		{
 			if (value == null)
