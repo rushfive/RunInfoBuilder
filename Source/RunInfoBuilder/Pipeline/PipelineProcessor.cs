@@ -68,38 +68,24 @@ namespace R5.RunInfoBuilder.Pipeline
 		{
 			if (_preProcessCallback != null)
 			{
-				var preProcessContext = new PreProcessContext<TRunInfo>(getProgramArguments(), _runInfo.Value);
+				var preProcessContext = new PreProcessContext<TRunInfo>(GetProgramArgumentsFrom(programArgumentInfos), _runInfo.Value);
 				_preProcessCallback(preProcessContext);
 			}
 
 			for (int i = 0; i < programArgumentInfos.Count; i++)
 			{
 				ProgramArgumentInfo info = programArgumentInfos[i];
-				
+
 				if (info.Type == ProgramArgumentType.Unresolved)
 				{
-					switch (_processConfig.HandleUnresolvedArgument)
-					{
-						case HandleUnresolvedArgument.NotAllowed:
-							// should never reach here due to validation before this
-							throw new InvalidOperationException("Unresolved program arguments are invalid for this configuration.");
-						case HandleUnresolvedArgument.AllowedButThrowOnProcess:
-							throw new RunInfoBuilderException($"Failed to process program argument '{info.RawArgumentToken}' because it's an unknown type.");
-						case HandleUnresolvedArgument.AllowedButSkipOnProcess:
-							continue;
-						default:
-							throw new ArgumentOutOfRangeException($"'{_processConfig.HandleUnresolvedArgument}' is invalid.");
-					}
+					ThrowIfUnresolvedNotAllowed(info, _processConfig);
+					continue;
 				}
 
-				var stageContext = new ProcessArgumentContext<TRunInfo>(
-					info.RawArgumentToken, 
-					info.Type,
-					info.Position, 
-					getProgramArguments(), 
-					_runInfo.Value);
+				ProcessArgumentContext<TRunInfo> stageContext = GetStageContext(info, GetProgramArgumentsFrom(programArgumentInfos), _runInfo.Value);
 
-				(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(info.RawArgumentToken, stageContext, ref i);
+				(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(
+					info.RawArgumentToken, stageContext);
 
 				i += skipNext;
 
@@ -111,19 +97,43 @@ namespace R5.RunInfoBuilder.Pipeline
 
 			if (_postProcessCallback != null)
 			{
-				var postProcessContext = new PostProcessContext<TRunInfo>(getProgramArguments(), _runInfo.Value);
+				var postProcessContext = new PostProcessContext<TRunInfo>(GetProgramArgumentsFrom(programArgumentInfos), _runInfo.Value);
 				_postProcessCallback(postProcessContext);
 			}
-
-			// the program arguments made available to users are essentially "immutable"
-			// by giving a fresh copy at each accessible place
-			string[] getProgramArguments() => programArgumentInfos
-				.Select(i => i.RawArgumentToken)
-				.ToArray();
 		}
 
+		// the program arguments made available to users are essentially "immutable"
+		// by giving a fresh copy at each accessible place
+		private static string[] GetProgramArgumentsFrom(List<ProgramArgumentInfo> infos) => infos
+				.Select(i => i.RawArgumentToken)
+				.ToArray();
+
+		private static void ThrowIfUnresolvedNotAllowed(ProgramArgumentInfo info, ProcessConfig config)
+		{
+			switch (config.HandleUnresolvedArgument)
+			{
+				case HandleUnresolvedArgument.NotAllowed:
+					// should never reach here due to validation before this
+					throw new InvalidOperationException("Unresolved program arguments are invalid for this configuration.");
+				case HandleUnresolvedArgument.AllowedButThrowOnProcess:
+					throw new RunInfoBuilderException($"Failed to process program argument '{info.RawArgumentToken}' because it's an unknown type.");
+				case HandleUnresolvedArgument.AllowedButSkipOnProcess:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException($"'{config.HandleUnresolvedArgument}' is invalid.");
+			}
+		}
+
+		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgumentInfo info, 
+			string[] programArguments, TRunInfo runInfo) => new ProcessArgumentContext<TRunInfo>(
+				info.RawArgumentToken,
+				info.Type,
+				info.Position,
+				programArguments,
+				runInfo);
+
 		private (int SkipNext, AfterProcessingArgument AfterArgument) ProcessArgumentInPipeline(string argumentToken, 
-			ProcessArgumentContext<TRunInfo> processArgumentContext, ref int i)
+			ProcessArgumentContext<TRunInfo> processArgumentContext)
 		{
 			int totalSkipNext = 0;
 			foreach (ProcessPipelineStageBase<TRunInfo> stage in _pipeline)
@@ -136,8 +146,6 @@ namespace R5.RunInfoBuilder.Pipeline
 
 				(int skipNext, AfterProcessingStage afterStage) = stage.Process(processArgumentContext);
 
-				// always increments i by skip (note this in docs!, potentially edgy weird cases where multiple callbacks increment!)
-				//i += skipNext;
 				totalSkipNext += skipNext;
 
 				if (afterStage == AfterProcessingStage.StopProcessingRemainingStages)
@@ -152,16 +160,5 @@ namespace R5.RunInfoBuilder.Pipeline
 
 			return (totalSkipNext, AfterProcessingArgument.Continue);
 		}
-
-		// TODO: remove AFTER finishing new unit tests
-		//internal List<Type> GetPipelineStageTypes()
-		//{
-		//	var result = new List<Type>();
-		//	foreach(ProcessPipelineStageBase<TRunInfo> stage in _pipeline)
-		//	{
-		//		result.Add(stage.GetType());
-		//	}
-		//	return result;
-		//}
 	}
 }

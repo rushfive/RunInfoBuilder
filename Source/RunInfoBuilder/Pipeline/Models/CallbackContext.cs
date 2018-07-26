@@ -6,7 +6,7 @@
 		public string[] ProgramArguments { get; }
 		public TRunInfo RunInfo { get; }
 		
-		public CallbackContext(string[] programArguments, TRunInfo runInfo )
+		internal CallbackContext(string[] programArguments, TRunInfo runInfo )
 		{
 			ProgramArguments = (string[])programArguments.Clone();
 			RunInfo = runInfo;

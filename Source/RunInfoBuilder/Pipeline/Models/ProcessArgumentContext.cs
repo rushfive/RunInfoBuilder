@@ -5,9 +5,9 @@ namespace R5.RunInfoBuilder
 	public class ProcessArgumentContext<TRunInfo> : CallbackContext<TRunInfo>
 		where TRunInfo : class
 	{
-		public string Token { get; set; }
-		public ProgramArgumentType ArgumentType { get; set; }
-		public int Position { get; set; }
+		public string Token { get; }
+		public ProgramArgumentType ArgumentType { get; }
+		public int Position { get; }
 
 		internal ProcessArgumentContext(
 			string token, 
