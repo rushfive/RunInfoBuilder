@@ -1,33 +1,42 @@
 ﻿namespace R5.RunInfoBuilder
 {
+	internal enum ProcessStageType
+	{
+		Continue,
+		StopCurrent,
+		KillBuild
+	}
+
 	public class ProcessStageResult
 	{
-		internal int SkipArgsCount { get; private set; }
-		internal bool ContinueArgumentProcessing { get; private set; }
-		internal bool KilledBuildProcess { get; private set; }
+		internal int SkipNextArgumentsCount { get; private set; }
+		//internal bool ContinueArgumentProcessing { get; private set; }
+		//internal bool KilledBuildProcess { get; private set; }
+		internal ProcessStageType Type { get; private set; }
 
 		public ProcessStageResult()
 		{
-			SkipArgsCount = 0;
-			ContinueArgumentProcessing = true;
-			KilledBuildProcess = false;
+			SkipNextArgumentsCount = 0;
+			Type = ProcessStageType.Continue;
+			//ContinueArgumentProcessing = true;
+			//KilledBuildProcess = false;
 		}
 
 		public ProcessStageResult SkipNext(int skip)
 		{
-			SkipArgsCount = skip;
+			SkipNextArgumentsCount = skip;
 			return this;
 		}
 
-		public ProcessStageResult SkipFurtherProcessingForCurrentArgument()
+		public ProcessStageResult StopProcessingCurrentArgument()
 		{
-			ContinueArgumentProcessing = false;
+			Type = ProcessStageType.StopCurrent;
 			return this;
 		}
 
 		public ProcessStageResult KillBuildProcess()
 		{
-			KilledBuildProcess = true;
+			Type = ProcessStageType.KillBuild;
 			return this;
 		}
 	}

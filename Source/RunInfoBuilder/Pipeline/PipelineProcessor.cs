@@ -124,7 +124,7 @@ namespace R5.RunInfoBuilder.Pipeline
 				ProcessStageResult result = stage.Process(stageContext);
 
 				// always increments i by skip (note this in docs!, potentially edgy weird cases where multiple callbacks increment!)
-				i += result.SkipArgsCount;
+				i += result.SkipNextArgumentsCount;
 
 				if (result.KilledBuildProcess)
 				{

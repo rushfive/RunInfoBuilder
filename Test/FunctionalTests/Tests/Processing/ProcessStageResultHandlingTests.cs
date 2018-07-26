@@ -90,7 +90,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			builder.Store
 				.AddCommand("command1", context => new ProcessStageResult())
-				.AddCommand("command2", context => new ProcessStageResult().SkipFurtherProcessingForCurrentArgument())
+				.AddCommand("command2", context => new ProcessStageResult().StopProcessingCurrentArgument())
 				.AddCommand("command3", context => new ProcessStageResult());
 
 			var args = new string[] { "command1", "command2", "command3" };
