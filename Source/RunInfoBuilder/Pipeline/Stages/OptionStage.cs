@@ -23,7 +23,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			_tokenizer = tokenizer;
 		}
 
-		internal override ProcessStageResult Process(ProcessArgumentContext<TRunInfo> context)
+		internal override (int SkipNext, AfterProcessingStage AfterStage) Process(ProcessArgumentContext<TRunInfo> context)
 		{
 			(OptionType type, string fullKey, List<char> shortKeys) = _tokenizer.TokenizeOption(context.Token);
 
@@ -42,7 +42,7 @@ namespace R5.RunInfoBuilder.Pipeline
 					throw new ArgumentOutOfRangeException($"'{type}' is not a valid option type.");
 			}
 
-			return new ProcessStageResult();
+			return (0, AfterProcessingStage.Continue);
 		}
 
 		private void ResolveFullOption(string key)

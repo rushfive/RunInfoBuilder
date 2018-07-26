@@ -16,6 +16,12 @@ namespace R5.RunInfoBuilder.Pipeline
 	internal class PipelineProcessor<TRunInfo> : IPipelineProcessor<TRunInfo>
 		where TRunInfo : class
 	{
+		enum AfterProcessingArgument
+		{
+			Continue,
+			KillBuild
+		}
+
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private ProcessConfig _processConfig { get; }
 		private List<ProcessPipelineStageBase<TRunInfo>> _pipeline { get; set; }
@@ -92,7 +98,7 @@ namespace R5.RunInfoBuilder.Pipeline
 					getProgramArguments(), 
 					_runInfo.Value);
 
-				killedBuildProcess = this.ApplyPipeline(info.RawArgumentToken, stageContext, ref i);
+				killedBuildProcess = this.ProcessArgumentInPipeline(info.RawArgumentToken, stageContext, ref i);
 				if (killedBuildProcess)
 				{
 					break;
@@ -111,32 +117,35 @@ namespace R5.RunInfoBuilder.Pipeline
 			}
 		}
 
-		private bool ApplyPipeline(string argumentToken, ProcessArgumentContext<TRunInfo> stageContext, ref int i)
+		private (int SkipNext, AfterProcessingArgument ProcessResult) ProcessArgumentInPipeline(string argumentToken, 
+			ProcessArgumentContext<TRunInfo> processArgumentContext, ref int i)
 		{
+			int totalSkipNext = 0;
 			foreach (ProcessPipelineStageBase<TRunInfo> stage in _pipeline)
 			{
-				bool shouldProcess = stage.CanProcessArgument(stageContext.ArgumentType);
+				bool shouldProcess = stage.CanProcessArgument(processArgumentContext.ArgumentType);
 				if (!shouldProcess)
 				{
 					continue;
 				}
 
-				ProcessStageResult result = stage.Process(stageContext);
+				(int skipNext, AfterProcessingStage afterStage) = stage.Process(processArgumentContext);
 
 				// always increments i by skip (note this in docs!, potentially edgy weird cases where multiple callbacks increment!)
-				i += result.SkipNextArgumentsCount;
+				//i += skipNext;
+				totalSkipNext += skipNext;
 
-				if (result.KilledBuildProcess)
-				{
-					return true;
-				}
-				if (!result.ContinueArgumentProcessing)
+				if (afterStage == AfterProcessingStage.StopProcessingRemainingStages)
 				{
 					break;
 				}
+				if (afterStage == AfterProcessingStage.KillBuild)
+				{
+					return (skipNext, AfterProcessingArgument.KillBuild);
+				}
 			}
 
-			return false;
+			return (totalSkipNext, AfterProcessingArgument.Continue);
 		}
 
 		// TODO: remove AFTER finishing new unit tests

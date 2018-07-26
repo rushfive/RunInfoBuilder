@@ -18,7 +18,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			_runInfo = runInfo;
 		}
 
-		internal override ProcessStageResult Process(ProcessArgumentContext<TRunInfo> context)
+		internal override (int SkipNext, AfterProcessingStage AfterStage) Process(ProcessArgumentContext<TRunInfo> context)
 		{
 			string commandToken = context.Token;
 
@@ -37,23 +37,26 @@ namespace R5.RunInfoBuilder.Pipeline
 			}
 		}
 
-		private ProcessStageResult HandleForPropertyMapped(CommandMetadata<TRunInfo> metadata)
+		private (int SkipNext, AfterProcessingStage AfterStage) HandleForPropertyMapped(CommandMetadata<TRunInfo> metadata)
 		{
 			metadata.PropertyInfo.SetValue(_runInfo.Value, metadata.MappedValue);
-			return new ProcessStageResult();
+			return (0, AfterProcessingStage.Continue);
 		}
 
-		private ProcessStageResult HandleForCustomCallback(CommandMetadata<TRunInfo> metadata,
+		private (int SkipNext, AfterProcessingStage AfterStage) HandleForCustomCallback(CommandMetadata<TRunInfo> metadata,
 			ProcessArgumentContext<TRunInfo> context)
 		{
-			return metadata.Callback(context);
+			ProcessStageResult result = metadata.Callback(context);
+			return (result.SkipNextArgumentsCount, result.HandleType);
 		}
 
-		private ProcessStageResult HandleForMappedAndCallback(CommandMetadata<TRunInfo> metadata,
+		private (int SkipNext, AfterProcessingStage AfterStage) HandleForMappedAndCallback(CommandMetadata<TRunInfo> metadata,
 			ProcessArgumentContext<TRunInfo> context)
 		{
 			metadata.PropertyInfo.SetValue(_runInfo.Value, metadata.MappedValue);
-			return metadata.Callback(context);
+
+			ProcessStageResult result = metadata.Callback(context);
+			return (result.SkipNextArgumentsCount, result.HandleType);
 		}
 	}
 }

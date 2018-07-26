@@ -26,7 +26,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			_tokenizer = tokenizer;
 		}
 
-		internal override ProcessStageResult Process(ProcessArgumentContext<TRunInfo> context)
+		internal override (int SkipNext, AfterProcessingStage AfterStage) Process(ProcessArgumentContext<TRunInfo> context)
 		{
 			if (_parser == null)
 			{
@@ -54,7 +54,7 @@ namespace R5.RunInfoBuilder.Pipeline
 
 			propertyInfo.SetValue(_runInfo.Value, parsed);
 
-			return new ProcessStageResult();
+			return (0, AfterProcessingStage.Continue);
 		}
 	}
 }

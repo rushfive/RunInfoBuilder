@@ -13,9 +13,10 @@ namespace R5.RunInfoBuilder.Pipeline
 			_processCallback = processCallback;
 		}
 
-		internal override ProcessStageResult Process(ProcessArgumentContext<TRunInfo> context)
+		internal override (int SkipNext, AfterProcessingStage AfterStage) Process(ProcessArgumentContext<TRunInfo> context)
 		{
-			return _processCallback(context);
+			ProcessStageResult result = _processCallback(context);
+			return (result.SkipNextArgumentsCount, result.HandleType);
 		}
 	}
 }

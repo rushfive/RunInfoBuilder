@@ -8,18 +8,18 @@ namespace R5.RunInfoBuilder.Pipeline
 		where TRunInfo : class
 	{
 		private ProgramArgumentType? _handlesArgumentType { get; set; }
-		private bool _handlesAnyType => !this._handlesArgumentType.HasValue;
 
 		protected ProcessPipelineStageBase(ProgramArgumentType? handlesArgumentType)
 		{
 			this._handlesArgumentType = handlesArgumentType;
 		}
 
-		internal abstract ProcessStageResult Process(ProcessArgumentContext<TRunInfo> context);
+		internal abstract (int SkipNext, AfterProcessingStage AfterStage) Process(ProcessArgumentContext<TRunInfo> context);
 
 		internal bool CanProcessArgument(ProgramArgumentType argumentType)
 		{
-			if (_handlesAnyType)
+			bool alwaysProcessed = !this._handlesArgumentType.HasValue;
+			if (alwaysProcessed)
 			{
 				return true;
 			}
