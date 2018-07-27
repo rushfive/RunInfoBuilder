@@ -1,12 +1,12 @@
 ﻿namespace R5.RunInfoBuilder
 {
-    internal class ProgramArgumentInfo
+    internal class ProgramArgument
     {
 		internal int Position { get; }
 		internal string RawArgumentToken { get; }
 		internal ProgramArgumentType Type { get; }
 
-		internal ProgramArgumentInfo(
+		internal ProgramArgument(
 			int position,
 			string rawArgumentToken,
 			ProgramArgumentType type)

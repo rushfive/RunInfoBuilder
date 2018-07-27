@@ -10,7 +10,7 @@ namespace R5.RunInfoBuilder.Pipeline
 	internal interface IPipelineProcessor<TRunInfo>
 		where TRunInfo : class
 	{
-		void ProcessArgs(List<ProgramArgumentInfo> programArgumentInfos);
+		void ProcessArgs(List<ProgramArgument> programArgumentInfos);
 	}
 
 	internal class PipelineProcessor<TRunInfo> : IPipelineProcessor<TRunInfo>
@@ -65,17 +65,17 @@ namespace R5.RunInfoBuilder.Pipeline
 			}
 		}
 
-		public void ProcessArgs(List<ProgramArgumentInfo> programArgumentInfos)
+		public void ProcessArgs(List<ProgramArgument> programArguments)
 		{
 			if (_preProcessCallback != null)
 			{
-				var preProcessContext = new PreProcessContext<TRunInfo>(GetProgramArgumentsFrom(programArgumentInfos), _runInfo.Value);
+				var preProcessContext = new PreProcessContext<TRunInfo>(GetProgramArgumentsFrom(programArguments), _runInfo.Value);
 				_preProcessCallback(preProcessContext);
 			}
 
-			for (int i = 0; i < programArgumentInfos.Count; i++)
+			for (int i = 0; i < programArguments.Count; i++)
 			{
-				ProgramArgumentInfo info = programArgumentInfos[i];
+				ProgramArgument info = programArguments[i];
 
 				if (info.Type == ProgramArgumentType.Unresolved)
 				{
@@ -83,7 +83,7 @@ namespace R5.RunInfoBuilder.Pipeline
 					continue;
 				}
 
-				ProcessArgumentContext<TRunInfo> stageContext = GetStageContext(info, GetProgramArgumentsFrom(programArgumentInfos), _runInfo.Value);
+				ProcessArgumentContext<TRunInfo> stageContext = GetStageContext(info, GetProgramArgumentsFrom(programArguments), _runInfo.Value);
 
 				(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(
 					info.RawArgumentToken, stageContext);
@@ -98,18 +98,18 @@ namespace R5.RunInfoBuilder.Pipeline
 
 			if (_postProcessCallback != null)
 			{
-				var postProcessContext = new PostProcessContext<TRunInfo>(GetProgramArgumentsFrom(programArgumentInfos), _runInfo.Value);
+				var postProcessContext = new PostProcessContext<TRunInfo>(GetProgramArgumentsFrom(programArguments), _runInfo.Value);
 				_postProcessCallback(postProcessContext);
 			}
 		}
 
 		// the program arguments made available to users are essentially "immutable"
 		// by giving a fresh copy at each accessible place
-		private static string[] GetProgramArgumentsFrom(List<ProgramArgumentInfo> infos) => infos
+		private static string[] GetProgramArgumentsFrom(List<ProgramArgument> infos) => infos
 				.Select(i => i.RawArgumentToken)
 				.ToArray();
 
-		private static void ThrowIfUnresolvedNotAllowed(ProgramArgumentInfo info, ProcessConfig config)
+		private static void ThrowIfUnresolvedNotAllowed(ProgramArgument info, ProcessConfig config)
 		{
 			switch (config.HandleUnresolvedArgument)
 			{
@@ -125,7 +125,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			}
 		}
 
-		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgumentInfo info,
+		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgument info,
 			string[] programArguments, TRunInfo runInfo) => new ProcessArgumentContext<TRunInfo>(
 				info.RawArgumentToken,
 				info.Type,

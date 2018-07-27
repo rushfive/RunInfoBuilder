@@ -13,7 +13,7 @@ namespace R5.RunInfoBuilder.Validators
 	{
 		void ValidateBuilderConfiguration();
 
-		List<ProgramArgumentInfo> ValidateProgramArguments(string[] programArguments);
+		List<ProgramArgument> ValidateProgramArguments(string[] programArguments);
 	}
 
 	internal class BuildValidator<TRunInfo> : IBuildValidator
@@ -69,7 +69,7 @@ namespace R5.RunInfoBuilder.Validators
 			}
 		}
 
-		public List<ProgramArgumentInfo> ValidateProgramArguments(string[] programArguments)
+		public List<ProgramArgument> ValidateProgramArguments(string[] programArguments)
 		{
 			ValidateRawProgramArguments(programArguments);
 
@@ -78,7 +78,7 @@ namespace R5.RunInfoBuilder.Validators
 			ValidateFromArgumentInfos(argumentInfos);
 			
 			return argumentInfos
-				.Select(i => new ProgramArgumentInfo(i.Position, i.RawArgumentToken, i.Type))
+				.Select(i => new ProgramArgument(i.Position, i.RawArgumentToken, i.Type))
 				.ToList();
 		}
 

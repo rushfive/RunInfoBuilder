@@ -95,7 +95,7 @@ namespace R5.RunInfoBuilder
 
 				_buildValidator.ValidateBuilderConfiguration();
 
-				List<ProgramArgumentInfo> programArgumentInfos = _buildValidator.ValidateProgramArguments(programArguments);
+				List<ProgramArgument> programArgumentInfos = _buildValidator.ValidateProgramArguments(programArguments);
 
 				_pipelineProcessor.ProcessArgs(programArgumentInfos);
 
