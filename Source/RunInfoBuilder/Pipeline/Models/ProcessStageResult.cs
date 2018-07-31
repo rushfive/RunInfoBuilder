@@ -9,30 +9,30 @@
 
 	public class ProcessStageResult
 	{
-		internal int SkipNextArgumentsCount { get; private set; }
-		internal AfterProcessingStage HandleType { get; private set; }
+		internal int SkipNextCount { get; private set; }
+		internal AfterProcessingStage AfterProcessing { get; private set; }
 
 		public ProcessStageResult()
 		{
-			SkipNextArgumentsCount = 0;
-			HandleType = AfterProcessingStage.Continue;
+			SkipNextCount = 0;
+			AfterProcessing = AfterProcessingStage.Continue;
 		}
 
 		public ProcessStageResult SkipNext(int skip)
 		{
-			SkipNextArgumentsCount = skip;
+			SkipNextCount = skip;
 			return this;
 		}
 
 		public ProcessStageResult StopProcessingCurrentArgument()
 		{
-			HandleType = AfterProcessingStage.StopProcessingRemainingStages;
+			AfterProcessing = AfterProcessingStage.StopProcessingRemainingStages;
 			return this;
 		}
 
 		public ProcessStageResult KillBuildProcess()
 		{
-			HandleType = AfterProcessingStage.KillBuild;
+			AfterProcessing = AfterProcessingStage.KillBuild;
 			return this;
 		}
 	}

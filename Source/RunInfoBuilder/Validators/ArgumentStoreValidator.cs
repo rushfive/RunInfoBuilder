@@ -27,13 +27,13 @@ namespace R5.RunInfoBuilder.Validators
 		private IValidationHelper _validationHelper { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 		private IReflectionHelper<TRunInfo> _reflectionHelper { get; }
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 
 		public ArgumentStoreValidator(
 			IValidationHelper validationHelper,
 			IRestrictedKeyValidator keyValidator,
 			IReflectionHelper<TRunInfo> reflectionHelper,
-			IArgumentMetadataMaps<TRunInfo> argumentMaps)
+			IArgumentMetadata<TRunInfo> argumentMaps)
 		{
 			_validationHelper = validationHelper;
 			_keyValidator = keyValidator;

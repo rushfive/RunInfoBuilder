@@ -3,7 +3,7 @@
     internal class ProgramArgument
     {
 		internal int Position { get; }
-		internal string RawArgumentToken { get; }
+		internal string ArgumentToken { get; }
 		internal ProgramArgumentType Type { get; }
 
 		internal ProgramArgument(
@@ -12,7 +12,7 @@
 			ProgramArgumentType type)
 		{
 			Position = position;
-			RawArgumentToken = rawArgumentToken;
+			ArgumentToken = rawArgumentToken;
 			Type = type;
 		}
 	}

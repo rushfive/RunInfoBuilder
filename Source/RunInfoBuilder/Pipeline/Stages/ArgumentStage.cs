@@ -8,13 +8,13 @@ namespace R5.RunInfoBuilder.Pipeline
 	internal class ArgumentStage<TRunInfo> : ProcessPipelineStageBase<TRunInfo>
 		where TRunInfo : class
 	{
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private IParser _parser { get; }
 		private IArgumentTokenizer _tokenizer { get; }
 
 		internal ArgumentStage(
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			RunInfo<TRunInfo> runInfo,
 			IParser parser,
 			IArgumentTokenizer tokenizer)

@@ -23,14 +23,14 @@ namespace R5.RunInfoBuilder.Help
 		private const string descriptionPadding = "      ";
 		private const string validationPadding = "        ";
 
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 		private HashSet<string> _helpTriggers { get; set; }
 		private string _programDescription { get; set; }
 		private Action<HelpCallbackContext<TRunInfo>> _callback { get; set; }
 
 		public HelpManager(
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			IRestrictedKeyValidator keyValidator,
 			HelpConfig<TRunInfo> config)
 		{

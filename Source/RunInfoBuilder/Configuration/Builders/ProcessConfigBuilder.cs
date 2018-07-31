@@ -1,5 +1,8 @@
 ﻿namespace R5.RunInfoBuilder.Configuration
 {
+	// TODO: ALLOW DUPLICATES by default, allow option to PREVENT IT
+
+
 	public class ProcessConfigBuilder<TRunInfo>
 		where TRunInfo : class
 	{

@@ -16,9 +16,9 @@ namespace R5.RunInfoBuilder.Validators
 	internal class ValidationHelper<TRunInfo> : IValidationHelper
 		where TRunInfo : class
 	{
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 
-		public ValidationHelper(IArgumentMetadataMaps<TRunInfo> argumentMaps)
+		public ValidationHelper(IArgumentMetadata<TRunInfo> argumentMaps)
 		{
 			_argumentMaps = argumentMaps;
 		}

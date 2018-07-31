@@ -117,7 +117,7 @@ namespace R5.RunInfoBuilder.Configuration
 				})
 				.AddScoped<IRestrictedKeyValidator, RestrictedKeyValidator>()
 				.AddScoped<IReflectionHelper<TRunInfo>, ReflectionHelper<TRunInfo>>()
-				.AddScoped<IArgumentMetadataMaps<TRunInfo>, ArgumentMetadataMaps<TRunInfo>>()
+				.AddScoped<IArgumentMetadata<TRunInfo>, ArgumentMetadata<TRunInfo>>()
 				.AddScoped<IArgumentStore<TRunInfo>, ArgumentStore<TRunInfo>>()
 				.AddScoped<IArgumentTypeResolver, ArgumentTypeResolver<TRunInfo>>()
 				.AddScoped<IValidationRuleSetFactory, ValidationRuleSetFactory<TRunInfo>>()

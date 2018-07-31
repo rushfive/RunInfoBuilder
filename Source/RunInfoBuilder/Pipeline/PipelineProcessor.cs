@@ -29,7 +29,7 @@ namespace R5.RunInfoBuilder.Pipeline
 		private Action<PostProcessContext<TRunInfo>> _postProcessCallback { get; set; }
 
 		public PipelineProcessor(
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			RunInfo<TRunInfo> runInfo,
 			IParser parser,
 			IArgumentTokenizer tokenizer,
@@ -86,7 +86,7 @@ namespace R5.RunInfoBuilder.Pipeline
 				ProcessArgumentContext<TRunInfo> stageContext = GetStageContext(info, GetProgramArgumentsFrom(programArguments), _runInfo.Value);
 
 				(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(
-					info.RawArgumentToken, stageContext);
+					info.ArgumentToken, stageContext);
 
 				i += skipNext;
 
@@ -106,28 +106,28 @@ namespace R5.RunInfoBuilder.Pipeline
 		// the program arguments made available to users are essentially "immutable"
 		// by giving a fresh copy at each accessible place
 		private static string[] GetProgramArgumentsFrom(List<ProgramArgument> infos) => infos
-				.Select(i => i.RawArgumentToken)
+				.Select(i => i.ArgumentToken)
 				.ToArray();
 
 		private static void ThrowIfUnresolvedNotAllowed(ProgramArgument info, ProcessConfig config)
 		{
-			switch (config.HandleUnresolvedArgument)
+			switch (config.HandleUnresolved)
 			{
 				case HandleUnresolvedArgument.NotAllowed:
 					// should never reach here due to validation before this
 					throw new InvalidOperationException("Unresolved program arguments are invalid for this configuration.");
 				case HandleUnresolvedArgument.AllowedButThrowOnProcess:
-					throw new RunInfoBuilderException($"Failed to process program argument '{info.RawArgumentToken}' because it's an unknown type.");
+					throw new RunInfoBuilderException($"Failed to process program argument '{info.ArgumentToken}' because it's an unknown type.");
 				case HandleUnresolvedArgument.AllowedButSkipOnProcess:
 					break;
 				default:
-					throw new ArgumentOutOfRangeException($"'{config.HandleUnresolvedArgument}' is invalid.");
+					throw new ArgumentOutOfRangeException($"'{config.HandleUnresolved}' is invalid.");
 			}
 		}
 
 		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgument info,
 			string[] programArguments, TRunInfo runInfo) => new ProcessArgumentContext<TRunInfo>(
-				info.RawArgumentToken,
+				info.ArgumentToken,
 				info.Type,
 				info.Position,
 				programArguments,

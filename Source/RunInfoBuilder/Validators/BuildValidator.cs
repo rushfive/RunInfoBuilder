@@ -20,14 +20,14 @@ namespace R5.RunInfoBuilder.Validators
 		where TRunInfo : class
 	{
 		private IValidationRuleSetFactory _validationFactory { get; }
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IParser _parser { get; }
 		private ProcessConfig _processConfig { get; }
 		private IArgumentTypeResolver _argumentTypeResolver { get; }
 
 		public BuildValidator(
 			IValidationRuleSetFactory validationFactory,
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			IParser parser,
 			ProcessConfig processConfig,
 			IArgumentTypeResolver argumentTypeResolver)
@@ -116,7 +116,7 @@ namespace R5.RunInfoBuilder.Validators
 
 		private void ValidateFromArgumentInfos(ProgramArgumentValidationInfo[] argumentInfos)
 		{
-			if (_processConfig.HandleUnresolvedArgument == HandleUnresolvedArgument.NotAllowed)
+			if (_processConfig.HandleUnresolved == HandleUnresolvedArgument.NotAllowed)
 			{
 				_validationFactory
 					.AllProgramArgumentsHaveValidTypes()

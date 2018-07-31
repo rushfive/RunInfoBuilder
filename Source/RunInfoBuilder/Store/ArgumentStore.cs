@@ -33,13 +33,13 @@ namespace R5.RunInfoBuilder.Store
 	{
 		private IArgumentStoreValidator<TRunInfo> _storeValidator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IReflectionHelper<TRunInfo> _reflectionHelper { get; }
 
 		public ArgumentStore(
 			IArgumentStoreValidator<TRunInfo> storeValidator,
 			IRestrictedKeyValidator keyValidator,
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			IReflectionHelper<TRunInfo> reflectionHelper)
 		{
 			_storeValidator = storeValidator;

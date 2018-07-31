@@ -18,11 +18,11 @@ namespace R5.RunInfoBuilder.Validators
 		//internal const string ArgumentRegex = @"^[A-Za-z0-9]+\b=\b[\w/.-]+$";
 		internal const string ArgumentRegex = @"^[A-Za-z0-9]+\b=.*$";
 
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IArgumentTokenizer _tokenizer { get; }
 
 		public ArgumentTypeResolver(
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			IArgumentTokenizer tokenizer)
 		{
 			_argumentMaps = argumentMaps;

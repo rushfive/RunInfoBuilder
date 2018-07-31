@@ -6,11 +6,11 @@ namespace R5.RunInfoBuilder.Pipeline
 	internal class CommandStage<TRunInfo> : ProcessPipelineStageBase<TRunInfo>
 		where TRunInfo : class
 	{
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 
 		internal CommandStage(
-			IArgumentMetadataMaps<TRunInfo> argumentMaps,
+			IArgumentMetadata<TRunInfo> argumentMaps,
 			RunInfo<TRunInfo> runInfo)
 			: base(ProgramArgumentType.Command)
 		{
@@ -47,7 +47,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			ProcessArgumentContext<TRunInfo> context)
 		{
 			ProcessStageResult result = metadata.Callback(context);
-			return (result.SkipNextArgumentsCount, result.HandleType);
+			return (result.SkipNext, result.AfterProcessing);
 		}
 
 		private (int SkipNext, AfterProcessingStage AfterStage) HandleForMappedAndCallback(CommandMetadata<TRunInfo> metadata,
@@ -56,7 +56,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			metadata.PropertyInfo.SetValue(_runInfo.Value, metadata.MappedValue);
 
 			ProcessStageResult result = metadata.Callback(context);
-			return (result.SkipNextArgumentsCount, result.HandleType);
+			return (result.SkipNext, result.AfterProcessing);
 		}
 	}
 }

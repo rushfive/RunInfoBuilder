@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Pipeline;
+using R5.RunInfoBuilder.Process;
 using System;
 using System.Reflection;
 
@@ -19,7 +20,7 @@ namespace R5.RunInfoBuilder.Store
 		internal string Description { get; }
 		internal PropertyInfo PropertyInfo { get; }
 		internal object MappedValue { get; }
-		internal Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> Callback { get; }
+		internal Func<ProcessContext<TRunInfo>, ProcessStageResult> Callback { get; }
 
 		internal CommandMetadata(
 			string key,
@@ -27,7 +28,7 @@ namespace R5.RunInfoBuilder.Store
 			string description,
 			PropertyInfo propertyInfo,
 			object mappedValue,
-			Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback)
+			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
 		{
 			Key = key;
 			Type = type;

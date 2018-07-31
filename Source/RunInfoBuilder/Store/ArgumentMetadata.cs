@@ -4,7 +4,7 @@ using System.Linq;
 namespace R5.RunInfoBuilder.Store
 {
 	// todo: run through and see if all these used
-	internal interface IArgumentMetadataMaps<TRunInfo>
+	internal interface IArgumentMetadata<TRunInfo>
 		where TRunInfo : class
 	{
 		bool ArgumentExists(string key);
@@ -36,7 +36,7 @@ namespace R5.RunInfoBuilder.Store
 		void AddOption(string fullKey, char? shortKey, OptionMetadata metadata);
 	}
 
-	internal class ArgumentMetadataMaps<TRunInfo> : IArgumentMetadataMaps<TRunInfo>
+	internal class ArgumentMetadata<TRunInfo> : IArgumentMetadata<TRunInfo>
 		where TRunInfo : class
 	{
 		private Dictionary<string, ArgumentMetadata> _argumentMap { get; }
@@ -44,7 +44,7 @@ namespace R5.RunInfoBuilder.Store
 		private Dictionary<string, OptionMetadata> _fullOptionMap { get; }
 		private Dictionary<char, string> _shortOptionMap { get; }
 
-		public ArgumentMetadataMaps()
+		public ArgumentMetadata()
 		{
 			_argumentMap = new Dictionary<string, ArgumentMetadata>();
 			_commandMap = new Dictionary<string, CommandMetadata<TRunInfo>>();

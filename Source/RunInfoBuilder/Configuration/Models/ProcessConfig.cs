@@ -2,11 +2,11 @@
 {
 	internal class ProcessConfig
 	{
-		internal HandleUnresolvedArgument HandleUnresolvedArgument { get; set; }
+		internal HandleUnresolvedArgument HandleUnresolved { get; set; }
 
-		internal ProcessConfig(HandleUnresolvedArgument handleUnresolvedArgument)
+		internal ProcessConfig(HandleUnresolvedArgument handleUnresolved)
 		{
-			HandleUnresolvedArgument = handleUnresolvedArgument;
+			HandleUnresolved = handleUnresolved;
 		}
 	}
 }

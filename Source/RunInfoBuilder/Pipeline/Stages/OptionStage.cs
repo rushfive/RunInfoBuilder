@@ -8,12 +8,12 @@ namespace R5.RunInfoBuilder.Pipeline
 	internal class OptionStage<TRunInfo> : ProcessPipelineStageBase<TRunInfo>
 		where TRunInfo : class
 	{
-		private IArgumentMetadataMaps<TRunInfo> _argumentMaps { get; }
+		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private IArgumentTokenizer _tokenizer { get; }
 
 		internal OptionStage(
-			IArgumentMetadataMaps<TRunInfo> argumentMaps, 
+			IArgumentMetadata<TRunInfo> argumentMaps, 
 			RunInfo<TRunInfo> runInfo,
 			IArgumentTokenizer tokenizer)
 			: base(ProgramArgumentType.Option)
