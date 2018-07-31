@@ -4,6 +4,7 @@ using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Store;
 using R5.RunInfoBuilder.Version;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace R5.RunInfoBuilder.Process
 {
@@ -48,6 +49,13 @@ namespace R5.RunInfoBuilder.Process
 
 		public StageChain<TRunInfo> Create()
 		{
+			Queue<StageChain<TRunInfo>> stages = GetOrderedStages();
+
+			return GetLinkedStages(stages);
+		}
+
+		private Queue<StageChain<TRunInfo>> GetOrderedStages()
+		{
 			var stages = new Queue<StageChain<TRunInfo>>();
 
 			if (_hooksConfig.PreArgumentCallback != null)
@@ -65,24 +73,29 @@ namespace R5.RunInfoBuilder.Process
 				stages.Enqueue(new VersionStage<TRunInfo>(_versionManager));
 			}
 
-			var unresolvedstage = new HandleUnresolvedStage<TRunInfo>(_processConfig);
-			var argumentStage = new ArgumentStage<TRunInfo>(_argumentMetadata, _parser, _runInfo, _tokenizer);
-			var commandStage = new CommandStage<TRunInfo>(_argumentMetadata, _runInfo);
-			var optionStage = new OptionStage<TRunInfo>(_argumentMetadata, _runInfo, _tokenizer);
-
-			unresolvedstage
-				.SetNext(argumentStage)
-				.SetNext(commandStage)
-				.SetNext(optionStage);
-
-			StageChain<TRunInfo> first = unresolvedstage;
-
-			
+			stages.Enqueue(new HandleUnresolvedStage<TRunInfo>(_processConfig));
+			stages.Enqueue(new ArgumentStage<TRunInfo>(_argumentMetadata, _parser, _runInfo, _tokenizer));
+			stages.Enqueue(new CommandStage<TRunInfo>(_argumentMetadata, _runInfo));
+			stages.Enqueue(new OptionStage<TRunInfo>(_argumentMetadata, _runInfo, _tokenizer));
 
 			if (_hooksConfig.PostArgumentCallback != null)
 			{
-				var postProcessStage = new PostProcessStage<TRunInfo>(_hooksConfig.PreArgumentCallback);
-				optionStage.SetNext(postProcessStage);
+				stages.Enqueue(new PostProcessStage<TRunInfo>(_hooksConfig.PreArgumentCallback));
+			}
+
+			return stages;
+		}
+
+		private StageChain<TRunInfo> GetLinkedStages(Queue<StageChain<TRunInfo>> stages)
+		{
+			StageChain<TRunInfo> first = stages.Peek();
+			StageChain<TRunInfo> prev = stages.Dequeue();
+
+			while (stages.Any())
+			{
+				var next = stages.Dequeue();
+				prev.SetNext(next);
+				prev = next;
 			}
 
 			return first;

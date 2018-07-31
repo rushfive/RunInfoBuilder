@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Store;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,33 +7,37 @@ namespace R5.RunInfoBuilder.Process
 {
 	internal interface IProcessInvoker
 	{
-		ProcessResult Start(List<ProgramArgument> programArguments);
+		ProcessResult Start(string[] args);
 	}
 
 	internal class ProcessInvoker<TRunInfo> : IProcessInvoker
 		where TRunInfo : class
 	{
-		private Queue<ProgramArgument> _argumentQueue { get; set; }
+		private IArgumentTypeResolver _argumentTypeResolver { get; set; }
 		private IStageChainFactory<TRunInfo> _chainFactory { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 
 		public ProcessInvoker(
+			IArgumentTypeResolver argumentTypeResolver,
 			IStageChainFactory<TRunInfo> chainFactory,
 			RunInfo<TRunInfo> runInfo)
 		{
+			_argumentTypeResolver = argumentTypeResolver;
 			_chainFactory = chainFactory;
 			_runInfo = runInfo;
 		}
 
-		public ProcessResult Start(List<ProgramArgument> programArguments)
+		public ProcessResult Start(string[] args)
 		{
-			_argumentQueue = new Queue<ProgramArgument>(programArguments);
+			List<ProgramArgument> programArguments = ResolveProgramArguments(args, _argumentTypeResolver.GetArgumentType);
+
+			var argumentQueue = new Queue<ProgramArgument>(programArguments);
 			
 			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory = CreateContextFactory(programArguments, _runInfo.Value);
 
-			while (_argumentQueue.Any())
+			while (argumentQueue.Any())
 			{
-				ProgramArgument argument = _argumentQueue.Dequeue();
+				ProgramArgument argument = argumentQueue.Dequeue();
 
 				StageChain<TRunInfo> chain = _chainFactory.Create();
 
@@ -51,13 +56,26 @@ namespace R5.RunInfoBuilder.Process
 					return ProcessResult.Version;
 				}
 
-				while (_argumentQueue.Any() && skipNext-- > 0)
+				while (argumentQueue.Any() && skipNext-- > 0)
 				{
-					_argumentQueue.Dequeue();
+					argumentQueue.Dequeue();
 				}
 			}
 
 			return ProcessResult.Success;
+		}
+
+		private static List<ProgramArgument> ResolveProgramArguments(string[] args, 
+			Func<string, ProgramArgumentType> typeResolveFunc)
+		{
+			var result = new List<ProgramArgument>();
+
+			for (int i = 0; i < args.Length; i++)
+			{
+				var argument = new ProgramArgument(i, args[i], typeResolveFunc(args[i]));
+			}
+
+			return result;
 		}
 
 		private static Func<ProgramArgument, ProcessContext<TRunInfo>> CreateContextFactory

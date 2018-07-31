@@ -69,39 +69,22 @@ namespace R5.RunInfoBuilder
 		{
 			try
 			{
-				if (_hooksConfig.PreBuildCallback != null)
-				{
-					BuildContext<TRunInfo> buildContext = GetBuildContext(args);
-					_hooksConfig.PreBuildCallback(buildContext);
-				}
+				InvokePreBuild(args);
 
 				if (args == null || !args.Any())
 				{
 					return BuildResult<TRunInfo>.NotProcessed();
 				}
 
-				_buildValidator.ValidateBuilderConfiguration();
+				//_buildValidator.ValidateBuilderConfiguration();
 
-				List<ProgramArgument> programArguments = _buildValidator.ValidateProgramArguments(args);
+				//List<ProgramArgument> programArguments = _buildValidator.ValidateProgramArguments(args);
 
-				ProcessResult processResult = _processInvoker.Start(programArguments);
+				ProcessResult processResult = _processInvoker.Start(args);
 
-				if (_hooksConfig.PostBuildCallback != null)
-				{
-					BuildContext<TRunInfo> buildContext = GetBuildContext(args);
-					_hooksConfig.PostBuildCallback(buildContext);
-				}
+				InvokePostBuild(args);
 
-				if (processResult == ProcessResult.Help)
-				{
-					return BuildResult<TRunInfo>.Help();
-				}
-				if (processResult == ProcessResult.Version)
-				{
-					return BuildResult<TRunInfo>.Version();
-				}
-
-				return BuildResult<TRunInfo>.Success(_runInfo.Value);
+				return CompleteFromResult(processResult);
 			}
 			catch (BuilderConfigurationValidationException ex)
 			{
@@ -131,5 +114,37 @@ namespace R5.RunInfoBuilder
 
 		private BuildContext<TRunInfo> GetBuildContext(string[] args)
 			=> new BuildContext<TRunInfo>((string[]) args.Clone(), _runInfo.Value);
+
+		private void InvokePreBuild(string[] args)
+		{
+			if (_hooksConfig.PreBuildCallback != null)
+			{
+				BuildContext<TRunInfo> buildContext = GetBuildContext(args);
+				_hooksConfig.PreBuildCallback(buildContext);
+			}
+		}
+
+		private void InvokePostBuild(string[] args)
+		{
+			if (_hooksConfig.PostBuildCallback != null)
+			{
+				BuildContext<TRunInfo> buildContext = GetBuildContext(args);
+				_hooksConfig.PostBuildCallback(buildContext);
+			}
+		}
+
+		private BuildResult<TRunInfo> CompleteFromResult(ProcessResult processResult)
+		{
+			if (processResult == ProcessResult.Help)
+			{
+				return BuildResult<TRunInfo>.Help();
+			}
+			if (processResult == ProcessResult.Version)
+			{
+				return BuildResult<TRunInfo>.Version();
+			}
+
+			return BuildResult<TRunInfo>.Success(_runInfo.Value);
+		}
 	}
 }

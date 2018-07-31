@@ -19,20 +19,20 @@ namespace R5.RunInfoBuilder.Validators
 	internal class BuildValidator<TRunInfo> : IBuildValidator
 		where TRunInfo : class
 	{
-		private IValidationRuleSetFactory _validationFactory { get; }
+		//private IValidationRuleSetFactory _validationFactory { get; }
 		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IParser _parser { get; }
 		private ProcessConfig _processConfig { get; }
 		private IArgumentTypeResolver _argumentTypeResolver { get; }
 
 		public BuildValidator(
-			IValidationRuleSetFactory validationFactory,
+			//IValidationRuleSetFactory validationFactory,
 			IArgumentMetadata<TRunInfo> argumentMaps,
 			IParser parser,
 			ProcessConfig processConfig,
 			IArgumentTypeResolver argumentTypeResolver)
 		{
-			_validationFactory = validationFactory;
+			//_validationFactory = validationFactory;
 			_argumentMaps = argumentMaps;
 			_parser = parser;
 			_processConfig = processConfig;
@@ -84,17 +84,17 @@ namespace R5.RunInfoBuilder.Validators
 
 		private void ValidateRawProgramArguments(string[] programArguments)
 		{
-			_validationFactory
-				.NoDuplicateProgramArguments()
-				.Validate(programArguments);
+			//_validationFactory
+			//	.NoDuplicateProgramArguments()
+			//	.Validate(programArguments);
 
-			_validationFactory
-				.HelpArgumentMustBeFirst()
-				.Validate(programArguments);
+			//_validationFactory
+			//	.HelpArgumentMustBeFirst()
+			//	.Validate(programArguments);
 
-			_validationFactory
-				.VersionArgumentMustBeFirst()
-				.Validate(programArguments);
+			//_validationFactory
+			//	.VersionArgumentMustBeFirst()
+			//	.Validate(programArguments);
 		}
 
 		private ProgramArgumentValidationInfo[] InitializeArgumentInfosFrom(string[] programArguments)
@@ -105,10 +105,10 @@ namespace R5.RunInfoBuilder.Validators
 			{
 				validationInfos[i] = new ProgramArgumentValidationInfo(i, programArguments[i]);
 
-				if (_argumentTypeResolver.TryGetArgumentType(programArguments[i], out ProgramArgumentType type))
-				{
-					validationInfos[i].SetType(type);
-				}
+				//if (_argumentTypeResolver.GetArgumentType(programArguments[i], out ProgramArgumentType type))
+				//{
+				//	validationInfos[i].SetType(type);
+				//}
 			}
 
 			return validationInfos;
@@ -118,9 +118,9 @@ namespace R5.RunInfoBuilder.Validators
 		{
 			if (_processConfig.HandleUnresolved == HandleUnresolvedArgument.NotAllowed)
 			{
-				_validationFactory
-					.AllProgramArgumentsHaveValidTypes()
-					.Validate(argumentInfos);
+				//_validationFactory
+				//	.AllProgramArgumentsHaveValidTypes()
+				//	.Validate(argumentInfos);
 			}
 
 			ValidationByConfigurationRules(argumentInfos);
@@ -128,17 +128,17 @@ namespace R5.RunInfoBuilder.Validators
 
 		private void ValidationByConfigurationRules(ProgramArgumentValidationInfo[] argumentInfos)
 		{
-			_validationFactory
-				.CommandConfigurationRules()
-				.Validate(argumentInfos);
+			//_validationFactory
+			//	.CommandConfigurationRules()
+			//	.Validate(argumentInfos);
 
-			_validationFactory
-				.ArgumentConfigurationRules()
-				.Validate(argumentInfos);
+			//_validationFactory
+			//	.ArgumentConfigurationRules()
+			//	.Validate(argumentInfos);
 
-			_validationFactory
-				.OptionConfigurationRules()
-				.Validate(argumentInfos);
+			//_validationFactory
+			//	.OptionConfigurationRules()
+			//	.Validate(argumentInfos);
 		}
 	}
 }
