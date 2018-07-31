@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Pipeline;
+using R5.RunInfoBuilder.Process;
 using System;
 
 namespace R5.RunInfoBuilder.Configuration
@@ -8,14 +9,14 @@ namespace R5.RunInfoBuilder.Configuration
 	{
 		internal Action<PreProcessContext<TRunInfo>> PreProcessCallback { get; }
 		internal Action<PostProcessContext<TRunInfo>> PostProcessCallback { get; }
-		internal Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> PreArgumentCallback { get; }
-		internal Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> PostArgumentCallback { get; }
+		internal Func<ProcessContext<TRunInfo>, ProcessStageResult> PreArgumentCallback { get; }
+		internal Func<ProcessContext<TRunInfo>, ProcessStageResult> PostArgumentCallback { get; }
 
 		internal ProcessHooksConfig(
 			Action<PreProcessContext<TRunInfo>> preProcessCallback,
 			Action<PostProcessContext<TRunInfo>> postProcessCallback,
-			Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> preArgumentCallback,
-			Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> postArgumentCallback)
+			Func<ProcessContext<TRunInfo>, ProcessStageResult> preArgumentCallback,
+			Func<ProcessContext<TRunInfo>, ProcessStageResult> postArgumentCallback)
 		{
 			PreProcessCallback = preProcessCallback;
 			PostProcessCallback = postProcessCallback;

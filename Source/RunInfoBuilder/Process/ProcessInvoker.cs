@@ -68,7 +68,7 @@ namespace R5.RunInfoBuilder.Process
 
 					(StageChainResult result, int skipNext) = _chainFactory
 						.Create()
-						.Process(argument, contextFactory);
+						.TryProcessArgument(argument, contextFactory);
 					// the ProcessStage above SHOULD return skip next info too,
 					// resulting in queue dequeueing
 
@@ -170,7 +170,7 @@ namespace R5.RunInfoBuilder.Process
 			return (StageChainResult.Continue, 0);
 		}
 
-		protected (StageChainResult Result, int SkipNext) GoToNextFromResult(ProcessStageResult result,
+		protected (StageChainResult Result, int SkipNext) GoToNextFromCallbackResult(ProcessStageResult result,
 			ProgramArgument argument, Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
 		{
 			switch (result.AfterProcessing)
@@ -219,7 +219,7 @@ namespace R5.RunInfoBuilder.Process
 
 			ProcessStageResult result = _callback(context);
 
-			return GoToNextFromResult(result, argument, contextFactory);
+			return GoToNextFromCallbackResult(result, argument, contextFactory);
 		}
 	}
 
@@ -336,14 +336,13 @@ namespace R5.RunInfoBuilder.Process
 						metadata.PropertyInfo.SetValue(_runInfo.Value, metadata.MappedValue);
 						return GoToNext(argument, contextFactory);
 					}
-					break;
 				case CommandType.CustomCallback:
 					{
 						ProcessContext<TRunInfo> context = contextFactory(argument);
 
 						ProcessStageResult result = metadata.Callback(context);
 
-						return GoToNextFromResult(result, argument, contextFactory);
+						return GoToNextFromCallbackResult(result, argument, contextFactory);
 					}
 				case CommandType.MappedAndCallback:
 					{
@@ -353,7 +352,7 @@ namespace R5.RunInfoBuilder.Process
 
 						ProcessStageResult result = metadata.Callback(context);
 
-						return GoToNextFromResult(result, argument, contextFactory);
+						return GoToNextFromCallbackResult(result, argument, contextFactory);
 					}
 				default:
 					throw new ArgumentOutOfRangeException($"'{metadata.Type}' is not a valid command type.");

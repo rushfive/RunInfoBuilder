@@ -24,7 +24,7 @@ namespace R5.RunInfoBuilder.Pipeline
 
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private ProcessConfig _processConfig { get; }
-		private List<ProcessPipelineStageBase<TRunInfo>> _pipeline { get; set; }
+		//private List<ProcessPipelineStageBase<TRunInfo>> _pipeline { get; set; }
 		private Action<PreProcessContext<TRunInfo>> _preProcessCallback { get; set; }
 		private Action<PostProcessContext<TRunInfo>> _postProcessCallback { get; set; }
 
@@ -39,12 +39,12 @@ namespace R5.RunInfoBuilder.Pipeline
 			_runInfo = runInfo;
 			_processConfig = processConfig;
 
-			_pipeline = new List<ProcessPipelineStageBase<TRunInfo>>
-			{
-				new CommandStage<TRunInfo>(argumentMaps, runInfo),
-				new OptionStage<TRunInfo>(argumentMaps, runInfo, tokenizer),
-				new ArgumentStage<TRunInfo>(argumentMaps, runInfo, parser, tokenizer)
-			};
+			//_pipeline = new List<ProcessPipelineStageBase<TRunInfo>>
+			//{
+			//	//new CommandStage<TRunInfo>(argumentMaps, runInfo),
+			//	new OptionStage<TRunInfo>(argumentMaps, runInfo, tokenizer),
+			//	//new ArgumentStage<TRunInfo>(argumentMaps, runInfo, parser, tokenizer)
+			//};
 
 			Configure(hooksConfig);
 		}
@@ -54,15 +54,15 @@ namespace R5.RunInfoBuilder.Pipeline
 			_preProcessCallback = config.PreProcessCallback;
 			_postProcessCallback = config.PostProcessCallback;
 
-			if (config.PreArgumentCallback != null)
-			{
-				_pipeline.Insert(0, new PreProcessArgumentStage<TRunInfo>(config.PreArgumentCallback));
-			}
+			//if (config.PreArgumentCallback != null)
+			//{
+			//	_pipeline.Insert(0, new PreProcessArgumentStage<TRunInfo>(config.PreArgumentCallback));
+			//}
 
-			if (config.PostArgumentCallback != null)
-			{
-				_pipeline.Add(new PostProcessArgumentStage<TRunInfo>(config.PostArgumentCallback));
-			}
+			//if (config.PostArgumentCallback != null)
+			//{
+			//	_pipeline.Add(new PostProcessArgumentStage<TRunInfo>(config.PostArgumentCallback));
+			//}
 		}
 
 		public void ProcessArgs(List<ProgramArgument> programArguments)
@@ -83,17 +83,17 @@ namespace R5.RunInfoBuilder.Pipeline
 					continue;
 				}
 
-				ProcessArgumentContext<TRunInfo> stageContext = GetStageContext(info, GetProgramArgumentsFrom(programArguments), _runInfo.Value);
+				//ProcessContext<TRunInfo> stageContext = GetStageContext(info, GetProgramArgumentsFrom(programArguments), _runInfo.Value);
 
-				(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(
-					info.ArgumentToken, stageContext);
+				//(int skipNext, AfterProcessingArgument afterArgument) = this.ProcessArgumentInPipeline(
+				//	info.ArgumentToken, stageContext);
 
-				i += skipNext;
+				//i += skipNext;
 
-				if (afterArgument == AfterProcessingArgument.KillBuild)
-				{
-					break;
-				}
+				//if (afterArgument == AfterProcessingArgument.KillBuild)
+				//{
+				//	break;
+				//}
 			}
 
 			if (_postProcessCallback != null)
@@ -125,41 +125,41 @@ namespace R5.RunInfoBuilder.Pipeline
 			}
 		}
 
-		private static ProcessArgumentContext<TRunInfo> GetStageContext(ProgramArgument info,
-			string[] programArguments, TRunInfo runInfo) => new ProcessArgumentContext<TRunInfo>(
-				info.ArgumentToken,
-				info.Type,
-				info.Position,
-				programArguments,
-				runInfo);
+		//private static ProcessContext<TRunInfo> GetStageContext(ProgramArgument info,
+		//	string[] programArguments, TRunInfo runInfo) => new ProcessContext<TRunInfo>(
+		//		info.ArgumentToken,
+		//		info.Type,
+		//		info.Position,
+		//		programArguments,
+		//		runInfo);
 
-		private (int SkipNext, AfterProcessingArgument AfterArgument) ProcessArgumentInPipeline(string argumentToken,
-			ProcessArgumentContext<TRunInfo> processArgumentContext)
-		{
-			int totalSkipNext = 0;
-			foreach (ProcessPipelineStageBase<TRunInfo> stage in _pipeline)
-			{
-				bool shouldProcess = stage.CanProcessArgument(processArgumentContext.ArgumentType);
-				if (!shouldProcess)
-				{
-					continue;
-				}
+		//private (int SkipNext, AfterProcessingArgument AfterArgument) ProcessArgumentInPipeline(string argumentToken,
+		//	ProcessContext<TRunInfo> processArgumentContext)
+		//{
+		//	int totalSkipNext = 0;
+		//	foreach (ProcessPipelineStageBase<TRunInfo> stage in _pipeline)
+		//	{
+		//		bool shouldProcess = stage.CanProcessArgument(processArgumentContext.ArgumentType);
+		//		if (!shouldProcess)
+		//		{
+		//			continue;
+		//		}
 
-				(int skipNext, AfterProcessingStage afterStage) = stage.Process(processArgumentContext);
+		//		(int skipNext, AfterProcessingStage afterStage) = stage.Process(processArgumentContext);
 
-				totalSkipNext += skipNext;
+		//		totalSkipNext += skipNext;
 
-				if (afterStage == AfterProcessingStage.StopProcessingRemainingStages)
-				{
-					break;
-				}
-				if (afterStage == AfterProcessingStage.KillBuild)
-				{
-					return (skipNext, AfterProcessingArgument.KillBuild);
-				}
-			}
+		//		if (afterStage == AfterProcessingStage.StopProcessingRemainingStages)
+		//		{
+		//			break;
+		//		}
+		//		if (afterStage == AfterProcessingStage.KillBuild)
+		//		{
+		//			return (skipNext, AfterProcessingArgument.KillBuild);
+		//		}
+		//	}
 
-			return (totalSkipNext, AfterProcessingArgument.Continue);
-		}
+		//	return (totalSkipNext, AfterProcessingArgument.Continue);
+		//}
 	}
 }

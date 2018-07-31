@@ -1,5 +1,6 @@
 ﻿using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Pipeline;
+using R5.RunInfoBuilder.Process;
 using R5.RunInfoBuilder.Validators;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,11 @@ namespace R5.RunInfoBuilder.Store
 		IArgumentStore<TRunInfo> AddCommand<TPropertyType>(string key, Expression<Func<TRunInfo, TPropertyType>> propertyExpression,
 					TPropertyType mappedValue, string description = null);
 
-		IArgumentStore<TRunInfo> AddCommand(string key, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback,
+		IArgumentStore<TRunInfo> AddCommand(string key, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback,
 			string description = null);
 
 		IArgumentStore<TRunInfo> AddCommand<TPropertyType>(string key, Expression<Func<TRunInfo, TPropertyType>> propertyExpression,
-			TPropertyType mappedValue, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback, string description = null);
+			TPropertyType mappedValue, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback, string description = null);
 
 		IArgumentStore<TRunInfo> AddOption(string fullKey, Expression<Func<TRunInfo, bool>> propertyExpression,
 			char? shortKey = null, string description = null);
@@ -69,20 +70,20 @@ namespace R5.RunInfoBuilder.Store
 			return AddCommandInternal(CommandType.PropertyMapped, key, propertyExpression, mappedValue, null, description);
 		}
 
-		public IArgumentStore<TRunInfo> AddCommand(string key, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback,
+		public IArgumentStore<TRunInfo> AddCommand(string key, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback,
 			string description = null)
 		{
 			return AddCommandInternal<object>(CommandType.CustomCallback, key, null, null, callback, description);
 		}
 
 		public IArgumentStore<TRunInfo> AddCommand<TPropertyType>(string key, Expression<Func<TRunInfo, TPropertyType>> propertyExpression,
-			TPropertyType mappedValue, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback, string description = null)
+			TPropertyType mappedValue, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback, string description = null)
 		{
 			return AddCommandInternal(CommandType.MappedAndCallback, key, propertyExpression, mappedValue, callback, description);
 		}
 
 		private IArgumentStore<TRunInfo> AddCommandInternal<TPropertyType>(CommandType type, string key, Expression<Func<TRunInfo, TPropertyType>> propertyExpression,
-			TPropertyType mappedValue, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback, string description)
+			TPropertyType mappedValue, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback, string description)
 		{
 			_storeValidator.ValidateCommand(type, key, propertyExpression, mappedValue, callback);
 

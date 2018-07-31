@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Pipeline;
+using R5.RunInfoBuilder.Process;
 using R5.RunInfoBuilder.Store;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace R5.RunInfoBuilder.Validators
 			Func<object, bool> validateFunction = null, string validatorDescription = null);
 		
 		void ValidateCommand<TPropertyType>(CommandType type, string key, Expression<Func<TRunInfo, TPropertyType>> propertyExpression,
-			TPropertyType mappedValue, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback);
+			TPropertyType mappedValue, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback);
 
 		void ValidateOption(string fullOptionKey, Expression<Func<TRunInfo, bool>> propertyExpression,
 			char? shortOptionKey = null);
@@ -77,7 +78,7 @@ namespace R5.RunInfoBuilder.Validators
 		}
 		
 		public void ValidateCommand<TPropertyType>(CommandType type, string key, Expression<Func<TRunInfo, TPropertyType>> propertyExpression,
-			TPropertyType mappedValue, Func<ProcessArgumentContext<TRunInfo>, ProcessStageResult> callback)
+			TPropertyType mappedValue, Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
