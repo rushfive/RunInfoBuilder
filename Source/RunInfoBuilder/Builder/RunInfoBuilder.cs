@@ -19,24 +19,17 @@ namespace R5.RunInfoBuilder
 		public IArgumentStore<TRunInfo> Store { get; }
 
 		private IBuildValidator _buildValidator { get; }
-		private IHelpManager<TRunInfo> _helpManager { get; }
 		private IProcessInvoker _processInvoker { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
-		private IVersionManager _versionManager { get; }
 		private BuilderConfig _config { get; }
 		private HooksConfig<TRunInfo> _hooksConfig { get; }
-
-		private bool _helpEnabled => _helpManager != null;
-		private bool _versionEnabled => _versionManager != null;
-
+		
 		internal RunInfoBuilder(
 			IProcessInvoker processInvoker,
 			IParser parser,
 			IArgumentStore<TRunInfo> store,
 			IBuildValidator buildValidator,
-			IHelpManager<TRunInfo> helpManager,
 			RunInfo<TRunInfo> runInfo,
-			IVersionManager versionManager,
 			BuilderConfig config,
 			HooksConfig<TRunInfo> hooksConfig)
 		{
@@ -45,9 +38,7 @@ namespace R5.RunInfoBuilder
 
 			_processInvoker = processInvoker;
 			_buildValidator = buildValidator;
-			_helpManager = helpManager;
 			_runInfo = runInfo;
-			_versionManager = versionManager;
 			_config = config;
 			_hooksConfig = hooksConfig;
 
@@ -69,9 +60,7 @@ namespace R5.RunInfoBuilder
 			Store = dependencies.Store;
 			_processInvoker = dependencies.ProcessInvoker;
 			_buildValidator = dependencies.BuildValidator;
-			_helpManager = dependencies.HelpManager;
 			_runInfo = dependencies.RunInfo;
-			_versionManager = dependencies.VersionManager;
 			_config = dependencies.Config;
 			_hooksConfig = dependencies.HooksConfig;
 		}
@@ -90,29 +79,26 @@ namespace R5.RunInfoBuilder
 				{
 					return BuildResult<TRunInfo>.NotProcessed();
 				}
-				// move version and help into their own stages?????
-				if (_versionEnabled && args.Length == 1 && _versionManager.IsTrigger(args[0]))
-				{
-					_versionManager.InvokeCallback();
-					return BuildResult<TRunInfo>.Version();
-				}
-
-				if (_helpEnabled && args.Length == 1 && _helpManager.IsTrigger(args[0]))
-				{
-					_helpManager.InvokeCallback();
-					return BuildResult<TRunInfo>.Help();
-				}
 
 				_buildValidator.ValidateBuilderConfiguration();
 
 				List<ProgramArgument> programArguments = _buildValidator.ValidateProgramArguments(args);
 
-				_processInvoker.Start(programArguments);
+				ProcessResult processResult = _processInvoker.Start(programArguments);
 
 				if (_hooksConfig.PostBuildCallback != null)
 				{
 					BuildContext<TRunInfo> buildContext = GetBuildContext(args);
 					_hooksConfig.PostBuildCallback(buildContext);
+				}
+
+				if (processResult == ProcessResult.Help)
+				{
+					return BuildResult<TRunInfo>.Help();
+				}
+				if (processResult == ProcessResult.Version)
+				{
+					return BuildResult<TRunInfo>.Version();
 				}
 
 				return BuildResult<TRunInfo>.Success(_runInfo.Value);

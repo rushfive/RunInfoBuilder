@@ -14,9 +14,7 @@ namespace R5.RunInfoBuilder.Configuration
 		internal IParser Parser { get; }
 		internal IArgumentStore<TRunInfo> Store { get; }
 		internal IBuildValidator BuildValidator { get; }
-		internal IHelpManager<TRunInfo> HelpManager { get; }
 		internal RunInfo<TRunInfo> RunInfo { get; }
-		internal IVersionManager VersionManager { get; }
 		internal BuilderConfig Config { get; }
 		internal HooksConfig<TRunInfo> HooksConfig { get; }
 
@@ -25,9 +23,7 @@ namespace R5.RunInfoBuilder.Configuration
 			IParser parser,
 			IArgumentStore<TRunInfo> store,
 			IBuildValidator buildValidator,
-			IHelpManager<TRunInfo> helpManager,
 			RunInfo<TRunInfo> runInfo,
-			IVersionManager versionManager,
 			BuilderConfig config,
 			HooksConfig<TRunInfo> hooksConfig)
 		{
@@ -35,9 +31,7 @@ namespace R5.RunInfoBuilder.Configuration
 			Parser = parser;
 			Store = store;
 			BuildValidator = buildValidator;
-			HelpManager = helpManager;
 			RunInfo = runInfo;
-			VersionManager = versionManager;
 			Config = config;
 			HooksConfig = hooksConfig;
 		}

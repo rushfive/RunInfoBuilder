@@ -3,6 +3,8 @@
 	internal enum StageChainResult
 	{
 		Continue,
-		KillBuild
+		KillBuild,
+		Version,
+		Help
 	}
 }

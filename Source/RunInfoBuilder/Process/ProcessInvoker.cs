@@ -6,7 +6,7 @@ namespace R5.RunInfoBuilder.Process
 {
 	internal interface IProcessInvoker
 	{
-		void Start(List<ProgramArgument> programArguments);
+		ProcessResult Start(List<ProgramArgument> programArguments);
 	}
 
 	internal class ProcessInvoker<TRunInfo> : IProcessInvoker
@@ -24,7 +24,7 @@ namespace R5.RunInfoBuilder.Process
 			_runInfo = runInfo;
 		}
 
-		public void Start(List<ProgramArgument> programArguments)
+		public ProcessResult Start(List<ProgramArgument> programArguments)
 		{
 			_argumentQueue = new Queue<ProgramArgument>(programArguments);
 			
@@ -40,7 +40,15 @@ namespace R5.RunInfoBuilder.Process
 
 				if (result == StageChainResult.KillBuild)
 				{
-					break;
+					return ProcessResult.Success;
+				}
+				if (result == StageChainResult.Help)
+				{
+					return ProcessResult.Help;
+				}
+				if (result == StageChainResult.Version)
+				{
+					return ProcessResult.Version;
 				}
 
 				while (_argumentQueue.Any() && skipNext-- > 0)
@@ -48,6 +56,8 @@ namespace R5.RunInfoBuilder.Process
 					_argumentQueue.Dequeue();
 				}
 			}
+
+			return ProcessResult.Success;
 		}
 
 		private static Func<ProgramArgument, ProcessContext<TRunInfo>> CreateContextFactory

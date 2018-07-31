@@ -1,4 +1,6 @@
-﻿using R5.RunInfoBuilder.Store;
+﻿using R5.RunInfoBuilder.Help;
+using R5.RunInfoBuilder.Store;
+using R5.RunInfoBuilder.Version;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,18 +22,24 @@ namespace R5.RunInfoBuilder.Store
 
 		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IArgumentTokenizer _tokenizer { get; }
+		private IHelpManager<TRunInfo> _helpManager { get; }
+		private IVersionManager _versionManager { get; }
 
 		public ArgumentTypeResolver(
 			IArgumentMetadata<TRunInfo> argumentMaps,
-			IArgumentTokenizer tokenizer)
+			IArgumentTokenizer tokenizer,
+			IHelpManager<TRunInfo> helpManager,
+			IVersionManager versionManager)
 		{
 			_argumentMaps = argumentMaps;
 			_tokenizer = tokenizer;
+			_helpManager = helpManager;
+			_versionManager = versionManager;
 		}
 
 		public bool TryGetArgumentType(string argumentToken, out ProgramArgumentType type)
 		{
-			type = default;
+			type = ProgramArgumentType.Unresolved;
 
 			if (string.IsNullOrWhiteSpace(argumentToken))
 			{
@@ -46,30 +54,58 @@ namespace R5.RunInfoBuilder.Store
 
 			if (Regex.IsMatch(argumentToken, ArgumentTypeResolver<TRunInfo>.ArgumentRegex))
 			{
-				type = ProgramArgumentType.Argument;
-
 				(string argumentKey, _) = _tokenizer.TokenizeArgument(argumentToken);
 
-				return _argumentMaps.ArgumentExists(argumentKey);
+				bool isValid = _argumentMaps.ArgumentExists(argumentKey);
+
+				if (isValid)
+				{
+					type = ProgramArgumentType.Argument;
+					return true;
+				}
+
+				return false;
 			}
 
 			if (Regex.IsMatch(argumentToken, ArgumentTypeResolver<TRunInfo>.OptionRegex))
 			{
-				type = ProgramArgumentType.Option;
-
 				(OptionType optionType, string fullKey, List<char> shortKeys) = _tokenizer.TokenizeOption(argumentToken);
 
+				bool optionValid = false;
 				switch (optionType)
 				{
 					case OptionType.Full:
-						return _argumentMaps.FullOptionExists(fullKey);
+						optionValid = _argumentMaps.FullOptionExists(fullKey);
+						break;
 					case OptionType.Short:
-						return _argumentMaps.ShortOptionExists(shortKeys.Single());
+						optionValid = _argumentMaps.ShortOptionExists(shortKeys.Single());
+						break;
 					case OptionType.ShortCompound:
-						return shortKeys.All(_argumentMaps.ShortOptionExists);
+						optionValid = shortKeys.All(_argumentMaps.ShortOptionExists);
+						break;
 					default:
 						throw new ArgumentOutOfRangeException($"'{type}' is not a valid option type.");
 				}
+
+				if (optionValid)
+				{
+					type = ProgramArgumentType.Option;
+					return true;
+				}
+
+				return false;
+			}
+
+			if (_helpManager != null && _helpManager.IsTrigger(argumentToken))
+			{
+				type = ProgramArgumentType.Help;
+				return true;
+			}
+
+			if (_versionManager != null && _versionManager.IsTrigger(argumentToken))
+			{
+				type = ProgramArgumentType.Version;
+				return true;
 			}
 
 			return false;

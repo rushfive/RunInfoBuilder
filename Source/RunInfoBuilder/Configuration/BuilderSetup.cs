@@ -131,9 +131,7 @@ namespace R5.RunInfoBuilder.Configuration
 						dependencies.Parser,
 						dependencies.Store,
 						dependencies.BuildValidator,
-						dependencies.HelpManager,
 						dependencies.RunInfo,
-						dependencies.VersionManager,
 						dependencies.Config,
 						dependencies.HooksConfig);
 				});
@@ -232,20 +230,16 @@ namespace R5.RunInfoBuilder.Configuration
 			var parser = provider.GetRequiredService<IParser>();
 			var store = provider.GetRequiredService<IArgumentStore<TRunInfo>>();
 			var buildValidator = provider.GetRequiredService<IBuildValidator>();
-			var helpManager = provider.GetService<IHelpManager<TRunInfo>>();
 			var runInfoValue = provider.GetRequiredService<RunInfo<TRunInfo>>();
-			var versionManager = provider.GetService<IVersionManager>();
-			var config = provider.GetService<BuilderConfig>();
-			var hooksConfig = provider.GetService<HooksConfig<TRunInfo>>();
+			var config = provider.GetRequiredService<BuilderConfig>();
+			var hooksConfig = provider.GetRequiredService<HooksConfig<TRunInfo>>();
 
 			return new RunInfoBuilderDependencies<TRunInfo>(
 				processInvoker,
 				parser,
 				store,
 				buildValidator,
-				helpManager,
 				runInfoValue,
-				versionManager,
 				config,
 				hooksConfig);
 		}

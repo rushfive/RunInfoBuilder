@@ -5,6 +5,8 @@
 		Unresolved,
 		Command,
 		Option,
-		Argument
+		Argument,
+		Help,
+		Version
 	}
 }
