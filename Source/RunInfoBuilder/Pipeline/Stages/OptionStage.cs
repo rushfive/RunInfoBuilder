@@ -14,7 +14,7 @@
 //		private IArgumentTokenizer _tokenizer { get; }
 
 //		internal OptionStage(
-//			IArgumentMetadata<TRunInfo> argumentMaps, 
+//			IArgumentMetadata<TRunInfo> argumentMaps,
 //			RunInfo<TRunInfo> runInfo,
 //			IArgumentTokenizer tokenizer)
 //			: base(ProgramArgumentType.Option)
@@ -60,7 +60,7 @@
 
 //		private void ResolveShortCompoundOption(IEnumerable<char> shortKeys)
 //		{
-//			foreach(char key in shortKeys)
+//			foreach (char key in shortKeys)
 //			{
 //				OptionMetadata metadata = _argumentMaps.GetShortOption(key);
 //				metadata.PropertyInfo.SetValue(_runInfo.Value, true);

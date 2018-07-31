@@ -6,6 +6,7 @@ using R5.RunInfoBuilder.Pipeline;
 using R5.RunInfoBuilder.Validators;
 using R5.RunInfoBuilder.Version;
 using System;
+using R5.RunInfoBuilder.Process;
 
 namespace R5.RunInfoBuilder.Configuration
 {
@@ -17,6 +18,7 @@ namespace R5.RunInfoBuilder.Configuration
 		public ArgumentConfigBuilder Arguments { get; }
 		public ParserConfigBuilder Parser { get; }
 		public ProcessConfigBuilder<TRunInfo> Process { get; }
+		public ProcessHooksBuilder<TRunInfo> Hooks { get; }
 
 		private TRunInfo _implementation { get; set; }
 		private bool _alwaysReturnBuildResult { get; set; }
@@ -31,6 +33,7 @@ namespace R5.RunInfoBuilder.Configuration
 			Arguments = new ArgumentConfigBuilder();
 			Parser = new ParserConfigBuilder();
 			Process = new ProcessConfigBuilder<TRunInfo>();
+			Hooks = new ProcessHooksBuilder<TRunInfo>();
 
 			_implementation = null;
 			_alwaysReturnBuildResult = false;
@@ -107,77 +110,66 @@ namespace R5.RunInfoBuilder.Configuration
 		{
 			IServiceCollection services = new ServiceCollection();
 
-			AddConfigs(services);
-
 			services
+				.AddConfigs(this)
+				.AddParserServices()
+				.AddHelpServices(_helpBuilder)
+				.AddProcessServices<TRunInfo>()
+				.AddStoreServices<TRunInfo>()
+				.AddVersionServices(_versionBuilder)
+				.AddValidators<TRunInfo>()
 				.AddScoped<RunInfo<TRunInfo>>(sp =>
 				{
 					TRunInfo implementation = _implementation ?? (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
 					return new RunInfo<TRunInfo>(implementation);
 				})
-				.AddScoped<IRestrictedKeyValidator, RestrictedKeyValidator>()
-				.AddScoped<IReflectionHelper<TRunInfo>, ReflectionHelper<TRunInfo>>()
-				.AddScoped<IArgumentMetadata<TRunInfo>, ArgumentMetadata<TRunInfo>>()
-				.AddScoped<IArgumentStore<TRunInfo>, ArgumentStore<TRunInfo>>()
-				.AddScoped<IArgumentTypeResolver, ArgumentTypeResolver<TRunInfo>>()
-				.AddScoped<IValidationRuleSetFactory, ValidationRuleSetFactory<TRunInfo>>()
-				.AddScoped<IValidationHelper, ValidationHelper<TRunInfo>>()
-				.AddScoped<IArgumentStoreValidator<TRunInfo>, ArgumentStoreValidator<TRunInfo>>()
-				.AddScoped<IBuildValidator, BuildValidator<TRunInfo>>()
-				.AddScoped<IArgumentTokenizer, ArgumentTokenizer>()
-				.AddConfigurableServices<TRunInfo>(_helpBuilder, _versionBuilder)
 				.AddScoped<RunInfoBuilder<TRunInfo>>(sp =>
 				{
 					RunInfoBuilderDependencies<TRunInfo> dependencies = sp.GetRunInfoBuilderDependencies<TRunInfo>();
 
 					return new RunInfoBuilder<TRunInfo>(
+						dependencies.ProcessInvoker,
 						dependencies.Parser,
-						dependencies.Pipeline,
 						dependencies.Store,
 						dependencies.BuildValidator,
 						dependencies.HelpManager,
 						dependencies.RunInfo,
 						dependencies.VersionManager,
-						dependencies.Config);
+						dependencies.Config,
+						dependencies.HooksConfig);
 				});
 
 			return services;
 		}
 
-		private IServiceCollection AddConfigs(IServiceCollection services)
-		{
-			(ProcessConfig processConfig, ProcessHooksConfig<TRunInfo> processHooks) = Process.Build();
-
-			return services
-				.AddScoped<CommandConfig>(sp => Commands.Build())
-				.AddScoped<OptionConfig>(sp => Options.Build())
-				.AddScoped<ArgumentConfig>(sp => Arguments.Build())
-				.AddScoped<ProcessConfig>(sp => processConfig)
-				.AddScoped<ProcessHooksConfig<TRunInfo>>(sp => processHooks)
-				.AddScoped<BuilderConfig>(sp => BuildConfig())
-				.AddScoped<ParserConfig>(sp => Parser.Build());
-		}
-
-		private BuilderConfig BuildConfig()
+		internal BuilderConfig BuildConfig()
 		{
 			return new BuilderConfig(_alwaysReturnBuildResult);
 		}
 	}
-	
+
 	internal static class BuilderSetupExtensions
 	{
-		public static IServiceCollection AddConfigurableServices<TRunInfo>(this IServiceCollection services,
-			HelpConfigBuilder<TRunInfo> helpBuilder, VersionConfigBuilder versionBuilder)
+		public static IServiceCollection AddConfigs<TRunInfo>(this IServiceCollection services, BuilderSetup<TRunInfo> setup)
 			where TRunInfo : class
 		{
 			return services
-				.AddHelpManager(helpBuilder)
-				.AddVersionManager(versionBuilder)
-				.AddScoped<IPipelineProcessor<TRunInfo>, PipelineProcessor<TRunInfo>>()
+				.AddScoped<CommandConfig>(sp => setup.Commands.Build())
+				.AddScoped<OptionConfig>(sp => setup.Options.Build())
+				.AddScoped<ArgumentConfig>(sp => setup.Arguments.Build())
+				.AddScoped<ProcessConfig>(sp => setup.Process.Build())
+				.AddScoped<HooksConfig<TRunInfo>>(sp => setup.Hooks.Build())
+				.AddScoped<BuilderConfig>(sp => setup.BuildConfig())
+				.AddScoped<ParserConfig>(sp => setup.Parser.Build());
+		}
+
+		public static IServiceCollection AddParserServices(this IServiceCollection services)
+		{
+			return services
 				.AddScoped<IParser, Parser>();
 		}
 
-		private static IServiceCollection AddHelpManager<TRunInfo>(this IServiceCollection services,
+		public static IServiceCollection AddHelpServices<TRunInfo>(this IServiceCollection services,
 			HelpConfigBuilder<TRunInfo> helpBuilder)
 			where TRunInfo : class
 		{
@@ -191,7 +183,27 @@ namespace R5.RunInfoBuilder.Configuration
 				.AddScoped<IHelpManager<TRunInfo>, HelpManager<TRunInfo>>();
 		}
 
-		private static IServiceCollection AddVersionManager(this IServiceCollection services,
+		public static IServiceCollection AddProcessServices<TRunInfo>(this IServiceCollection services)
+			where TRunInfo : class
+		{
+			return services
+				.AddScoped<IProcessInvoker, ProcessInvoker<TRunInfo>>()
+				.AddScoped<IStageChainFactory<TRunInfo>, StageChainFactory<TRunInfo>>();
+		}
+
+		public static IServiceCollection AddStoreServices<TRunInfo>(this IServiceCollection services)
+			where TRunInfo : class
+		{
+			return services
+				.AddScoped<IArgumentMetadata<TRunInfo>, ArgumentMetadata<TRunInfo>>()
+				.AddScoped<IArgumentStore<TRunInfo>, ArgumentStore<TRunInfo>>()
+				.AddScoped<IArgumentTypeResolver, ArgumentTypeResolver<TRunInfo>>()
+				.AddScoped<IArgumentTokenizer, ArgumentTokenizer>()
+				.AddScoped<IArgumentStoreValidator<TRunInfo>, ArgumentStoreValidator<TRunInfo>>()
+				.AddScoped<IReflectionHelper<TRunInfo>, ReflectionHelper<TRunInfo>>();
+		}
+
+		public static IServiceCollection AddVersionServices(this IServiceCollection services,
 			VersionConfigBuilder versionBuilder)
 		{
 			if (versionBuilder == null)
@@ -204,27 +216,39 @@ namespace R5.RunInfoBuilder.Configuration
 				.AddScoped<IVersionManager, VersionManager>();
 		}
 
+		public static IServiceCollection AddValidators<TRunInfo>(this IServiceCollection services)
+			where TRunInfo : class
+		{
+			return services
+				.AddScoped<IRestrictedKeyValidator, RestrictedKeyValidator>()
+				.AddScoped<IValidationRuleSetFactory, ValidationRuleSetFactory<TRunInfo>>()
+				.AddScoped<IArgumentStoreValidator<TRunInfo>, ArgumentStoreValidator<TRunInfo>>()
+				.AddScoped<IBuildValidator, BuildValidator<TRunInfo>>();
+		}
+
 		public static RunInfoBuilderDependencies<TRunInfo> GetRunInfoBuilderDependencies<TRunInfo>(this IServiceProvider provider)
 			where TRunInfo : class
 		{
+			var processInvoker = provider.GetRequiredService<IProcessInvoker>();
 			var parser = provider.GetRequiredService<IParser>();
-			var pipeline = provider.GetRequiredService<IPipelineProcessor<TRunInfo>>();
 			var store = provider.GetRequiredService<IArgumentStore<TRunInfo>>();
 			var buildValidator = provider.GetRequiredService<IBuildValidator>();
 			var helpManager = provider.GetService<IHelpManager<TRunInfo>>();
 			var runInfoValue = provider.GetRequiredService<RunInfo<TRunInfo>>();
 			var versionManager = provider.GetService<IVersionManager>();
 			var config = provider.GetService<BuilderConfig>();
+			var hooksConfig = provider.GetService<HooksConfig<TRunInfo>>();
 
 			return new RunInfoBuilderDependencies<TRunInfo>(
+				processInvoker,
 				parser,
-				pipeline,
 				store,
 				buildValidator,
 				helpManager,
 				runInfoValue,
 				versionManager,
-				config);
+				config,
+				hooksConfig);
 		}
 	}
 }

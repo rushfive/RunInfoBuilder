@@ -12,15 +12,6 @@ namespace R5.RunInfoBuilder
 		}
 	}
 
-	public class ProcessException : Exception
-	{
-		internal ProcessException(string message)
-			: base(message) { }
-
-		internal ProcessException(string message, Exception innerException)
-			: base(message, innerException) { }
-	}
-
 	public class ProgramArgumentsValidationException : RunInfoBuilderException
 	{
 		public List<ProgramArgumentError> Errors { get; }

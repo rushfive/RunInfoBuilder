@@ -34,7 +34,7 @@ namespace R5.RunInfoBuilder.Pipeline
 			IParser parser,
 			IArgumentTokenizer tokenizer,
 			ProcessConfig processConfig,
-			ProcessHooksConfig<TRunInfo> hooksConfig)
+			HooksConfig<TRunInfo> hooksConfig)
 		{
 			_runInfo = runInfo;
 			_processConfig = processConfig;
@@ -49,10 +49,10 @@ namespace R5.RunInfoBuilder.Pipeline
 			Configure(hooksConfig);
 		}
 
-		private void Configure(ProcessHooksConfig<TRunInfo> config)
+		private void Configure(HooksConfig<TRunInfo> config)
 		{
-			_preProcessCallback = config.PreProcessCallback;
-			_postProcessCallback = config.PostProcessCallback;
+			_preProcessCallback = config.PreBuildCallback;
+			_postProcessCallback = config.PostBuildCallback;
 
 			//if (config.PreArgumentCallback != null)
 			//{

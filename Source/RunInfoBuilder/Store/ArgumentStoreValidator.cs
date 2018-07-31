@@ -1,13 +1,9 @@
-﻿using R5.RunInfoBuilder.Pipeline;
-using R5.RunInfoBuilder.Process;
-using R5.RunInfoBuilder.Store;
+﻿using R5.RunInfoBuilder.Process;
+using R5.RunInfoBuilder.Validators;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 
-namespace R5.RunInfoBuilder.Validators
+namespace R5.RunInfoBuilder.Store
 {
 	internal interface IArgumentStoreValidator<TRunInfo>
 		where TRunInfo : class
@@ -25,18 +21,15 @@ namespace R5.RunInfoBuilder.Validators
     internal class ArgumentStoreValidator<TRunInfo> : IArgumentStoreValidator<TRunInfo>
 		where TRunInfo : class
 	{
-		private IValidationHelper _validationHelper { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 		private IReflectionHelper<TRunInfo> _reflectionHelper { get; }
 		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 
 		public ArgumentStoreValidator(
-			IValidationHelper validationHelper,
 			IRestrictedKeyValidator keyValidator,
 			IReflectionHelper<TRunInfo> reflectionHelper,
 			IArgumentMetadata<TRunInfo> argumentMaps)
 		{
-			_validationHelper = validationHelper;
 			_keyValidator = keyValidator;
 			_reflectionHelper = reflectionHelper;
 			_argumentMaps = argumentMaps;

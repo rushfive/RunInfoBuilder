@@ -7,50 +7,50 @@ namespace R5.RunInfoBuilder.Configuration
 	public class ProcessHooksBuilder<TRunInfo>
 		where TRunInfo : class
 	{
-		private Action<PreProcessContext<TRunInfo>> _preProcessCallback { get; set; }
-		private Action<PostProcessContext<TRunInfo>> _postProcessCallback { get; set; }
-		private Func<ProcessContext<TRunInfo>, ProcessStageResult> _preArgumentCallback { get; set; }
-		private Func<ProcessContext<TRunInfo>, ProcessStageResult> _postArgumentCallback { get; set; }
+		private Action<BuildContext<TRunInfo>> _preBuildCallback { get; set; }
+		private Action<BuildContext<TRunInfo>> _postBuildCallback { get; set; }
+		private Func<ProcessContext<TRunInfo>, ProcessStageResult> _preProcessStageCallback { get; set; }
+		private Func<ProcessContext<TRunInfo>, ProcessStageResult> _postProcessStageCallback { get; set; }
 
 		internal ProcessHooksBuilder()
 		{
-			_preProcessCallback = null;
-			_postProcessCallback = null;
-			_preArgumentCallback = null;
-			_postArgumentCallback = null;
+			_preBuildCallback = null;
+			_postBuildCallback = null;
+			_preProcessStageCallback = null;
+			_postProcessStageCallback = null;
 		}
 
-		public ProcessHooksBuilder<TRunInfo> EnablePreProcessing(Action<PreProcessContext<TRunInfo>> callback)
+		public ProcessHooksBuilder<TRunInfo> AddPreBuildCallback(Action<BuildContext<TRunInfo>> callback)
 		{
-			_preProcessCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
+			_preBuildCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
 			return this;
 		}
 
-		public ProcessHooksBuilder<TRunInfo> EnablePostProcessing(Action<PostProcessContext<TRunInfo>> callback)
+		public ProcessHooksBuilder<TRunInfo> AddPostBuildCallback(Action<BuildContext<TRunInfo>> callback)
 		{
-			_postProcessCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
+			_postBuildCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
 			return this;
 		}
 
 		public ProcessHooksBuilder<TRunInfo> EnablePreArgumentProcessing(Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
 		{
-			_preArgumentCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
+			_preProcessStageCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
 			return this;
 		}
 
 		public ProcessHooksBuilder<TRunInfo> EnablePostArgumentProcessing(Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
 		{
-			_postArgumentCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
+			_postProcessStageCallback = callback ?? throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
 			return this;
 		}
 
-		internal ProcessHooksConfig<TRunInfo> Build()
+		internal HooksConfig<TRunInfo> Build()
 		{
-			return new ProcessHooksConfig<TRunInfo>(
-				_preProcessCallback,
-				_postProcessCallback,
-				_preArgumentCallback,
-				_postArgumentCallback);
+			return new HooksConfig<TRunInfo>(
+				_preBuildCallback,
+				_postBuildCallback,
+				_preProcessStageCallback,
+				_postProcessStageCallback);
 		}
 	}
 }

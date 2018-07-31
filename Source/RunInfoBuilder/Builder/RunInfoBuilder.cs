@@ -9,6 +9,7 @@ using R5.RunInfoBuilder.Validators;
 using Microsoft.Extensions.DependencyInjection;
 using R5.RunInfoBuilder.Configuration;
 using System.Collections.Generic;
+using R5.RunInfoBuilder.Process;
 
 namespace R5.RunInfoBuilder
 {
@@ -20,33 +21,36 @@ namespace R5.RunInfoBuilder
 
 		private IBuildValidator _buildValidator { get; }
 		private IHelpManager<TRunInfo> _helpManager { get; }
-		private IPipelineProcessor<TRunInfo> _pipelineProcessor { get; }
+		private IProcessInvoker _processInvoker { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private IVersionManager _versionManager { get; }
 		private BuilderConfig _config { get; }
+		private HooksConfig<TRunInfo> _hooksConfig { get; }
 
 		private bool _helpEnabled => _helpManager != null;
 		private bool _versionEnabled => _versionManager != null;
 
 		internal RunInfoBuilder(
+			IProcessInvoker processInvoker,
 			IParser parser,
-			IPipelineProcessor<TRunInfo> pipeline,
 			IArgumentStore<TRunInfo> store,
 			IBuildValidator buildValidator,
 			IHelpManager<TRunInfo> helpManager,
 			RunInfo<TRunInfo> runInfo,
 			IVersionManager versionManager,
-			BuilderConfig config)
+			BuilderConfig config,
+			HooksConfig<TRunInfo> hooksConfig)
 		{
 			Parser = parser;
 			Store = store;
 
-			_pipelineProcessor = pipeline;
+			_processInvoker = processInvoker;
 			_buildValidator = buildValidator;
 			_helpManager = helpManager;
 			_runInfo = runInfo;
 			_versionManager = versionManager;
 			_config = config;
+			_hooksConfig = hooksConfig;
 
 			Console.WriteLine("INITIALIZED FROM IOC");
 		}
@@ -64,30 +68,37 @@ namespace R5.RunInfoBuilder
 
 			Parser = dependencies.Parser;
 			Store = dependencies.Store;
-			_pipelineProcessor = dependencies.Pipeline;
+			_processInvoker = dependencies.ProcessInvoker;
 			_buildValidator = dependencies.BuildValidator;
 			_helpManager = dependencies.HelpManager;
 			_runInfo = dependencies.RunInfo;
 			_versionManager = dependencies.VersionManager;
 			_config = dependencies.Config;
+			_hooksConfig = dependencies.HooksConfig;
 		}
 
-		public BuildResult<TRunInfo> Build(string[] programArguments)
+		public BuildResult<TRunInfo> Build(string[] args)
 		{
 			try
 			{
-				if (programArguments == null || !programArguments.Any())
+				// pre build
+				if (_hooksConfig.PreBuildCallback != null)
+				{
+
+				}
+
+				if (args == null || !args.Any())
 				{
 					return BuildResult<TRunInfo>.NotProcessed();
 				}
 
-				if (_versionEnabled && programArguments.Length == 1 && _versionManager.IsTrigger(programArguments[0]))
+				if (_versionEnabled && args.Length == 1 && _versionManager.IsTrigger(args[0]))
 				{
 					_versionManager.InvokeCallback();
 					return BuildResult<TRunInfo>.Version();
 				}
 
-				if (_helpEnabled && programArguments.Length == 1 && _helpManager.IsTrigger(programArguments[0]))
+				if (_helpEnabled && args.Length == 1 && _helpManager.IsTrigger(args[0]))
 				{
 					_helpManager.InvokeCallback();
 					return BuildResult<TRunInfo>.Help();
@@ -95,9 +106,11 @@ namespace R5.RunInfoBuilder
 
 				_buildValidator.ValidateBuilderConfiguration();
 
-				List<ProgramArgument> programArgumentInfos = _buildValidator.ValidateProgramArguments(programArguments);
+				List<ProgramArgument> programArguments = _buildValidator.ValidateProgramArguments(args);
 
-				_pipelineProcessor.ProcessArgs(programArgumentInfos);
+				_processInvoker.Start(programArguments);
+
+				// post build
 
 				return BuildResult<TRunInfo>.Success(_runInfo.Value);
 			}

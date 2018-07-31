@@ -1,20 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace R5.RunInfoBuilder
 {
-	public enum BuildResultType
-	{
-		NotProcessed,
-		Success,
-		ConfigurationValidationFail,
-		ProgramArgumentsValidationFail,
-		ProcessFail,
-		Help,
-		Version
-	}
-
 	public class BuildResult<TRunInfo>
 		where TRunInfo : class
 	{

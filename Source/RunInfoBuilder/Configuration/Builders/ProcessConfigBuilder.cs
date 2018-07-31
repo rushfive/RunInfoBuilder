@@ -1,19 +1,15 @@
 ﻿namespace R5.RunInfoBuilder.Configuration
 {
-	// TODO: ALLOW DUPLICATES by default, allow option to PREVENT IT
-
-
 	public class ProcessConfigBuilder<TRunInfo>
 		where TRunInfo : class
 	{
-		public ProcessHooksBuilder<TRunInfo> Hooks { get; }
-
 		private HandleUnresolvedArgument _handleUnresolvedArgument { get; set; }
+		private bool _duplicateArgumentsAllowed { get; set; }
 
 		internal ProcessConfigBuilder()
 		{
-			Hooks = new ProcessHooksBuilder<TRunInfo>();
 			_handleUnresolvedArgument = HandleUnresolvedArgument.NotAllowed;
+			_duplicateArgumentsAllowed = true;
 		}
 
 		public ProcessConfigBuilder<TRunInfo> AllowUnresolvedArgumentsButThrowOnProcess()
@@ -28,12 +24,15 @@
 			return this;
 		}
 
-		internal (ProcessConfig, ProcessHooksConfig<TRunInfo>) Build()
+		public ProcessConfigBuilder<TRunInfo> PreventDuplicateArguments()
 		{
-			var config = new ProcessConfig(_handleUnresolvedArgument);
-			ProcessHooksConfig<TRunInfo> processHooks = Hooks.Build();
+			_duplicateArgumentsAllowed = false;
+			return this;
+		}
 
-			return (config, processHooks);
+		internal ProcessConfig Build()
+		{
+			return new ProcessConfig(_handleUnresolvedArgument, _duplicateArgumentsAllowed);
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace R5.RunInfoBuilder.Validators
+namespace R5.RunInfoBuilder.Store
 {
 	internal interface IArgumentTypeResolver
 	{
