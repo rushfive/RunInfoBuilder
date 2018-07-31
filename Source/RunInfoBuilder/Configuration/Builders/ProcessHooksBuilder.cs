@@ -1,5 +1,4 @@
-﻿using R5.RunInfoBuilder.Pipeline;
-using R5.RunInfoBuilder.Process;
+﻿using R5.RunInfoBuilder.Process;
 using System;
 
 namespace R5.RunInfoBuilder.Configuration

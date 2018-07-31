@@ -1,7 +1,6 @@
 ﻿using R5.RunInfoBuilder.ArgumentParser;
 using R5.RunInfoBuilder.Store;
 using R5.RunInfoBuilder.Help;
-using R5.RunInfoBuilder.Pipeline;
 using R5.RunInfoBuilder.Version;
 using System;
 using System.Linq;
@@ -81,17 +80,17 @@ namespace R5.RunInfoBuilder
 		{
 			try
 			{
-				// pre build
 				if (_hooksConfig.PreBuildCallback != null)
 				{
-
+					BuildContext<TRunInfo> buildContext = GetBuildContext(args);
+					_hooksConfig.PreBuildCallback(buildContext);
 				}
 
 				if (args == null || !args.Any())
 				{
 					return BuildResult<TRunInfo>.NotProcessed();
 				}
-
+				// move version and help into their own stages?????
 				if (_versionEnabled && args.Length == 1 && _versionManager.IsTrigger(args[0]))
 				{
 					_versionManager.InvokeCallback();
@@ -110,7 +109,11 @@ namespace R5.RunInfoBuilder
 
 				_processInvoker.Start(programArguments);
 
-				// post build
+				if (_hooksConfig.PostBuildCallback != null)
+				{
+					BuildContext<TRunInfo> buildContext = GetBuildContext(args);
+					_hooksConfig.PostBuildCallback(buildContext);
+				}
 
 				return BuildResult<TRunInfo>.Success(_runInfo.Value);
 			}
@@ -139,5 +142,8 @@ namespace R5.RunInfoBuilder
 				throw;
 			}
 		}
+
+		private BuildContext<TRunInfo> GetBuildContext(string[] args)
+			=> new BuildContext<TRunInfo>((string[]) args.Clone(), _runInfo.Value);
 	}
 }
