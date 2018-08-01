@@ -77,6 +77,7 @@ namespace R5.RunInfoBuilder.Process
 			for (int i = 0; i < args.Length; i++)
 			{
 				var argument = new ProgramArgument(i, args[i], typeResolveFunc(args[i]));
+				result.Add(argument);
 			}
 
 			return result;

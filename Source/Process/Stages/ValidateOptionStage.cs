@@ -5,13 +5,9 @@ namespace R5.RunInfoBuilder.Process
 	internal class ValidateOptionStage<TRunInfo> : ValidationStage<TRunInfo>
 			where TRunInfo : class
 	{
-		private OptionConfig _config { get; }
-
-		internal ValidateOptionStage(
-			OptionConfig config)
+		internal ValidateOptionStage()
 			: base(handlesType: ProgramArgumentType.Option)
 		{
-			_config = config;
 		}
 
 		protected override void Validate(ProgramArgument argument, ValidationContext validationContext)

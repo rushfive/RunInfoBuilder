@@ -115,7 +115,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 			}
 		}
 
-		public class ConfigurationValidationFail
+		public class Fail
 		{
 			[Fact]
 			public void ReturnsCorrectResult()
@@ -124,44 +124,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 
 				setup.AlwaysReturnBuildResult();
 
-				RunInfoBuilder<TestRunInfo> builder = setup.Create();
-
-				builder.Store
-					.AddArgument("argument", ri => ri.Bool1);
-
-				BuildResult<TestRunInfo> result = builder.Build(new string[] { "argument=true" });
-
-				Assert.Equal(BuildResultType.ConfigurationValidationFail, result.Type);
-			}
-		}
-
-		public class ProgramArgumentsValidationFail
-		{
-			[Fact]
-			public void ReturnsCorrectResult()
-			{
-				var setup = new BuilderSetup<TestRunInfo>();
-
-				setup.AlwaysReturnBuildResult();
-
-				RunInfoBuilder<TestRunInfo> builder = setup.Create();
-
-				BuildResult<TestRunInfo> result = builder.Build(new string[] { "a", "a" });
-
-				Assert.Equal(BuildResultType.ProgramArgumentsValidationFail, result.Type);
-			}
-		}
-
-		public class ProcessFail
-		{
-			[Fact]
-			public void ReturnsCorrectResult()
-			{
-				var setup = new BuilderSetup<TestRunInfo>();
-
-				setup.AlwaysReturnBuildResult();
-
-				setup.Process.Hooks.EnablePreProcessing(context => throw new Exception());
+				setup.Hooks.EnablePreArgumentProcessing(context => throw new Exception());
 
 				RunInfoBuilder<TestRunInfo> builder = setup.Create();
 

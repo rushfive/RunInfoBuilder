@@ -28,7 +28,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 					.AddArgument("string", ri => ri.String)
 					.AddArgument("datetime", ri => ri.DateTime);
 
-				Assert.Throws<BuilderConfigurationValidationException>(
+				Assert.Throws<InvalidOperationException>(
 					() => builder.Build(new string[] { "bool", "string", "datetime" }));
 			}
 
@@ -46,7 +46,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 					.SetPredicateForType<bool>(value => (true, default))
 					.SetPredicateForType<DateTime>(value => (true, default));
 
-				Assert.Throws<BuilderConfigurationValidationException>(
+				Assert.Throws<InvalidOperationException>(
 					() => builder.Build(new string[] { "bool", "string", "datetime" }));
 			}
 		}
@@ -60,7 +60,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 				{
 					var builder = new RunInfoBuilder<TestRunInfo>();
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "a", "b", "a" }));
 				}
 
@@ -78,7 +78,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 
 					RunInfoBuilder<TestRunInfo> builder = setup.Create();
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "a", "b", "-help" }));
 				}
 
@@ -96,7 +96,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 
 					RunInfoBuilder<TestRunInfo> builder = setup.Create();
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "a", "b", "-version" }));
 				}
 			}
@@ -108,13 +108,13 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 				{
 					var builder = new RunInfoBuilder<TestRunInfo>();
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "a" }));
 
 					builder.Store
 						.AddOption("option", ri => ri.Bool1);
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "--option", "a" }));
 
 					builder.Build(new string[] { "--option" });
@@ -136,7 +136,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 						.AddCommand("command1", ri => ri.Bool1, true)
 						.AddCommand("command2", ri => ri.Bool1, true);
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "command1", "command2" }));
 				}
 
@@ -154,64 +154,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 						.AddCommand("command1", ri => ri.Bool1, true)
 						.AddCommand("command2", ri => ri.Bool1, true);
 
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "--option", "command1" }));
 
-					Assert.Throws<ProgramArgumentsValidationException>(
-						() => builder.Build(new string[] { "command1", "--option", "command2" }));
-				}
-			}
-
-			public class ArgumentConfigurationValidations
-			{
-				[Fact]
-				public void ArgumentsBeforeCommands_WhenExpectedAfter_Throws()
-				{
-					var setup = new BuilderSetup<TestRunInfo>();
-
-					setup.Arguments.EnforcePositionedAfterCommands();
-
-					RunInfoBuilder<TestRunInfo> builder = setup.Create();
-
-					builder.Parser
-						.SetPredicateForType<bool>(value => (true, default));
-
-					builder.Store
-						.AddArgument<bool>("arg", ri => ri.Bool1)
-						.AddCommand("command1", ri => ri.Bool1, true)
-						.AddCommand("command2", ri => ri.Bool1, true);
-
-					Assert.Throws<ProgramArgumentsValidationException>(
-						() => builder.Build(new string[] { "arg=true", "command1" }));
-
-					Assert.Throws<ProgramArgumentsValidationException>(
-						() => builder.Build(new string[] { "command1", "arg=true", "command2" }));
-				}
-			}
-
-			public class OptionConfigurationValidations
-			{
-				[Fact]
-				public void OptionsBeforeCommands_WhenExpectedAfter_Throws()
-				{
-					var setup = new BuilderSetup<TestRunInfo>();
-
-					setup.Options.EnforcePositionedAfterCommands();
-
-					RunInfoBuilder<TestRunInfo> builder = setup.Create();
-
-					builder.Parser
-						.SetPredicateForType<bool>(value => (true, default));
-
-					builder.Store
-						.AddOption("option", ri => ri.Bool1)
-						.AddCommand("command1", ri => ri.Bool1, true)
-						.AddCommand("command2", ri => ri.Bool1, true);
-
-					Assert.Throws<ProgramArgumentsValidationException>(
-						() => builder.Build(new string[] { "--option", "command1" }));
-
-					Assert.Throws<ProgramArgumentsValidationException>(
+					Assert.Throws<InvalidOperationException>(
 						() => builder.Build(new string[] { "command1", "--option", "command2" }));
 				}
 			}

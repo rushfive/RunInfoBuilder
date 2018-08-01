@@ -23,46 +23,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Builder.Models
 				AssertOptionalPropertiesHaveDefaultValues(result);
 			}
 		}
-
-		public class ConfigurationValidationFail
-		{
-			[Fact]
-			public void ResolvesProperties()
-			{
-				string failMessage = "fail";
-				var exception = new Exception();
-
-				BuildResult<TestRunInfo> result = BuildResult<TestRunInfo>.ConfigurationValidationFail(failMessage, exception);
-
-				Assert.Null(result.RunInfo);
-				Assert.Equal(BuildResultType.ConfigurationValidationFail, result.Type);
-				Assert.Equal(failMessage, result.FailMessage);
-				Assert.Same(exception, result.Exception);
-				Assert.Null(result.ProgramArgumentErrors);
-			}
-		}
-
-		public class ProgramArgumentsValidationFail
-		{
-			[Fact]
-			public void ResolvesProperties()
-			{
-				string failMessage = "fail";
-				var exception = new Exception();
-				var argumentErrors = new List<ProgramArgumentError>();
-
-				BuildResult<TestRunInfo> result = BuildResult<TestRunInfo>.ProgramArgumentsValidationFail(
-					failMessage, exception, argumentErrors);
-
-				Assert.Null(result.RunInfo);
-				Assert.Equal(BuildResultType.ProgramArgumentsValidationFail, result.Type);
-				Assert.Equal(failMessage, result.FailMessage);
-				Assert.Same(exception, result.Exception);
-				Assert.Same(argumentErrors, result.ProgramArgumentErrors);
-			}
-		}
-
-		public class ProcessFail
+		
+		public class Fail
 		{
 			[Fact]
 			public void ResolvesProperties()

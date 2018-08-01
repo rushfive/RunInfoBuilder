@@ -74,13 +74,19 @@ namespace R5.RunInfoBuilder.Process
 			}
 
 			stages.Enqueue(new HandleUnresolvedStage<TRunInfo>(_processConfig));
+
+			stages.Enqueue(new ValidateArgumentStage<TRunInfo>(_argumentMetadata, _parser));
 			stages.Enqueue(new ArgumentStage<TRunInfo>(_argumentMetadata, _parser, _runInfo, _tokenizer));
+
+			stages.Enqueue(new ValidateCommandStage<TRunInfo>());
 			stages.Enqueue(new CommandStage<TRunInfo>(_argumentMetadata, _runInfo));
+
+			stages.Enqueue(new ValidateOptionStage<TRunInfo>());
 			stages.Enqueue(new OptionStage<TRunInfo>(_argumentMetadata, _runInfo, _tokenizer));
 
 			if (_hooksConfig.PostArgumentCallback != null)
 			{
-				stages.Enqueue(new PostProcessStage<TRunInfo>(_hooksConfig.PreArgumentCallback));
+				stages.Enqueue(new PostProcessStage<TRunInfo>(_hooksConfig.PostArgumentCallback));
 			}
 
 			return stages;

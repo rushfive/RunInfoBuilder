@@ -80,7 +80,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			var seen = new HashSet<string>();
 
-			setup.Process.Hooks.EnablePostArgumentProcessing(context =>
+			setup.Hooks.EnablePostArgumentProcessing(context =>
 			{
 				seen.Add(context.ProgramArguments[context.Position]);
 				return new ProcessStageResult();

@@ -66,7 +66,8 @@ namespace R5.RunInfoBuilder.Process
 				case AfterProcessingStage.Continue:
 					if (_next != null)
 					{
-						return _next.TryProcessArgument(argument, contextFactory, validationContext);
+						(StageChainResult downstreamResult, int downstreamSkip) = _next.TryProcessArgument(argument, contextFactory, validationContext);
+						return (downstreamResult, result.SkipNextCount + downstreamSkip);
 					}
 					return (StageChainResult.Continue, result.SkipNextCount);
 				case AfterProcessingStage.StopProcessingRemainingStages:
