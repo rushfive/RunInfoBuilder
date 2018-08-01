@@ -1,10 +1,10 @@
 ﻿namespace R5.RunInfoBuilder
 {
-    internal class ProgramArgument
+    public class ProgramArgument
     {
-		internal int Position { get; }
-		internal string ArgumentToken { get; }
-		internal ProgramArgumentType Type { get; }
+		public int Position { get; }
+		public string ArgumentToken { get; }
+		public ProgramArgumentType Type { get; }
 
 		internal ProgramArgument(
 			int position,

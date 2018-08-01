@@ -185,7 +185,7 @@ namespace R5.RunInfoBuilder.Configuration
 			return services
 				.AddScoped<IProcessInvoker, ProcessInvoker<TRunInfo>>()
 				.AddScoped<IStageChainFactory<TRunInfo>, StageChainFactory<TRunInfo>>()
-				.AddScoped<IValidationContextFactory, ValidationContextFactory>();
+				.AddScoped<IProcessContextsFactory<TRunInfo>, ProcessContextsFactory<TRunInfo>>();
 		}
 
 		public static IServiceCollection AddStoreServices<TRunInfo>(this IServiceCollection services)

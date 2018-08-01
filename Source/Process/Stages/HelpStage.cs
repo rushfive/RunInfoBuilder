@@ -21,7 +21,7 @@ namespace R5.RunInfoBuilder.Process
 		{
 			ProcessContext<TRunInfo> context = contextFactory(argument);
 
-			if (argument.Position > 0 || context.ProgramArguments.Length > 1)
+			if (argument.Position > 0 || context.ProgramArguments.Count > 1)
 			{
 				throw new InvalidOperationException("Help command must be the only program argument.");
 			}

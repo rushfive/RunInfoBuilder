@@ -16,18 +16,18 @@ namespace R5.RunInfoBuilder.Process
 		private IArgumentTypeResolver _argumentTypeResolver { get; set; }
 		private IStageChainFactory<TRunInfo> _chainFactory { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
-		private IValidationContextFactory _validationContextFactory { get; }
+		private IProcessContextsFactory<TRunInfo> _processContextsFactory { get; }
 
 		public ProcessInvoker(
 			IArgumentTypeResolver argumentTypeResolver,
 			IStageChainFactory<TRunInfo> chainFactory,
 			RunInfo<TRunInfo> runInfo,
-			IValidationContextFactory validationContextFactory)
+			IProcessContextsFactory<TRunInfo> processContextsFactory)
 		{
 			_argumentTypeResolver = argumentTypeResolver;
 			_chainFactory = chainFactory;
 			_runInfo = runInfo;
-			_validationContextFactory = validationContextFactory;
+			_processContextsFactory = processContextsFactory;
 		}
 
 		public ProcessResult Start(string[] args)
@@ -35,9 +35,9 @@ namespace R5.RunInfoBuilder.Process
 			List<ProgramArgument> programArguments = ResolveProgramArguments(args, _argumentTypeResolver.GetArgumentType);
 			var argumentQueue = new Queue<ProgramArgument>(programArguments);
 			
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory = CreateContextFactory(programArguments, _runInfo.Value);
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory = _processContextsFactory.CreateProcessContextFactory(programArguments, _runInfo.Value);
 
-			ValidationContext validationContext = _validationContextFactory.Create();
+			ValidationContext validationContext = _processContextsFactory.CreateValidationContext();
 
 			while (argumentQueue.Any())
 			{
@@ -82,9 +82,5 @@ namespace R5.RunInfoBuilder.Process
 
 			return result;
 		}
-
-		private static Func<ProgramArgument, ProcessContext<TRunInfo>> CreateContextFactory
-			(List<ProgramArgument> arguments, TRunInfo runInfo) =>
-				(ProgramArgument argument) => new ProcessContext<TRunInfo>(argument, arguments, runInfo);
 	}
 }
