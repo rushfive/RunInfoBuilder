@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Source\RunInfoBuilder\RunInfoBuilder.csproj" />
+	  <ProjectReference Include="..\..\Source\RunInfoBuilder.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
