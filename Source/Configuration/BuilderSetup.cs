@@ -130,7 +130,6 @@ namespace R5.RunInfoBuilder.Configuration
 						dependencies.ProcessInvoker,
 						dependencies.Parser,
 						dependencies.Store,
-						dependencies.BuildValidator,
 						dependencies.RunInfo,
 						dependencies.Config,
 						dependencies.HooksConfig);
@@ -218,10 +217,7 @@ namespace R5.RunInfoBuilder.Configuration
 			where TRunInfo : class
 		{
 			return services
-				.AddScoped<IRestrictedKeyValidator, RestrictedKeyValidator>()
-				//.AddScoped<IValidationRuleSetFactory, ValidationRuleSetFactory<TRunInfo>>()
-				.AddScoped<IArgumentStoreValidator<TRunInfo>, ArgumentStoreValidator<TRunInfo>>()
-				.AddScoped<IBuildValidator, BuildValidator<TRunInfo>>();
+				.AddScoped<IRestrictedKeyValidator, RestrictedKeyValidator>();
 		}
 
 		public static RunInfoBuilderDependencies<TRunInfo> GetRunInfoBuilderDependencies<TRunInfo>(this IServiceProvider provider)
@@ -230,7 +226,6 @@ namespace R5.RunInfoBuilder.Configuration
 			var processInvoker = provider.GetRequiredService<IProcessInvoker>();
 			var parser = provider.GetRequiredService<IParser>();
 			var store = provider.GetRequiredService<IArgumentStore<TRunInfo>>();
-			var buildValidator = provider.GetRequiredService<IBuildValidator>();
 			var runInfoValue = provider.GetRequiredService<RunInfo<TRunInfo>>();
 			var config = provider.GetRequiredService<BuilderConfig>();
 			var hooksConfig = provider.GetRequiredService<HooksConfig<TRunInfo>>();
@@ -239,7 +234,6 @@ namespace R5.RunInfoBuilder.Configuration
 				processInvoker,
 				parser,
 				store,
-				buildValidator,
 				runInfoValue,
 				config,
 				hooksConfig);

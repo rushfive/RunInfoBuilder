@@ -105,7 +105,7 @@ namespace R5.RunInfoBuilder.ArgumentParser
 
 			if (!_predicatesMap.ContainsKey(type))
 			{
-				throw new RunInfoBuilderException($"Predicate for type '{type.Name}' is not set.");
+				throw new ArgumentException($"Predicate for type '{type.Name}' is not set.", nameof(type));
 			}
 
 			dynamic predicate = _predicatesMap[type];
@@ -151,7 +151,7 @@ namespace R5.RunInfoBuilder.ArgumentParser
 
 			if (!_predicatesMap.ContainsKey(type))
 			{
-				throw new RunInfoBuilderException($"Predicate for type '{typeof(T).Name}' is not set.");
+				throw new ArgumentException($"Predicate for type '{type.Name}' is not set.", nameof(type));
 			}
 
 			var predicate = _predicatesMap[type] as Func<string, (bool, T)>;

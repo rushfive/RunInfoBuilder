@@ -13,7 +13,6 @@ namespace R5.RunInfoBuilder.Configuration
 		internal IProcessInvoker ProcessInvoker { get; }
 		internal IParser Parser { get; }
 		internal IArgumentStore<TRunInfo> Store { get; }
-		internal IBuildValidator BuildValidator { get; }
 		internal RunInfo<TRunInfo> RunInfo { get; }
 		internal BuilderConfig Config { get; }
 		internal HooksConfig<TRunInfo> HooksConfig { get; }
@@ -22,7 +21,6 @@ namespace R5.RunInfoBuilder.Configuration
 			IProcessInvoker processInvoker,
 			IParser parser,
 			IArgumentStore<TRunInfo> store,
-			IBuildValidator buildValidator,
 			RunInfo<TRunInfo> runInfo,
 			BuilderConfig config,
 			HooksConfig<TRunInfo> hooksConfig)
@@ -30,7 +28,6 @@ namespace R5.RunInfoBuilder.Configuration
 			ProcessInvoker = processInvoker;
 			Parser = parser;
 			Store = store;
-			BuildValidator = buildValidator;
 			RunInfo = runInfo;
 			Config = config;
 			HooksConfig = hooksConfig;

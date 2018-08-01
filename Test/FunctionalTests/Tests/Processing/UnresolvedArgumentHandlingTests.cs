@@ -25,7 +25,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			Assert.False(runInfo.Bool1);
 
-			Assert.Throws<RunInfoBuilderException>(
+			Assert.Throws<InvalidOperationException>(
 				() => builder.Build(new string[] { "unresolved", "--option" }));
 
 			Assert.False(runInfo.Bool1);

@@ -13,18 +13,31 @@ namespace R5.RunInfoBuilder.Process
 
 		protected override void Validate(ProgramArgument argument, ValidationContext validationContext)
 		{
-			ThrowIfInvalidPositioning(validationContext, argument.ArgumentToken);
+			var token = argument.ArgumentToken;
+
+			ThrowIfOtherCommandAlreadySeen(token, validationContext);
+
+			ThrowIfPositionedInvalid(token, validationContext);
 		}
 
 		protected override void MarkSeen(string token, ValidationContext validationContext)
 			=> validationContext.MarkCommandSeen(token);
 
-		private void ThrowIfInvalidPositioning(ValidationContext validationContext, string commandToken)
+		private void ThrowIfOtherCommandAlreadySeen(string token, ValidationContext validationContext)
+		{
+			if (validationContext.CommandConfig.EnforceSingleCommand)
+			{
+				throw new InvalidOperationException($"Command '{token}' is invalid because processing "
+					+ "is configured to only have a single command, but another was already seen.");
+			}
+		}
+
+		private void ThrowIfPositionedInvalid(string token, ValidationContext validationContext)
 		{
 			if (validationContext.CommandConfig.Positioning == CommandPositioning.Front
 				&& (validationContext.ArgumentSeen || validationContext.OptionSeen))
 			{
-				throw new InvalidOperationException($"Command '{commandToken}' is positioned incorrectly. "
+				throw new InvalidOperationException($"Command '{token}' is positioned incorrectly. "
 					+ "Arguments/Options were found to be before this command.");
 			}
 		}

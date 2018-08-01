@@ -4,9 +4,7 @@
 	{
 		NotProcessed,
 		Success,
-		ConfigurationValidationFail,
-		ProgramArgumentsValidationFail,
-		ProcessFail,
+		Fail,
 		Help,
 		Version
 	}

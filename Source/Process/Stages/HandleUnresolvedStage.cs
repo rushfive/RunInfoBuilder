@@ -27,9 +27,9 @@ namespace R5.RunInfoBuilder.Process
 			switch (_config.HandleUnresolved)
 			{
 				case HandleUnresolvedArgument.NotAllowed:
-					throw new RunInfoBuilderException("Unresolved program arguments are invalid for this configuration.");
+					throw new InvalidOperationException("Unresolved program arguments are invalid for this configuration.");
 				case HandleUnresolvedArgument.AllowedButThrowOnProcess:
-					throw new RunInfoBuilderException($"Failed to process program argument '{argument.ArgumentToken}' because it's an unknown type.");
+					throw new InvalidOperationException($"Failed to process program argument '{argument.ArgumentToken}' because it's an unknown type.");
 				case HandleUnresolvedArgument.AllowedButSkipOnProcess:
 					return (StageChainResult.Continue, 0);
 				default:

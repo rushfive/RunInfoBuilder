@@ -11,7 +11,7 @@ namespace R5.RunInfoBuilder
 		{
 			if (items == null || !items.Any())
 			{
-				throw new ArgumentException(nameof(items), "Items to add must be provided.");
+				throw new ArgumentNullException(nameof(items), "Items to add must be provided.");
 			}
 
 			foreach (T item in items)

@@ -70,10 +70,10 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Builder.Models
 				string failMessage = "fail";
 				var exception = new Exception();
 
-				BuildResult<TestRunInfo> result = BuildResult<TestRunInfo>.ProcessFail(failMessage, exception);
+				BuildResult<TestRunInfo> result = BuildResult<TestRunInfo>.Fail(failMessage, exception);
 
 				Assert.Null(result.RunInfo);
-				Assert.Equal(BuildResultType.ProcessFail, result.Type);
+				Assert.Equal(BuildResultType.Fail, result.Type);
 				Assert.Equal(failMessage, result.FailMessage);
 				Assert.Same(exception, result.Exception);
 				Assert.Null(result.ProgramArgumentErrors);

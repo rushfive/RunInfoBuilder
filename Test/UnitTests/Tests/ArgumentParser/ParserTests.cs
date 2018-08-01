@@ -41,7 +41,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 				var parserNoAutoParse = new Parser(
 					new ParserConfig(AutoParseEnum.Never, null));
 
-				Assert.Throws<RunInfoBuilderException>(
+				Assert.Throws<InvalidOperationException>(
 					() => parserNoAutoParse.TryParseAs(typeof(TestEnum), "ValueA", out _));
 
 				var parser = new Parser(
@@ -133,7 +133,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 				var parser = new Parser(
 					new ParserConfig(AutoParseEnum.Never, null));
 
-				Assert.Throws<RunInfoBuilderException>(
+				Assert.Throws<InvalidOperationException>(
 					() => parser.TryParseAs(typeof(DateTime), "value", out _));
 			}
 
@@ -192,7 +192,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.ArgumentParser
 				var parser = new Parser(
 					new ParserConfig(AutoParseEnum.Never, null));
 
-				Assert.Throws<RunInfoBuilderException>(
+				Assert.Throws<InvalidOperationException>(
 					() => parser.TryParseAs<DateTime>("value", out _));
 			}
 

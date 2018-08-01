@@ -38,7 +38,8 @@ namespace R5.RunInfoBuilder.Process
 
 			if (!this._parser.TryParseAs(propertyInfo.PropertyType, argumentValue, out object parsed))
 			{
-				throw new RunInfoBuilderException($"Failed to parse argument value '{argumentValue}' as a '{propertyInfo.PropertyType.Name}' type.");
+				throw new ArgumentException($"Failed to parse argument value '{argumentValue}' as a "
+					+ $"'{propertyInfo.PropertyType.Name}' type.", nameof(argument));
 			}
 
 			if (metadata.ValidateFunction != null)
@@ -46,7 +47,7 @@ namespace R5.RunInfoBuilder.Process
 				bool isValid = metadata.ValidateFunction(parsed);
 				if (!isValid)
 				{
-					throw new RunInfoBuilderException($"Argument value '{argumentValue}' failed validation.");
+					throw new ArgumentException($"Argument value '{argumentValue}' failed validation.", nameof(argument));
 				}
 			}
 

@@ -18,7 +18,6 @@ namespace R5.RunInfoBuilder
 		public IParser Parser { get; }
 		public IArgumentStore<TRunInfo> Store { get; }
 
-		private IBuildValidator _buildValidator { get; }
 		private IProcessInvoker _processInvoker { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
 		private BuilderConfig _config { get; }
@@ -28,7 +27,6 @@ namespace R5.RunInfoBuilder
 			IProcessInvoker processInvoker,
 			IParser parser,
 			IArgumentStore<TRunInfo> store,
-			IBuildValidator buildValidator,
 			RunInfo<TRunInfo> runInfo,
 			BuilderConfig config,
 			HooksConfig<TRunInfo> hooksConfig)
@@ -37,18 +35,13 @@ namespace R5.RunInfoBuilder
 			Store = store;
 
 			_processInvoker = processInvoker;
-			_buildValidator = buildValidator;
 			_runInfo = runInfo;
 			_config = config;
 			_hooksConfig = hooksConfig;
-
-			Console.WriteLine("INITIALIZED FROM IOC");
 		}
 
 		public RunInfoBuilder()
 		{
-			Console.WriteLine("INITIALIZED FROM PUBLIC");
-
 			var setup = new BuilderSetup<TRunInfo>();
 			var services = setup.ResolveServices();
 
@@ -59,7 +52,6 @@ namespace R5.RunInfoBuilder
 			Parser = dependencies.Parser;
 			Store = dependencies.Store;
 			_processInvoker = dependencies.ProcessInvoker;
-			_buildValidator = dependencies.BuildValidator;
 			_runInfo = dependencies.RunInfo;
 			_config = dependencies.Config;
 			_hooksConfig = dependencies.HooksConfig;
@@ -69,44 +61,24 @@ namespace R5.RunInfoBuilder
 		{
 			try
 			{
-				InvokePreBuild(args);
+				TryInvokePreBuildInvoke(args);
 
 				if (args == null || !args.Any())
 				{
 					return BuildResult<TRunInfo>.NotProcessed();
 				}
-
-				//_buildValidator.ValidateBuilderConfiguration();
-
-				//List<ProgramArgument> programArguments = _buildValidator.ValidateProgramArguments(args);
-
+				
 				ProcessResult processResult = _processInvoker.Start(args);
 
-				InvokePostBuild(args);
+				TryInvokePostBuildCallback(args);
 
 				return CompleteFromResult(processResult);
-			}
-			catch (BuilderConfigurationValidationException ex)
-			{
-				if (_config.AlwaysReturnBuildResult)
-				{
-					return BuildResult<TRunInfo>.ConfigurationValidationFail(ex.Message, ex);
-				}
-				throw;
-			}
-			catch (ProgramArgumentsValidationException ex)
-			{
-				if (_config.AlwaysReturnBuildResult)
-				{
-					return BuildResult<TRunInfo>.ProgramArgumentsValidationFail(ex.Message, ex, ex.Errors);
-				}
-				throw;
 			}
 			catch (Exception ex)
 			{
 				if (_config.AlwaysReturnBuildResult)
 				{
-					return BuildResult<TRunInfo>.ProcessFail(ex.Message, ex);
+					return BuildResult<TRunInfo>.Fail(ex.Message, ex);
 				}
 				throw;
 			}
@@ -115,7 +87,7 @@ namespace R5.RunInfoBuilder
 		private BuildContext<TRunInfo> GetBuildContext(string[] args)
 			=> new BuildContext<TRunInfo>((string[]) args.Clone(), _runInfo.Value);
 
-		private void InvokePreBuild(string[] args)
+		private void TryInvokePreBuildInvoke(string[] args)
 		{
 			if (_hooksConfig.PreBuildCallback != null)
 			{
@@ -124,7 +96,7 @@ namespace R5.RunInfoBuilder
 			}
 		}
 
-		private void InvokePostBuild(string[] args)
+		private void TryInvokePostBuildCallback(string[] args)
 		{
 			if (_hooksConfig.PostBuildCallback != null)
 			{

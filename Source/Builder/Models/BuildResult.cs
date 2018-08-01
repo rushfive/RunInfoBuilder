@@ -32,23 +32,9 @@ namespace R5.RunInfoBuilder
 			return new BuildResult<TRunInfo>(runInfo, BuildResultType.Success);
 		}
 
-		internal static BuildResult<TRunInfo> ConfigurationValidationFail(string failMessage,
-			Exception exception)
+		internal static BuildResult<TRunInfo> Fail(string failMessage, Exception exception)
 		{
-			return new BuildResult<TRunInfo>(null, BuildResultType.ConfigurationValidationFail, 
-				failMessage, exception);
-		}
-
-		internal static BuildResult<TRunInfo> ProgramArgumentsValidationFail(string failMessage, 
-			Exception exception, List<ProgramArgumentError> errors)
-		{
-			return new BuildResult<TRunInfo>(null, BuildResultType.ProgramArgumentsValidationFail, failMessage, 
-				exception, errors);
-		}
-
-		internal static BuildResult<TRunInfo> ProcessFail(string failMessage, Exception exception)
-		{
-			return new BuildResult<TRunInfo>(null, BuildResultType.ProcessFail, 
+			return new BuildResult<TRunInfo>(null, BuildResultType.Fail, 
 				failMessage, exception);
 		}
 

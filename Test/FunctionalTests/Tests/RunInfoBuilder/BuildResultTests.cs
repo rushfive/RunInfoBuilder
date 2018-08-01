@@ -169,7 +169,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.RunInfoBuilder
 
 				BuildResult<TestRunInfo> result = builder.Build(new string[] { "--option" });
 
-				Assert.Equal(BuildResultType.ProcessFail, result.Type);
+				Assert.Equal(BuildResultType.Fail, result.Type);
 			}
 		}
 	}
