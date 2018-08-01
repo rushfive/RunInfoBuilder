@@ -28,7 +28,8 @@ namespace R5.RunInfoBuilder.Process
 
 		protected override (StageChainResult Result, int SkipNext) Process(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			(string argumentKey, string argumentValue) = _tokenizer.TokenizeArgument(argument.ArgumentToken);
 
@@ -51,7 +52,7 @@ namespace R5.RunInfoBuilder.Process
 
 			propertyInfo.SetValue(_runInfo.Value, parsed);
 
-			return GoToNext(argument, contextFactory);
+			return GoToNext(argument, contextFactory, validationContext);
 		}
 	}
 }

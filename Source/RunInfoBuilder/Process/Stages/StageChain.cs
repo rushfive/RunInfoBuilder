@@ -21,18 +21,20 @@ namespace R5.RunInfoBuilder.Process
 
 		internal (StageChainResult Result, int SkipNext) TryProcessArgument(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			if (CanProcessArgument(argument))
 			{
-				return Process(argument, contextFactory);
+				return Process(argument, contextFactory, validationContext);
 			}
-			return GoToNext(argument, contextFactory);
+			return GoToNext(argument, contextFactory, validationContext);
 		}
 
 		protected abstract (StageChainResult Result, int SkipNext) Process(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory);
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext);
 
 		private bool CanProcessArgument(ProgramArgument argument)
 		{
@@ -43,25 +45,28 @@ namespace R5.RunInfoBuilder.Process
 			return argument.Type == _handlesType;
 		}
 
-		protected (StageChainResult Result, int SkipNext) GoToNext(ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+		protected (StageChainResult Result, int SkipNext) GoToNext(
+			ProgramArgument argument,
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			if (_next != null)
 			{
-				return _next.TryProcessArgument(argument, contextFactory);
+				return _next.TryProcessArgument(argument, contextFactory, validationContext);
 			}
 			return (StageChainResult.Continue, 0);
 		}
 
 		protected (StageChainResult Result, int SkipNext) GoToNextFromCallbackResult(ProcessStageResult result,
-			ProgramArgument argument, Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			ProgramArgument argument, Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			switch (result.AfterProcessing)
 			{
 				case AfterProcessingStage.Continue:
 					if (_next != null)
 					{
-						return _next.TryProcessArgument(argument, contextFactory);
+						return _next.TryProcessArgument(argument, contextFactory, validationContext);
 					}
 					return (StageChainResult.Continue, result.SkipNextCount);
 				case AfterProcessingStage.StopProcessingRemainingStages:

@@ -13,8 +13,8 @@ namespace R5.RunInfoBuilder.Configuration
 		where TRunInfo : class
 	{
 		public CommandConfigBuilder Commands { get; }
-		//public OptionConfigBuilder Options { get; }
-		//public ArgumentConfigBuilder Arguments { get; }
+		internal OptionConfigBuilder Options { get; }
+		internal ArgumentConfigBuilder Arguments { get; }
 		public ParserConfigBuilder Parser { get; }
 		public ProcessConfigBuilder<TRunInfo> Process { get; }
 		public ProcessHooksBuilder<TRunInfo> Hooks { get; }
@@ -28,8 +28,8 @@ namespace R5.RunInfoBuilder.Configuration
 		public BuilderSetup()
 		{
 			Commands = new CommandConfigBuilder();
-			//Options = new OptionConfigBuilder();
-			//Arguments = new ArgumentConfigBuilder();
+			Options = new OptionConfigBuilder();
+			Arguments = new ArgumentConfigBuilder();
 			Parser = new ParserConfigBuilder();
 			Process = new ProcessConfigBuilder<TRunInfo>();
 			Hooks = new ProcessHooksBuilder<TRunInfo>();
@@ -152,8 +152,8 @@ namespace R5.RunInfoBuilder.Configuration
 		{
 			return services
 				.AddScoped<CommandConfig>(sp => setup.Commands.Build())
-				//.AddScoped<OptionConfig>(sp => setup.Options.Build())
-				//.AddScoped<ArgumentConfig>(sp => setup.Arguments.Build())
+				.AddScoped<OptionConfig>(sp => setup.Options.Build())
+				.AddScoped<ArgumentConfig>(sp => setup.Arguments.Build())
 				.AddScoped<ProcessConfig>(sp => setup.Process.Build())
 				.AddScoped<HooksConfig<TRunInfo>>(sp => setup.Hooks.Build())
 				.AddScoped<BuilderConfig>(sp => setup.BuildConfig())
@@ -185,7 +185,8 @@ namespace R5.RunInfoBuilder.Configuration
 		{
 			return services
 				.AddScoped<IProcessInvoker, ProcessInvoker<TRunInfo>>()
-				.AddScoped<IStageChainFactory<TRunInfo>, StageChainFactory<TRunInfo>>();
+				.AddScoped<IStageChainFactory<TRunInfo>, StageChainFactory<TRunInfo>>()
+				.AddScoped<IValidationContextFactory, ValidationContextFactory>();
 		}
 
 		public static IServiceCollection AddStoreServices<TRunInfo>(this IServiceCollection services)

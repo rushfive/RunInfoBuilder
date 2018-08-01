@@ -16,11 +16,12 @@ namespace R5.RunInfoBuilder.Process
 
 		protected override (StageChainResult Result, int SkipNext) Process(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			if (argument.Type != ProgramArgumentType.Unresolved)
 			{
-				return GoToNext(argument, contextFactory);
+				return GoToNext(argument, contextFactory, validationContext);
 			}
 
 			switch (_config.HandleUnresolved)

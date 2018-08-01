@@ -16,24 +16,28 @@ namespace R5.RunInfoBuilder.Process
 		private IArgumentTypeResolver _argumentTypeResolver { get; set; }
 		private IStageChainFactory<TRunInfo> _chainFactory { get; }
 		private RunInfo<TRunInfo> _runInfo { get; }
+		private IValidationContextFactory _validationContextFactory { get; }
 
 		public ProcessInvoker(
 			IArgumentTypeResolver argumentTypeResolver,
 			IStageChainFactory<TRunInfo> chainFactory,
-			RunInfo<TRunInfo> runInfo)
+			RunInfo<TRunInfo> runInfo,
+			IValidationContextFactory validationContextFactory)
 		{
 			_argumentTypeResolver = argumentTypeResolver;
 			_chainFactory = chainFactory;
 			_runInfo = runInfo;
+			_validationContextFactory = validationContextFactory;
 		}
 
 		public ProcessResult Start(string[] args)
 		{
 			List<ProgramArgument> programArguments = ResolveProgramArguments(args, _argumentTypeResolver.GetArgumentType);
-
 			var argumentQueue = new Queue<ProgramArgument>(programArguments);
 			
 			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory = CreateContextFactory(programArguments, _runInfo.Value);
+
+			ValidationContext validationContext = _validationContextFactory.Create();
 
 			while (argumentQueue.Any())
 			{
@@ -41,7 +45,7 @@ namespace R5.RunInfoBuilder.Process
 
 				StageChain<TRunInfo> chain = _chainFactory.Create();
 
-				(StageChainResult result, int skipNext) = chain.TryProcessArgument(argument, contextFactory);
+				(StageChainResult result, int skipNext) = chain.TryProcessArgument(argument, contextFactory, validationContext);
 
 				if (result == StageChainResult.KillBuild)
 				{

@@ -25,7 +25,8 @@ namespace R5.RunInfoBuilder.Process
 
 		protected override (StageChainResult Result, int SkipNext) Process(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			(OptionType type, string fullKey, List<char> shortKeys) = _tokenizer.TokenizeOption(argument.ArgumentToken);
 
@@ -56,7 +57,7 @@ namespace R5.RunInfoBuilder.Process
 					throw new ArgumentOutOfRangeException($"'{type}' is not a valid option type.");
 			}
 
-			return GoToNext(argument, contextFactory);
+			return GoToNext(argument, contextFactory, validationContext);
 		}
 	}
 }

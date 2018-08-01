@@ -20,7 +20,8 @@ namespace R5.RunInfoBuilder.Process
 
 		protected override (StageChainResult Result, int SkipNext) Process(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			CommandMetadata<TRunInfo> metadata = _argumentMetadata.GetCommand(argument.ArgumentToken);
 
@@ -29,7 +30,7 @@ namespace R5.RunInfoBuilder.Process
 				case CommandType.PropertyMapped:
 					{
 						metadata.PropertyInfo.SetValue(_runInfo.Value, metadata.MappedValue);
-						return GoToNext(argument, contextFactory);
+						return GoToNext(argument, contextFactory, validationContext);
 					}
 				case CommandType.CustomCallback:
 					{
@@ -37,7 +38,7 @@ namespace R5.RunInfoBuilder.Process
 
 						ProcessStageResult result = metadata.Callback(context);
 
-						return GoToNextFromCallbackResult(result, argument, contextFactory);
+						return GoToNextFromCallbackResult(result, argument, contextFactory, validationContext);
 					}
 				case CommandType.MappedAndCallback:
 					{
@@ -47,7 +48,7 @@ namespace R5.RunInfoBuilder.Process
 
 						ProcessStageResult result = metadata.Callback(context);
 
-						return GoToNextFromCallbackResult(result, argument, contextFactory);
+						return GoToNextFromCallbackResult(result, argument, contextFactory, validationContext);
 					}
 				default:
 					throw new ArgumentOutOfRangeException($"'{metadata.Type}' is not a valid command type.");

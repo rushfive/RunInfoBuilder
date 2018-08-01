@@ -15,13 +15,14 @@ namespace R5.RunInfoBuilder.Process
 
 		protected override (StageChainResult Result, int SkipNext) Process(
 			ProgramArgument argument,
-			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory)
+			Func<ProgramArgument, ProcessContext<TRunInfo>> contextFactory,
+			ValidationContext validationContext)
 		{
 			ProcessContext<TRunInfo> context = contextFactory(argument);
 
 			ProcessStageResult result = _callback(context);
 
-			return GoToNextFromCallbackResult(result, argument, contextFactory);
+			return GoToNextFromCallbackResult(result, argument, contextFactory, validationContext);
 		}
 	}
 }
