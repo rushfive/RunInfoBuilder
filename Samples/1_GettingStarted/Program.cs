@@ -1,10 +1,11 @@
 ﻿using R5.RunInfoBuilder;
 using R5.RunInfoBuilder.ArgumentParser;
 using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Help;
 using System;
 using static System.Console;
 
-namespace Sample_GettingStarted
+namespace R5.RunInfoBuilder.Samples.GettingStarted
 {
 	public class RunInfo
 	{
@@ -34,9 +35,32 @@ namespace Sample_GettingStarted
     {
         static void Main(string[] args)
         {
+			var header = new SectionHeaderConfig
+			{
+				Label = "Commands",
+				PaddingType = PaddingType.Tab,
+				PaddingCount = 1,
+				LineBreaksBelow = 1
+			};
+
+			WriteLine(header.Format());
+
+
+
+
+
+
+
+
+			Console.ReadKey();
+			return;
+
 			var setup = new BuilderSetup<RunInfo>();
 
-			setup.Process.AllowUnresolvedArgumentsButThrowOnProcess();
+			setup.AlwaysReturnBuildResult();
+
+			setup.Process
+				.AllowUnresolvedArgumentsButThrowOnProcess();
 
 			setup.Parser
 				.HandleBuiltInPrimitives()
@@ -49,6 +73,10 @@ namespace Sample_GettingStarted
 					.SetProgramDescription("This program lets you do computer related things.")
 					.SetCallback(context =>
 					{
+						HelpMetadata metadata = context.Metadata;
+
+
+
 						WriteLine(context.FormattedText);
 					});
 			});

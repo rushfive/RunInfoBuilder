@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>R5.RunInfoBuilder.Samples.HelpExamples</AssemblyName>
+    <RootNamespace>R5.RunInfoBuilder.Samples.HelpExamples</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\RunInfoBuilder.csproj" />
+  </ItemGroup>
+
+</Project>

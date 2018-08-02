@@ -82,7 +82,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing
 
 			setup.Hooks.EnablePostArgumentProcessing(context =>
 			{
-				seen.Add(context.ProgramArguments[context.Position]);
+				seen.Add(context.ProgramArguments[context.Position].ArgumentToken);
 				return new ProcessStageResult();
 			});
 

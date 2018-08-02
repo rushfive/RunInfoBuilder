@@ -17,9 +17,8 @@ namespace R5.RunInfoBuilder.Store
 		where TRunInfo : class
 	{
 		internal const string OptionRegex = @"^-{1,2}\b[A-Za-z0-9]+$";
-		//internal const string ArgumentRegex = @"^[A-Za-z0-9]+\b=\b[\w/.-]+$";
 		internal const string ArgumentRegex = @"^[A-Za-z0-9]+\b=.*$";
-
+		
 		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IArgumentTokenizer _tokenizer { get; }
 		private IHelpManager<TRunInfo> _helpManager { get; }

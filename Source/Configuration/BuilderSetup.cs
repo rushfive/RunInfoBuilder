@@ -176,7 +176,8 @@ namespace R5.RunInfoBuilder.Configuration
 
 			return services
 				.AddScoped<HelpConfig<TRunInfo>>(sp => helpBuilder.Build())
-				.AddScoped<IHelpManager<TRunInfo>, HelpManager<TRunInfo>>();
+				.AddScoped<IHelpManager<TRunInfo>, HelpManager<TRunInfo>>()
+				.AddScoped<IHelpBuilder<TRunInfo>, HelpBuilder<TRunInfo>>();
 		}
 
 		public static IServiceCollection AddProcessServices<TRunInfo>(this IServiceCollection services)

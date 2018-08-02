@@ -25,6 +25,8 @@ namespace R5.RunInfoBuilder.Help
 
 		private IArgumentMetadata<TRunInfo> _argumentMaps { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
+		private IHelpBuilder<TRunInfo> _helpBuilder { get; }
+
 		private HashSet<string> _helpTriggers { get; set; }
 		private string _programDescription { get; set; }
 		private Action<HelpCallbackContext<TRunInfo>> _callback { get; set; }
@@ -32,10 +34,12 @@ namespace R5.RunInfoBuilder.Help
 		public HelpManager(
 			IArgumentMetadata<TRunInfo> argumentMaps,
 			IRestrictedKeyValidator keyValidator,
+			IHelpBuilder<TRunInfo> helpBuilder,
 			HelpConfig<TRunInfo> config)
 		{
 			_argumentMaps = argumentMaps;
 			_keyValidator = keyValidator;
+			_helpBuilder = helpBuilder;
 
 			Configure(config);
 		}
@@ -72,6 +76,10 @@ namespace R5.RunInfoBuilder.Help
 
 		public string GetFormatted()
 		{
+			//string formatted = _helpBuilder.
+
+
+
 			var sb = new StringBuilder();
 
 			if (!string.IsNullOrWhiteSpace(_programDescription))
