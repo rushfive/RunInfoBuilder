@@ -32,16 +32,7 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
     {
         static void Main(string[] args)
         {
-			var header = new SectionHeaderConfig
-			{
-				Label = "Commands",
-				PaddingType = PaddingType.Tab,
-				PaddingCount = 1,
-				LineBreaksBelow = 1
-			};
-
-			WriteLine(header.Format());
-
+			
 
 			Console.ReadKey();
         }

@@ -2,11 +2,8 @@
 
 namespace R5.RunInfoBuilder.Help
 {
-	public class ArgumentHelpInfo
+	public class ArgumentHelpInfo : HelpInfo
 	{
-		public string Key { get; }
-		public string Description { get; }
-		public PropertyInfo PropertyInfo { get; }
 		public string ValidatorDescription { get; }
 
 		internal ArgumentHelpInfo(

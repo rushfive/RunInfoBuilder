@@ -2,20 +2,25 @@
 
 namespace R5.RunInfoBuilder.Help
 {
-	public class OptionHelpInfo
+	// todo move
+	public abstract class HelpInfo
 	{
-		public string FullKey { get; }
-		public char? ShortKey { get; }
-		public string Description { get; }
-		public PropertyInfo PropertyInfo { get; }
+		public string Key { get; protected set; }
+		public string Description { get; protected set; }
+		public PropertyInfo PropertyInfo { get; protected set; }
+	}
 
+	public class OptionHelpInfo : HelpInfo
+	{
+		public char? ShortKey { get; }
+		
 		internal OptionHelpInfo(
-			string fullKey,
+			string key,
 			char? shortKey,
 			string description,
 			PropertyInfo propertyInfo)
 		{
-			FullKey = fullKey;
+			Key = key;
 			ShortKey = shortKey;
 			Description = description;
 			PropertyInfo = propertyInfo;

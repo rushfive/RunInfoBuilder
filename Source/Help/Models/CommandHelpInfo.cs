@@ -1,14 +1,15 @@
-﻿namespace R5.RunInfoBuilder.Help
-{
-	public class CommandHelpInfo
-	{
-		public string Key { get; }
-		public string Description { get; }
+﻿using System.Reflection;
 
-		internal CommandHelpInfo(string key, string description)
+namespace R5.RunInfoBuilder.Help
+{
+	public class CommandHelpInfo : HelpInfo
+	{
+		internal CommandHelpInfo(string key, string description,
+			PropertyInfo propertyInfo)
 		{
 			Key = key;
 			Description = description;
+			PropertyInfo = propertyInfo;
 		}
 	}
 }

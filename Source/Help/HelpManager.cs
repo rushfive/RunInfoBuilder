@@ -138,7 +138,7 @@ namespace R5.RunInfoBuilder.Help
 					{
 						optionLabel += $"-{option.ShortKey} ";
 					}
-					optionLabel += $"--{option.FullKey}";
+					optionLabel += $"--{option.Key}";
 
 					sb.AppendLine($"{keyPadding}{optionLabel}");
 
@@ -162,7 +162,7 @@ namespace R5.RunInfoBuilder.Help
 
 			List<CommandHelpInfo> commands = _argumentMaps
 				.GetCommands()
-				.Select(c => new CommandHelpInfo(c.Key, c.Description))
+				.Select(c => new CommandHelpInfo(c.Key, c.Description, null)) // TODO: replace null
 				.ToList();
 
 			List<OptionHelpInfo> options = _argumentMaps
