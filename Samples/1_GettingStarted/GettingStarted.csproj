@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\RunInfoBuilder2\RunInfoBuilder.csproj" />
-    <ProjectReference Include="..\..\Source\OLD.csproj" />
+    <ProjectReference Include="..\..\Source\RunInfoBuilder.csproj" />
+    <ProjectReference Include="..\..\OLD\OLD.csproj" />
   </ItemGroup>
 
 </Project>
