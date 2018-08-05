@@ -1,4 +1,4 @@
-﻿namespace R5.RunInfoBuilder.Configuration
+﻿namespace OLD.Configuration
 {
 	public class ProcessConfigBuilder<TRunInfo>
 		where TRunInfo : class

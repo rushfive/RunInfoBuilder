@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunInfoBuilder", "Source\RunInfoBuilder.csproj", "{9732AE7C-F522-4A96-81E1-8E70EB59EA87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OLD", "Source\OLD.csproj", "{9732AE7C-F522-4A96-81E1-8E70EB59EA87}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{BAF7BA48-E06C-4027-BA4E-66ED9E959E04}"
 EndProject
@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GettingStarted", "Samples\1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpExamples", "Samples\2_HelpExamples\HelpExamples.csproj", "{F1A7141C-3B1C-428D-BDE9-435DDA003B78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunInfoBuilder2", "RunInfoBuilder2\RunInfoBuilder2.csproj", "{24D7D44B-658B-48BA-A184-02D4D070907E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunInfoBuilder", "RunInfoBuilder2\RunInfoBuilder.csproj", "{24D7D44B-658B-48BA-A184-02D4D070907E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

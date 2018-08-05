@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace R5.RunInfoBuilder2.Builder
+namespace R5.RunInfoBuilder.Builder
 {
 	public class Test
 	{

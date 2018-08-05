@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Configuration
+namespace OLD.Configuration
 {
 	internal class VersionConfig
 	{

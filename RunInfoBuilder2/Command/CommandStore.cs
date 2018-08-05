@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder2.Command
+namespace R5.RunInfoBuilder.Command
 {
 	public interface ICommandStore
 	{

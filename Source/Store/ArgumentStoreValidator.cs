@@ -1,9 +1,9 @@
-﻿using R5.RunInfoBuilder.Process;
-using R5.RunInfoBuilder.Validators;
+﻿using OLD.Process;
+using OLD.Validators;
 using System;
 using System.Linq.Expressions;
 
-namespace R5.RunInfoBuilder.Store
+namespace OLD.Store
 {
 	internal interface IArgumentStoreValidator<TRunInfo>
 		where TRunInfo : class

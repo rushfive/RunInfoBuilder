@@ -1,7 +1,7 @@
-﻿using R5.RunInfoBuilder.Configuration;
+﻿using OLD.Configuration;
 using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Process
+namespace OLD.Process
 {
 	internal class ValidationContext
 	{

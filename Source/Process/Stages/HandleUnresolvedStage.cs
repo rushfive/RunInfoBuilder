@@ -1,7 +1,7 @@
-﻿using R5.RunInfoBuilder.Configuration;
+﻿using OLD.Configuration;
 using System;
 
-namespace R5.RunInfoBuilder.Process
+namespace OLD.Process
 {
 	internal class HandleUnresolvedStage<TRunInfo> : StageChain<TRunInfo>
 		where TRunInfo : class

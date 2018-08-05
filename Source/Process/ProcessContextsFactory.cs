@@ -1,9 +1,9 @@
-﻿using R5.RunInfoBuilder.ArgumentParser;
-using R5.RunInfoBuilder.Configuration;
+﻿using OLD.ArgumentParser;
+using OLD.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Process
+namespace OLD.Process
 {
 	internal interface IProcessContextsFactory<TRunInfo>
 		where TRunInfo : class

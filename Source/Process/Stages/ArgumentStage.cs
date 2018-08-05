@@ -1,9 +1,9 @@
-﻿using R5.RunInfoBuilder.ArgumentParser;
-using R5.RunInfoBuilder.Store;
+﻿using OLD.ArgumentParser;
+using OLD.Store;
 using System;
 using System.Reflection;
 
-namespace R5.RunInfoBuilder.Process
+namespace OLD.Process
 {
 	internal class ArgumentStage<TRunInfo> : StageChain<TRunInfo>
 		where TRunInfo : class

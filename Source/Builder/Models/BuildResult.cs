@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder
+namespace OLD
 {
 	public class BuildResult<TRunInfo>
 		where TRunInfo : class

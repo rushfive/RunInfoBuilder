@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Help
+namespace OLD.Help
 {
 	public class HelpMetadata
 	{

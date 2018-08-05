@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\RunInfoBuilder2\RunInfoBuilder2.csproj" />
-    <ProjectReference Include="..\..\Source\RunInfoBuilder.csproj" />
+    <ProjectReference Include="..\..\RunInfoBuilder2\RunInfoBuilder.csproj" />
+    <ProjectReference Include="..\..\Source\OLD.csproj" />
   </ItemGroup>
 
 </Project>

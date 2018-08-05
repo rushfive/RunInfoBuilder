@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace R5.RunInfoBuilder.Store
+namespace OLD.Store
 {
 	internal interface IReflectionHelper<TRunInfo>
 		where TRunInfo : class

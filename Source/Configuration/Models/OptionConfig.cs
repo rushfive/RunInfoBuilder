@@ -1,4 +1,4 @@
-﻿namespace R5.RunInfoBuilder.Configuration
+﻿namespace OLD.Configuration
 {
 	internal class OptionConfig
 	{

@@ -1,4 +1,4 @@
-﻿using R5.RunInfoBuilder.Validators;
+﻿using OLD.Validators;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace R5.RunInfoBuilder.Store
+namespace OLD.Store
 {
 	internal enum OptionType
 	{

@@ -1,7 +1,7 @@
-﻿using R5.RunInfoBuilder.Store;
+﻿using OLD.Store;
 using System;
 
-namespace R5.RunInfoBuilder.Process
+namespace OLD.Process
 {
 	internal class CommandStage<TRunInfo> : StageChain<TRunInfo>
 		where TRunInfo : class

@@ -1,12 +1,12 @@
-﻿using R5.RunInfoBuilder.Help;
-using R5.RunInfoBuilder.Store;
-using R5.RunInfoBuilder.Version;
+﻿using OLD.Help;
+using OLD.Store;
+using OLD.Version;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace R5.RunInfoBuilder.Store
+namespace OLD.Store
 {
 	internal interface IArgumentTypeResolver
 	{

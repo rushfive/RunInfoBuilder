@@ -1,4 +1,4 @@
-﻿namespace R5.RunInfoBuilder.ArgumentParser
+﻿namespace OLD.ArgumentParser
 {
     internal enum AutoParseEnum
     {

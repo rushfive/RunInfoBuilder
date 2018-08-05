@@ -1,4 +1,4 @@
-﻿namespace R5.RunInfoBuilder.Configuration
+﻿namespace OLD.Configuration
 {
     public class BuildContext<TRunInfo>
 		where TRunInfo : class

@@ -1,12 +1,12 @@
-﻿using R5.RunInfoBuilder.Configuration;
-using R5.RunInfoBuilder.Store;
-using R5.RunInfoBuilder.Validators;
+﻿using OLD.Configuration;
+using OLD.Store;
+using OLD.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Help
+namespace OLD.Help
 {
 	internal interface IHelpManager<TRunInfo>
 		where TRunInfo : class

@@ -1,9 +1,9 @@
-﻿using R5.RunInfoBuilder.Help;
+﻿using OLD.Help;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace R5.RunInfoBuilder.Configuration
+namespace OLD.Configuration
 {
 	public class HelpConfigBuilder<TRunInfo>
 		where TRunInfo : class

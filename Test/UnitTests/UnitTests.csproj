@@ -29,12 +29,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Source\RunInfoBuilder.csproj" />
+	  <Folder Include="Models\" />
+	  <Folder Include="Tests\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Models\" />
-	  <Folder Include="Tests\" />
+	  <ProjectReference Include="..\..\Source\OLD.csproj" />
 	</ItemGroup>
 
 </Project>

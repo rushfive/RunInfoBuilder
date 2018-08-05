@@ -1,8 +1,8 @@
-﻿using R5.RunInfoBuilder.ArgumentParser;
-using R5.RunInfoBuilder.Store;
+﻿using OLD.ArgumentParser;
+using OLD.Store;
 using System;
 
-namespace R5.RunInfoBuilder.Process
+namespace OLD.Process
 {
 	internal class ValidateArgumentStage<TRunInfo> : ValidationStage<TRunInfo>
 		where TRunInfo : class

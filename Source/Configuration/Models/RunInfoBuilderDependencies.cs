@@ -1,11 +1,11 @@
-﻿using R5.RunInfoBuilder.ArgumentParser;
-using R5.RunInfoBuilder.Help;
-using R5.RunInfoBuilder.Process;
-using R5.RunInfoBuilder.Store;
-using R5.RunInfoBuilder.Validators;
-using R5.RunInfoBuilder.Version;
+﻿using OLD.ArgumentParser;
+using OLD.Help;
+using OLD.Process;
+using OLD.Store;
+using OLD.Validators;
+using OLD.Version;
 
-namespace R5.RunInfoBuilder.Configuration
+namespace OLD.Configuration
 {
 	internal class RunInfoBuilderDependencies<TRunInfo>
 			where TRunInfo : class

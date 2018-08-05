@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace R5.RunInfoBuilder.Validators
+namespace OLD.Validators
 {
 	internal interface IRestrictedKeyValidator
 	{

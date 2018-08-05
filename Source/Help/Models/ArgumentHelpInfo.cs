@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace R5.RunInfoBuilder.Help
+namespace OLD.Help
 {
 	public class ArgumentHelpInfo : HelpInfo
 	{

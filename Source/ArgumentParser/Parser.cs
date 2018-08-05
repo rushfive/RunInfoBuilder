@@ -1,9 +1,9 @@
-﻿using R5.RunInfoBuilder.Configuration;
+﻿using OLD.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace R5.RunInfoBuilder.ArgumentParser
+namespace OLD.ArgumentParser
 {
 	public interface IParser
 	{

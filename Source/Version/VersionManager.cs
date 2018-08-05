@@ -1,10 +1,10 @@
-﻿using R5.RunInfoBuilder.Configuration;
-using R5.RunInfoBuilder.Validators;
+﻿using OLD.Configuration;
+using OLD.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace R5.RunInfoBuilder.Version
+namespace OLD.Version
 {
 	internal interface IVersionManager
 	{

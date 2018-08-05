@@ -1,7 +1,7 @@
-﻿using R5.RunInfoBuilder.Process;
+﻿using OLD.Process;
 using System;
 
-namespace R5.RunInfoBuilder.Configuration
+namespace OLD.Configuration
 {
 	internal class HooksConfig<TRunInfo>
 		where TRunInfo : class

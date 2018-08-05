@@ -1,8 +1,8 @@
-﻿using R5.RunInfoBuilder.ArgumentParser;
+﻿using OLD.ArgumentParser;
 using System;
 using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Configuration
+namespace OLD.Configuration
 {
     public class ParserConfigBuilder
     {
