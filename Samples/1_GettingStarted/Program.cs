@@ -2,7 +2,9 @@
 using R5.RunInfoBuilder.ArgumentParser;
 using R5.RunInfoBuilder.Configuration;
 using R5.RunInfoBuilder.Help;
+using R5.RunInfoBuilder2.Builder;
 using System;
+using System.Collections.Generic;
 using static System.Console;
 
 namespace R5.RunInfoBuilder.Samples.GettingStarted
@@ -15,6 +17,7 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 		public DateTime BeginDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public OnFail OnFail { get; set; }
+		public List<string> RandomTokens { get; set; }
 	}
 
 	public enum Command
@@ -31,12 +34,50 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 		Crash
 	}
 
-    class Program
-    {
-        static void Main(string[] args)
-        {
-			
-
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			var test = new Command<RunInfo, bool>
+			{
+				Key = "status",
+				Description = "Lists all new or modified files to be committed",
+				Usage = "git status",
+				Mapping = //new PropertyMapping<RunInfo, bool>
+				{
+					Property = r => r.OverwriteExisting,
+					Value = true
+				},
+				Callback = //new Callback<RunInfo>
+				{
+					Timing = CallbackTiming.AfterProcessing,
+					Order = CallbackOrder.Parallel,
+					Func = context => CallbackResult.Continue
+				},
+				SubCommands =
+				{
+					new Command<RunInfo>(),
+					new Command<RunInfo, bool>()
+				},
+				Arguments =
+				{
+					new Argument<RunInfo, bool> { Property = r => r.RunAsRoot },
+					new ExclusiveArgumentSet<RunInfo>
+					{
+						new Argument<RunInfo, bool> { Property = r => r.RunAsRoot },
+						new ArgumentList<RunInfo, string>{ List = r => r.RandomTokens }
+					}
+				},
+				Options =
+				{
+					new Option<RunInfo>
+					{
+						Key = "overwrite | o",
+						Description = "overwrite existing files. defaults to false if not specified.",
+						Usage = "git status --overwrite | git status --overwrite=true/false"
+					}
+				}
+			};
 
 
 
@@ -122,6 +163,6 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 			BuildResult<RunInfo> result = builder.Build(programArguments);
 
 			ReadKey();
-        }
-    }
+		}
+	}
 }
