@@ -13,7 +13,9 @@ namespace R5.RunInfoBuilder.Command
 	{
 		public static readonly CallbackResult Continue = new Continue();
 		public static readonly CallbackResult KillProcess = new KillProcess();
-		public static CallbackResult Skip(int count) => new Skip(count);
+		public static CallbackResult SkipNext(int count) => new SkipNext(count);
+		public static CallbackResult SkipToPosition(int position) => new SkipToPosition(position);
+		public static CallbackResult SkipToToken(string token) => new SkipToToken(token);
 	}
 
 	public class Continue : CallbackResult
@@ -21,9 +23,19 @@ namespace R5.RunInfoBuilder.Command
 
 	}
 
-	public class Skip : CallbackResult
+	public class SkipNext : CallbackResult
 	{
-		internal Skip(int count) { }
+		internal SkipNext(int count) { }
+	}
+
+	public class SkipToPosition : CallbackResult
+	{
+		internal SkipToPosition(int position) { }
+	}
+
+	public class SkipToToken : CallbackResult
+	{
+		internal SkipToToken(string token) { }
 	}
 
 	public class KillProcess : CallbackResult

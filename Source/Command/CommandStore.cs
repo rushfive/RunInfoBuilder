@@ -11,7 +11,7 @@ namespace R5.RunInfoBuilder.Command
 		ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class;
 
-		ICommandStore Add<TRunInfo, TProperty>(CommandMapped<TRunInfo, TProperty> command)
+		ICommandStore Add<TRunInfo, TProperty>(CommandPropertyMapped<TRunInfo, TProperty> command)
 			where TRunInfo : class;
 
 		ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
@@ -32,7 +32,7 @@ namespace R5.RunInfoBuilder.Command
 			throw new NotImplementedException();
 		}
 
-		public ICommandStore Add<TRunInfo, TProperty>(CommandMapped<TRunInfo, TProperty> command) where TRunInfo : class
+		public ICommandStore Add<TRunInfo, TProperty>(CommandPropertyMapped<TRunInfo, TProperty> command) where TRunInfo : class
 		{
 			throw new NotImplementedException();
 		}
@@ -49,7 +49,7 @@ namespace R5.RunInfoBuilder.Command
 	{
 		void Validate(Command<TRunInfo> command);
 
-		void Validate<TProperty>(CommandMapped<TRunInfo, TProperty> command);
+		void Validate<TProperty>(CommandPropertyMapped<TRunInfo, TProperty> command);
 
 		void Validate(DefaultCommand<TRunInfo> defaultCommand);
 	}
@@ -82,7 +82,7 @@ namespace R5.RunInfoBuilder.Command
 			throw new NotImplementedException();
 		}
 
-		public void Validate<TProperty>(CommandMapped<TRunInfo, TProperty> command)
+		public void Validate<TProperty>(CommandPropertyMapped<TRunInfo, TProperty> command)
 		{
 			throw new NotImplementedException();
 		}
@@ -92,22 +92,5 @@ namespace R5.RunInfoBuilder.Command
 			throw new NotImplementedException();
 		}
 	}
-
-	internal interface IArgumentConfigurationValidator<TRunInfo> where TRunInfo : class
-	{
-
-	}
-
-	internal class ArgumentConfigurationValidator<TRunInfo> : IArgumentConfigurationValidator<TRunInfo>
-		where TRunInfo : class
-	{
-		public ArgumentConfigurationValidator()
-		{
-
-		}
-
-		public void Validate(List<ArgumentBase> arguments, Type parentType, string parentKey)
-			=> arguments.ForEach(a => a.Validate(parentType, parentKey));
-		
-	}
+	
 }

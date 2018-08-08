@@ -39,7 +39,7 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 	{
 		static void Main(string[] args)
 		{
-			var test = new CommandMapped<RunInfo, bool>
+			var test = new CommandPropertyMapped<RunInfo, bool>
 			{
 				Key = "status",
 				Description = "Lists all new or modified files to be committed",
@@ -57,20 +57,20 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 				SubCommands =
 				{
 					new Command<RunInfo>(),
-					new CommandMapped<RunInfo, bool>()
+					new CommandPropertyMapped<RunInfo, bool>()
 				},
 				Arguments =
 				{
 					new Argument<RunInfo, bool> { Property = r => r.RunAsRoot },
-					new ExclusiveArgumentSet<RunInfo>
+					new ArgumentExclusiveSet<RunInfo>
 					{
 						new Argument<RunInfo, bool> { Property = r => r.RunAsRoot },
-						new ArgumentList<RunInfo, string>{ List = r => r.RandomTokens }
+						new ArgumentSequence<RunInfo, string>{ List = r => r.RandomTokens }
 					}
 				},
 				Options =
 				{
-					new Option<RunInfo>
+					new OptionWithArguments<RunInfo>
 					{
 						Key = "overwrite | o",
 						Description = "overwrite existing files. defaults to false if not specified.",
