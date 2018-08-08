@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace R5.RunInfoBuilder.Command.Models
@@ -8,12 +9,21 @@ namespace R5.RunInfoBuilder.Command.Models
 	public class ExclusiveArgumentSet<TRunInfo> : ArgumentBase, IEnumerable<ArgumentBase>
 		where TRunInfo : class
 	{
-		private readonly List<ArgumentBase> _arguments = new List<ArgumentBase>();
+		internal readonly List<ArgumentBase> Arguments = new List<ArgumentBase>();
 
-		public void Add(ArgumentBase argument) => _arguments.Add(argument);
+		public void Add(ArgumentBase argument) => Arguments.Add(argument);
 
-		public IEnumerator<ArgumentBase> GetEnumerator() => _arguments.GetEnumerator();
+		public IEnumerator<ArgumentBase> GetEnumerator() => Arguments.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		internal override void Validate(Type parentType, string parentKey)
+		{
+			if (!Arguments.Any())
+			{
+				throw new ConfigurationException("Set must contain at least one argument.",
+					typeof(ExclusiveArgumentSet<TRunInfo>), parentType, parentKey);
+			}
+		}
 	}
 }

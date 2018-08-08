@@ -8,11 +8,21 @@ namespace R5.RunInfoBuilder.Command.Models
 	{
 		public string Key { get; set; }
 		public string Description { get; set; }
-		public string Usage { get; set; }
 		public Callback<TRunInfo> Callback { get; set; } = new Callback<TRunInfo>();
 
 		public List<CommandBase<TRunInfo>> SubCommands { get; set; } = new List<CommandBase<TRunInfo>>();
 		public List<ArgumentBase> Arguments { get; set; } = new List<ArgumentBase>();
 		public List<Option<TRunInfo>> Options { get; set; } = new List<Option<TRunInfo>>();
+
+		internal abstract void Validate(Type parentType, string parentKey);
+
+		protected void ValidateBase(Type derivedType, Type parentType, string parentKey)
+		{
+			if (string.IsNullOrWhiteSpace(Key))
+			{
+				throw new ConfigurationException("Key must be provided.",
+					derivedType, parentType, parentKey);
+			}
+		}
 	}
 }

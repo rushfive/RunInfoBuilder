@@ -39,11 +39,10 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 	{
 		static void Main(string[] args)
 		{
-			var test = new Command<RunInfo, bool>
+			var test = new CommandMapped<RunInfo, bool>
 			{
 				Key = "status",
 				Description = "Lists all new or modified files to be committed",
-				Usage = "git status",
 				Mapping = //new PropertyMapping<RunInfo, bool>
 				{
 					Property = r => r.OverwriteExisting,
@@ -58,7 +57,7 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 				SubCommands =
 				{
 					new Command<RunInfo>(),
-					new Command<RunInfo, bool>()
+					new CommandMapped<RunInfo, bool>()
 				},
 				Arguments =
 				{

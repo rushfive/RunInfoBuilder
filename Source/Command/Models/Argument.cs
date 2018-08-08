@@ -9,5 +9,14 @@ namespace R5.RunInfoBuilder.Command.Models
 		where TRunInfo : class
 	{
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
+
+		internal override void Validate(Type parentType, string parentKey)
+		{
+			if (Property == null)
+			{
+				throw new ConfigurationException("Property expression must be provided.", 
+					typeof(Argument<TRunInfo, TProperty>), parentType, parentKey);
+			}
+		}
 	}
 }
