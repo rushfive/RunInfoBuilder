@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command.Models
+namespace R5.RunInfoBuilder.Commands
 {
 	public class ArgumentExclusiveSet<TRunInfo> : ArgumentBase<TRunInfo>, IEnumerable<ArgumentBase<TRunInfo>>
 		where TRunInfo : class

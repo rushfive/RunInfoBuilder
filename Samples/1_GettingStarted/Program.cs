@@ -2,8 +2,7 @@
 using OLD.ArgumentParser;
 using OLD.Configuration;
 using OLD.Help;
-using R5.RunInfoBuilder.Command;
-using R5.RunInfoBuilder.Command.Models;
+using R5.RunInfoBuilder.Commands;
 using System;
 using System.Collections.Generic;
 using static System.Console;
@@ -48,12 +47,6 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 					Property = r => r.OverwriteExisting,
 					Value = true
 				},
-				Callback = //new Callback<RunInfo>
-				{
-					Timing = CallbackTiming.AfterProcessing,
-					Order = CallbackOrder.Parallel,
-					Func = context => CallbackResult.Continue
-				},
 				SubCommands =
 				{
 					new Command<RunInfo>(),
@@ -61,10 +54,10 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 				},
 				Arguments =
 				{
-					new Argument<RunInfo, bool> { Property = r => r.RunAsRoot },
+					new ArgumentPropertyMapped<RunInfo, bool> { Property = r => r.RunAsRoot },
 					new ArgumentExclusiveSet<RunInfo>
 					{
-						new Argument<RunInfo, bool> { Property = r => r.RunAsRoot },
+						new ArgumentPropertyMapped<RunInfo, bool> { Property = r => r.RunAsRoot },
 						new ArgumentSequence<RunInfo, string>{ List = r => r.RandomTokens }
 					}
 				},
@@ -73,8 +66,7 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 					new OptionWithArguments<RunInfo>
 					{
 						Key = "overwrite | o",
-						Description = "overwrite existing files. defaults to false if not specified.",
-						Usage = "git status --overwrite | git status --overwrite=true/false"
+						Description = "overwrite existing files. defaults to false if not specified."
 					}
 				}
 			};
@@ -133,11 +125,11 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 						var beginRangeArgument = context.ProgramArguments[context.Position + 1];
 						var endRangeArgument = context.ProgramArguments[context.Position + 2];
 
-						if (beginRangeArgument.Type != ProgramArgumentType.Unresolved
-							|| endRangeArgument.Type != ProgramArgumentType.Unresolved)
-						{
-							throw new Exception("Range command must be followed by two values that are not configured.");
-						}
+						//if (beginRangeArgument.Type != ProgramArgumentType.Unresolved
+						//	|| endRangeArgument.Type != ProgramArgumentType.Unresolved)
+						//{
+						//	throw new Exception("Range command must be followed by two values that are not configured.");
+						//}
 
 						IParser parser = context.Parser;
 

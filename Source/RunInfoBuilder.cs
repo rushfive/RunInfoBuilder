@@ -1,4 +1,4 @@
-﻿using R5.RunInfoBuilder.Command;
+﻿using R5.RunInfoBuilder.Commands;
 
 namespace R5.RunInfoBuilder
 {

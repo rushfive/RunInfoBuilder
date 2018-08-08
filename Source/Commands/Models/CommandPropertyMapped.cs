@@ -1,8 +1,9 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Commands;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command.Models
+namespace R5.RunInfoBuilder.Commands
 {
 	public class CommandPropertyMapped<TRunInfo, TProperty> : CommandBase<TRunInfo>
 		where TRunInfo : class

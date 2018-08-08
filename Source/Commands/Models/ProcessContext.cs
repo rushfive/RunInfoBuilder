@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command.Models
+namespace R5.RunInfoBuilder.Commands
 {
 	public class CallbackContext<TRunInfo> where TRunInfo : class
 	{
@@ -19,9 +19,10 @@ namespace R5.RunInfoBuilder.Command.Models
 
 	public enum ProgramArgumentType
 	{
-		Argument,
+		ArgumentPropertyMapped,
 		ArgumentExclusiveSet,
 		ArgumentSequence,
+		ArgumentUnhandled,
 		Command,
 		CommandPropertyMapped,
 		OptionWithArguments,

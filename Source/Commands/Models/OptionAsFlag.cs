@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command.Models
+namespace R5.RunInfoBuilder.Commands
 {
 	public class OptionAsFlag<TRunInfo> : OptionBase<TRunInfo>
 			where TRunInfo : class

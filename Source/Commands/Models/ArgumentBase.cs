@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command.Models
+namespace R5.RunInfoBuilder.Commands
 {
-	// add callbacks to these??
 	public abstract class ArgumentBase<TRunInfo> where TRunInfo : class
 	{
-		public Callback<TRunInfo> Callback { get; } = new Callback<TRunInfo>();
+		public Func<CallbackContext<TRunInfo>, CallbackResult> Callback { get; set; }
 
 		internal abstract void Validate(Type parentType, string parentKey);
 	}

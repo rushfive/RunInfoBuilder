@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command
+namespace R5.RunInfoBuilder.Commands
 {
 	//public static class CallbackResult
 	//{

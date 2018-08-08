@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Command.Models
+namespace R5.RunInfoBuilder.Commands
 {
 	public abstract class OptionBase<TRunInfo>
 		where TRunInfo : class
@@ -12,7 +12,7 @@ namespace R5.RunInfoBuilder.Command.Models
 		public string Key { get; set; }
 		public string Description { get; set; }
 		public string HelpText { get; set; }
-		public Callback<TRunInfo> Callback { get; } = new Callback<TRunInfo>();
+		public Func<CallbackContext<TRunInfo>, CallbackResult> Callback { get; set; }
 
 		internal abstract void Validate(Type parentType, string parentKey);
 
