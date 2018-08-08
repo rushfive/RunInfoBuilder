@@ -4,7 +4,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Validators
 {
-	internal interface IKeyValidator
+	internal interface IRestrictedKeyValidator
 	{
 		bool IsRestricted(string key);
 
@@ -16,7 +16,7 @@ namespace R5.RunInfoBuilder.Validators
 	}
 
 	// validates top-level keys only by uniqueness
-	internal class RestrictedKeyValidator : IKeyValidator
+	internal class RestrictedKeyValidator : IRestrictedKeyValidator
 	{
 		private readonly HashSet<string> _restricted = new HashSet<string>();
 

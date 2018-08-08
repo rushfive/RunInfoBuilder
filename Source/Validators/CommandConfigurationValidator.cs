@@ -5,28 +5,27 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Validators
 {
-	internal interface ICommandConfigurationValidator<TRunInfo> where TRunInfo : class
+	internal interface ICommandConfigurationValidator
 	{
-		void Validate(Command<TRunInfo> command);
+		void Validate<TRunInfo>(Command<TRunInfo> command)
+			where TRunInfo : class;
 
-		void Validate<TProperty>(CommandPropertyMapped<TRunInfo, TProperty> command);
-
-		void Validate(DefaultCommand<TRunInfo> defaultCommand);
+		void Validate<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+			where TRunInfo : class;
 	}
 
-	internal class CommandConfigurationValidator<TRunInfo> : ICommandConfigurationValidator<TRunInfo>
-		where TRunInfo : class
+	internal class CommandConfigurationValidator : ICommandConfigurationValidator
 	{
-		private IKeyValidator _keyValidator { get; }
+		private IRestrictedKeyValidator _keyValidator { get; }
 
-		public CommandConfigurationValidator(IKeyValidator keyValidator)
+		public CommandConfigurationValidator(IRestrictedKeyValidator keyValidator)
 		{
 			_keyValidator = keyValidator;
 		}
 
-		public void Validate(Command<TRunInfo> command)
+		public void Validate<TRunInfo>(Command<TRunInfo> command)
+			where TRunInfo : class
 		{
-			// these are top-level validations only
 			if (command == null)
 			{
 				throw new ArgumentNullException(nameof(command), "Command must be provided.");
@@ -38,16 +37,10 @@ namespace R5.RunInfoBuilder.Validators
 			}
 
 			command.Validate(parentType: null, parentKey: null);
-
-			throw new NotImplementedException();
 		}
 
-		public void Validate<TProperty>(CommandPropertyMapped<TRunInfo, TProperty> command)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Validate(DefaultCommand<TRunInfo> defaultCommand)
+		public void Validate<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+			where TRunInfo : class
 		{
 			throw new NotImplementedException();
 		}

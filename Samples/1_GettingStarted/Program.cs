@@ -38,38 +38,38 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 	{
 		static void Main(string[] args)
 		{
-			var test = new CommandPropertyMapped<RunInfo, bool>
-			{
-				Key = "status",
-				Description = "Lists all new or modified files to be committed",
-				Mapping = //new PropertyMapping<RunInfo, bool>
-				{
-					Property = r => r.OverwriteExisting,
-					Value = true
-				},
-				SubCommands =
-				{
-					new Command<RunInfo>(),
-					new CommandPropertyMapped<RunInfo, bool>()
-				},
-				Arguments =
-				{
-					new ArgumentPropertyMapped<RunInfo, bool> { Property = r => r.RunAsRoot },
-					new ArgumentExclusiveSet<RunInfo>
-					{
-						new ArgumentPropertyMapped<RunInfo, bool> { Property = r => r.RunAsRoot },
-						new ArgumentSequence<RunInfo, string>{ List = r => r.RandomTokens }
-					}
-				},
-				Options =
-				{
-					new OptionWithArguments<RunInfo>
-					{
-						Key = "overwrite | o",
-						Description = "overwrite existing files. defaults to false if not specified."
-					}
-				}
-			};
+			//var test = new Command<RunInfo, bool>
+			//{
+			//	Key = "status",
+			//	Description = "Lists all new or modified files to be committed",
+			//	Mapping = //new PropertyMapping<RunInfo, bool>
+			//	{
+			//		Property = r => r.OverwriteExisting,
+			//		Value = true
+			//	},
+			//	SubCommands =
+			//	{
+			//		new Command<RunInfo>(),
+			//		new Command<RunInfo, bool>()
+			//	},
+			//	Arguments =
+			//	{
+			//		new ArgumentPropertyMapped<RunInfo, bool> { Property = r => r.RunAsRoot },
+			//		new ArgumentExclusiveSet<RunInfo>
+			//		{
+			//			new ArgumentPropertyMapped<RunInfo, bool> { Property = r => r.RunAsRoot },
+			//			new ArgumentSequence<RunInfo, string>{ List = r => r.RandomTokens }
+			//		}
+			//	},
+			//	Options =
+			//	{
+			//		new OptionWithArguments<RunInfo>
+			//		{
+			//			Key = "overwrite | o",
+			//			Description = "overwrite existing files. defaults to false if not specified."
+			//		}
+			//	}
+			//};
 
 
 

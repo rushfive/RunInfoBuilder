@@ -9,7 +9,7 @@ namespace R5.RunInfoBuilder.Commands
 	public class OptionWithArguments<TRunInfo> : OptionBase<TRunInfo>
 		where TRunInfo : class
 	{
-		public List<ArgumentBase<TRunInfo>> Arguments { get; } = new List<ArgumentBase<TRunInfo>>();
+		public List<ArgumentBase<TRunInfo>> Arguments { get; set; } = new List<ArgumentBase<TRunInfo>>();
 		// if only a single argument, will assume the NEXT token (if delimited by space) is its value
 		//    - even if the next value is technically a valid configuerd option
 		// will keep readinig next tokens as if they are part of "Arguments" until we reach another keyword,
@@ -19,7 +19,7 @@ namespace R5.RunInfoBuilder.Commands
 		{
 			var type = typeof(OptionWithArguments<TRunInfo>);
 
-			if (!Arguments.Any())
+			if (Arguments.NullOrEmpty())
 			{
 				throw new ConfigurationException("Arguments must contain at least one item.",
 					type, parentType, parentKey);

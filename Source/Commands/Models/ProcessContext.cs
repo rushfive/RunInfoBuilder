@@ -20,11 +20,9 @@ namespace R5.RunInfoBuilder.Commands
 	public enum ProgramArgumentType
 	{
 		ArgumentPropertyMapped,
-		ArgumentExclusiveSet,
 		ArgumentSequence,
 		ArgumentUnhandled,
 		Command,
-		CommandPropertyMapped,
 		OptionWithArguments,
 		OptionAsFlag
 	}
