@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace OLD
 {
@@ -41,4 +42,11 @@ namespace OLD
 			return false;
 		}
 	}
+
+	public static class ObjectExtensions
+	{
+
+	}
+
+	
 }

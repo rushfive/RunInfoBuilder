@@ -12,7 +12,7 @@ namespace R5.RunInfoBuilder.Commands
 		public string Key { get; set; }
 		public string Description { get; set; }
 		public string HelpText { get; set; }
-		public Func<CallbackContext<TRunInfo>, CallbackResult> Callback { get; set; }
+		public Func<ProcessContext<TRunInfo>, ProcessNodeResult> Callback { get; set; }
 
 		internal abstract void Validate(Type parentType, string parentKey);
 

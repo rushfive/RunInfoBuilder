@@ -1,29 +1,32 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Parser;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public class CallbackContext<TRunInfo> where TRunInfo : class
+	public class ProcessContext<TRunInfo> where TRunInfo : class
 	{
-		public TRunInfo RunInfo { get; }
-		public ProgramArgumentType ArgumentType { get; }
-		public int Position { get; }
+		//public ProgramArgumentType ArgumentType { get; }
 		public string Token { get; }
+		public int Position { get; }
+		public TRunInfo RunInfo { get; }
+		public string[] ProgramArguments { get; }
+		public IArgumentParser Parser { get; }
 
-		internal CallbackContext()
+		internal ProcessContext()
 		{
 			throw new NotImplementedException("todo");
 		}
 	}
 
-	public enum ProgramArgumentType
-	{
-		ArgumentPropertyMapped,
-		ArgumentSequence,
-		ArgumentUnhandled,
-		Command,
-		OptionWithArguments,
-		OptionAsFlag
-	}
+	//public enum ProgramArgumentType
+	//{
+	//	ArgumentPropertyMapped,
+	//	ArgumentSequence,
+	//	ArgumentUnhandled,
+	//	Command,
+	//	OptionWithArguments,
+	//	OptionAsFlag
+	//}
 }

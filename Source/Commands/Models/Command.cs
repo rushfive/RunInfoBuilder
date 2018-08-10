@@ -11,7 +11,7 @@ namespace R5.RunInfoBuilder.Commands
 		public string Key { get; set; }
 		public string Description { get; set; }
 		public string HelpText { get; set; }
-		public Func<CallbackContext<TRunInfo>, CallbackResult> Callback { get; set; }
+		public Func<ProcessContext<TRunInfo>, ProcessNodeResult> Callback { get; set; }
 
 		public List<Command<TRunInfo>> SubCommands { get; set; } = new List<Command<TRunInfo>>();
 		public List<ArgumentBase<TRunInfo>> Arguments { get; set; } = new List<ArgumentBase<TRunInfo>>();
