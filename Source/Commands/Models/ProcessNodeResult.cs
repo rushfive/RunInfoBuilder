@@ -7,7 +7,7 @@ namespace R5.RunInfoBuilder.Commands
 	public static class ProcessResult
 	{
 		public static readonly ProcessNodeResult Continue = new Continue();
-		public static readonly ProcessNodeResult KillProcess = new KillProcess();
+		public static readonly ProcessNodeResult End = new End();
 		public static ProcessNodeResult SkipNext(int count) => new SkipNext(count);
 		public static ProcessNodeResult SkipToPosition(int position) => new SkipToPosition(position);
 		public static ProcessNodeResult SkipToToken(string token) => new SkipToToken(token);
@@ -23,7 +23,7 @@ namespace R5.RunInfoBuilder.Commands
 
 	}
 
-	public class KillProcess : ProcessNodeResult
+	public class End : ProcessNodeResult
 	{
 
 	}

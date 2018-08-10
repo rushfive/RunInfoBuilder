@@ -21,6 +21,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Folder Include="Lexer\" />
+	  <Folder Include="Processor\TreeNodes\" />
 	</ItemGroup>
 </Project>
