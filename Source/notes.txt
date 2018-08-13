@@ -1,0 +1,6 @@
+consider callback timing
+
+CURRENTLY:
+  called in the beginning, and if a NON-continue result is returned, immediately returns from that node.
+  implications: other tasks related to that node will NOT take place, ie command mappings, processing of other args, options, etc.
+

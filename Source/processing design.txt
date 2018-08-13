@@ -1,0 +1,29 @@
+
+
+back to processing in stages using pipeline/chain of responsibility
+
+root/entry is always via a command (unless args DOESNT start with a configured top-level command)
+
+- this pipeline is built (use some sort of builder) as the commands are configured
+
+Command ->
+    1. Arguments Stage
+	All are required. If an argument is configured, it must be included in program args
+	[Types]
+	- Argument (Property Mapped) - 1 arg
+	- Argument (Sequence) - n args
+	
+	2. Options Stage
+	options are always identified by starting with "--" (full), or "-" (short or stacked short)
+	When reading/configuring a command's options, build a two maps:
+	- full key to process logic
+	- short key to process logic
+	For each option, check if it's valid by:
+	- starts with "--"? check if full map contains it
+	- starts with "-" and only a single proceeding char? check short map
+	- starts with "-" and > 1 proceeding chars? check short map keys to see if valid stacked
+	    - validtion: short option keys must also be unique (only within that command)
+	[Types]
+	- Option (flag)
+	- Option (w/ arguments)
+

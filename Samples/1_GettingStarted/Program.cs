@@ -114,7 +114,7 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 				.AddOption("root", ri => ri.RunAsRoot, 'r', "Program will run with elevated privileges.")
 				.AddOption("overwrite", ri => ri.OverwriteExisting, 'o', "Program will overwrite any existing data.")
 				.AddCommand("Range",
-					context =>
+					(OLD.Process.ProcessContext<RunInfo> 					context) =>
 					{
 						int length = context.ProgramArguments.Count;
 						if (length - context.Position + 1 < 2)
@@ -145,7 +145,7 @@ namespace R5.RunInfoBuilder.Samples.GettingStarted
 						context.RunInfo.BeginDate = beginRange;
 						context.RunInfo.EndDate = endRange;
 
-						return new ProcessStageResult().SkipNext(2);
+						return new OLD.ProcessStageResult().SkipNext(2);
 					},
 					"Specifies that the next two arguments will define a range.")
 					.AddArgument<OnFail>("onfail", ri => ri.OnFail, description: "Specify how to handle any program run failures");

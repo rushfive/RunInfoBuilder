@@ -6,7 +6,7 @@ namespace R5.RunInfoBuilder.Commands
 {
 	public abstract class ArgumentBase<TRunInfo> where TRunInfo : class
 	{
-		public Func<ProcessContext<TRunInfo>, ProcessNodeResult> Callback { get; set; }
+		public Func<ProcessContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
 		public string HelpText { get; set; }
 
 		internal abstract void Validate(Type parentType, string parentKey);
