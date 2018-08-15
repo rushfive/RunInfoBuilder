@@ -21,11 +21,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		protected abstract ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context);
 
-		protected bool HasNext => _queue.HasNext();
+		protected bool HasNext() => _queue.HasNext();
 
-		protected string Peek => _queue.Peek();
+		protected string PeekNext() => _queue.Peek();
 
-		protected string Next => _queue.Dequeue();
+		protected string DequeueNext() => _queue.Dequeue();
 		
 		protected ProcessStageResult InvokeCallback(ProcessContext<TRunInfo> context)
 		{

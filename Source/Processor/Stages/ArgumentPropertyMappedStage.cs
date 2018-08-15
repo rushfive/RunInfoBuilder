@@ -14,6 +14,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal ArgumentPropertyMappedStage(
 			Expression<Func<TRunInfo, TProperty>> property,
+			ArgumentsQueue argumentsQueue,
 			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
 			: base(argumentsQueue, callback)
 		{

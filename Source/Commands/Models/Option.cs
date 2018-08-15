@@ -6,7 +6,12 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public abstract class OptionBase<TRunInfo>
+	public interface IOption
+	{
+		string Key { get; }
+	}
+
+	public class Option<TRunInfo, TProperty> : IOption
 		where TRunInfo : class
 	{
 		public string Key { get; set; }
@@ -14,14 +19,22 @@ namespace R5.RunInfoBuilder.Commands
 		public string HelpText { get; set; }
 		public Func<ProcessContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
 
-		internal abstract void Validate(Type parentType, string parentKey);
+		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
 
-		protected void ValidateBase(Type derivedType, Type parentType, string parentKey)
+		internal void Validate(Type parentType, string parentKey)
 		{
+			var type = typeof(Option<TRunInfo, TProperty>);
+
 			if (string.IsNullOrWhiteSpace(Key))
 			{
 				throw new ConfigurationException("Key must be provided.",
-					derivedType, parentType, parentKey);
+					type, parentType, parentKey);
+			}
+
+			if (Property == null)
+			{
+				throw new ConfigurationException("Property must be provided.",
+					type, parentType, parentKey);
 			}
 		}
 	}

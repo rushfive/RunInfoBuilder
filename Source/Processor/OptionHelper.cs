@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
@@ -12,11 +13,18 @@ namespace R5.RunInfoBuilder.Processor
 			throw new NotImplementedException();
 		}
 
-		public static bool TryTokenize(string input, out (string fullKey, char? shortKey)? result)
+		public static (string FullKey, char? ShortKey) Tokenize(string input)
 		{
-			throw new NotImplementedException();
+			if (input.Contains("|"))
+			{
+				string[] split = input.Split('|');
+				return (split[0].Trim(), split[1].Trim().ToCharArray().Single());
+			}
+
+			return (input.Trim(), null);
 		}
 
+		// TODO: Argument Sequence processing needs to be refactored, diff way to handle options
 		public static bool IsValidOption(string argumentToken, (List<string>, List<char>) availableOptions)
 		{
 			// todo: implement

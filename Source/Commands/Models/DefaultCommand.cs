@@ -9,14 +9,14 @@ namespace R5.RunInfoBuilder.Commands
 		public string Description { get; set; }
 		public string HelpText { get; set; }
 		public Func<ProcessContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
-		public List<OptionBase<TRunInfo>> Options { get; set; } = new List<OptionBase<TRunInfo>>();
+		public List<IOption> Options { get; set; } = new List<IOption>();
 
 		internal void Validate(Type parentType, string parentKey)
 		{
-			if (!Options.NullOrEmpty())
-			{
-				Options.ForEach(o => o.Validate(parentType: null, parentKey: null));
-			}
+			//if (!Options.NullOrEmpty())
+			//{
+			//	Options.ForEach(o => o.Validate(parentType: null, parentKey: null));
+			//}
 		}
 	}
 }

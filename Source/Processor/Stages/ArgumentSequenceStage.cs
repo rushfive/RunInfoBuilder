@@ -1,5 +1,6 @@
 ﻿using R5.RunInfoBuilder.Commands;
 using R5.RunInfoBuilder.Parser;
+using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
 		private IArgumentParser _parser { get; }
-		private (List<string>, List<char>)? _availableOptions { get; }
+		private OptionsInfo<TRunInfo> _optionsInfo { get; }
 		private List<string> _availableSubCommands { get; }
 
 		internal ArgumentSequenceStage(
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
 			IArgumentParser parser,
-			List<string> availableOptions,
+			OptionsInfo<TRunInfo> optionsInfo,
 			List<string> availableSubCommands,
 			ArgumentsQueue argumentsQueue,
 			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
@@ -28,38 +29,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			_listProperty = listProperty;
 			_parser = parser;
-			_availableOptions = TokenizeAvailableOptions(availableOptions);
+			_optionsInfo = optionsInfo;
 			_availableSubCommands = availableSubCommands;
-		}
-
-		private (List<string>, List<char>)? TokenizeAvailableOptions(List<string> availableOptions)
-		{
-			if (!availableOptions.Any())
-			{
-				return null;
-			}
-
-			var fullKeys = new List<string>();
-			var shortKeys = new List<char>();
-
-			foreach (string option in availableOptions)
-			{
-				if (!OptionHelper.TryTokenize(option, out (string, char?)? result))
-				{
-					throw new ArgumentException($"Failed to tokenize option '{option}'.", nameof(availableOptions));
-				}
-
-				var (fullKey, shortKey) = result.Value;
-
-				fullKeys.Add(fullKey);
-
-				if (shortKey.HasValue)
-				{
-					shortKeys.Add(shortKey.Value);
-				}
-			}
-
-			return (fullKeys, shortKeys);
 		}
 
 		protected override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
@@ -82,11 +53,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			// Iterate over proceeding program args, adding parseable items to list.
 			// Ends when all program args are exhausted or when an option or subcommand 
 			// has been identified.
-			while (HasNext)
+			while (HasNext())
 			{
-				string nextProgramArgument = Peek;
+				string nextProgramArgument = PeekNext();
 
-				bool nextIsOption = _availableOptions.HasValue && OptionHelper.IsValidOption(nextProgramArgument, _availableOptions.Value);
+				bool nextIsOption = _optionsInfo.IsOption(nextProgramArgument);
 				if (nextIsOption)
 				{
 					return ProcessResult.Continue;
@@ -98,7 +69,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					return ProcessResult.Continue;
 				}
 
-				nextProgramArgument = Next;
+				nextProgramArgument = DequeueNext();
 
 				if (!_parser.TryParseAs(nextProgramArgument, out TListProperty parsed))
 				{
