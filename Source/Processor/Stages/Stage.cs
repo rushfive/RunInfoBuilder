@@ -17,7 +17,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_context = context;
 		}
 
-		protected abstract ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context);
+		internal abstract ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context);
 
 		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 

@@ -23,7 +23,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_context = context;
 		}
 		
-		protected override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
 		{
 			while (MoreProgramArgumentsExist())
 			{

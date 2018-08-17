@@ -26,7 +26,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_parser = parser;
 		}
 
-		protected override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
 		{
 			//ProcessStageResult result = InvokeCallback(context);
 			//if (result != ProcessResult.Continue)
