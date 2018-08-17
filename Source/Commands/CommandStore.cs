@@ -5,29 +5,29 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public interface ICommandStore
+	public interface ICommandStore<TRunInfo> where TRunInfo : class
 	{
-		ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
-			where TRunInfo : class;
+		ICommandStore<TRunInfo> Add(Command<TRunInfo> command);
 
-		ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
-			where TRunInfo : class;
+		ICommandStore<TRunInfo> AddDefault(DefaultCommand<TRunInfo> defaultCommand);
 	}
 
-	internal interface ICommandStoreInternal : ICommandStore
+	internal interface ICommandStoreInternal<TRunInfo> : ICommandStore<TRunInfo>
+		where TRunInfo : class
 	{
 		object Get(string key);
 
 		object GetDefault();
 	}
 
-	internal class CommandStore : ICommandStore, ICommandStoreInternal
+	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>, ICommandStoreInternal<TRunInfo>
+		where TRunInfo : class
 	{
 		private ICommandConfigurationValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 
 		// keep values as object because we dont know their generic types until runtime
-		private Dictionary<string, object> _commandMap { get; }
+		private Dictionary<string, Command<TRunInfo>> _commandMap { get; }
 		private object _defaultCommand { get; set; }
 
 		public CommandStore(
@@ -36,10 +36,10 @@ namespace R5.RunInfoBuilder.Commands
 		{
 			_validator = validator;
 			_keyValidator = keyValidator;
-			_commandMap = new Dictionary<string, object>();
+			_commandMap = new Dictionary<string, Command<TRunInfo>>();
 		}
 
-		public ICommandStore Add<TRunInfo>(Command<TRunInfo> command) where TRunInfo : class
+		public ICommandStore<TRunInfo> Add(Command<TRunInfo> command)
 		{
 			_validator.Validate(command);
 
@@ -55,7 +55,7 @@ namespace R5.RunInfoBuilder.Commands
 			return this;
 		}
 
-		public ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand) where TRunInfo : class
+		public ICommandStore<TRunInfo> AddDefault(DefaultCommand<TRunInfo> defaultCommand)
 		{
 			_validator.Validate(defaultCommand);
 

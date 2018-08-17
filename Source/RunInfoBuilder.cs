@@ -4,7 +4,7 @@ namespace R5.RunInfoBuilder
 {
 	public class RunInfoBuilder
 	{
-		public ICommandStore Commands { get; }
+		//public ICommandStore Commands { get; }
 	}
 	
 	

@@ -17,7 +17,6 @@ namespace R5.RunInfoBuilder.Commands
 		public string Key { get; set; }
 		public string Description { get; set; }
 		public string HelpText { get; set; }
-		public Func<CallbackContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
 
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
 
