@@ -15,13 +15,13 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
 		private IArgumentParser _parser { get; }
-		private OptionsInfo<TRunInfo> _optionsInfo { get; }
+		private OptionsProcessInfo<TRunInfo> _optionsInfo { get; }
 		private List<string> _availableSubCommands { get; }
 
 		internal ArgumentSequenceStage(
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
 			IArgumentParser parser,
-			OptionsInfo<TRunInfo> optionsInfo,
+			OptionsProcessInfo<TRunInfo> optionsInfo,
 			List<string> availableSubCommands,
 			ArgumentsQueue argumentsQueue,
 			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
@@ -53,9 +53,9 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			// Iterate over proceeding program args, adding parseable items to list.
 			// Ends when all program args are exhausted or when an option or subcommand 
 			// has been identified.
-			while (HasNext())
+			while (MoreProgramArgumentsExist())
 			{
-				string nextProgramArgument = PeekNext();
+				string nextProgramArgument = Peek();
 
 				bool nextIsOption = _optionsInfo.IsOption(nextProgramArgument);
 				if (nextIsOption)
@@ -69,7 +69,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					return ProcessResult.Continue;
 				}
 
-				nextProgramArgument = DequeueNext();
+				nextProgramArgument = Dequeue();
 
 				if (!_parser.TryParseAs(nextProgramArgument, out TListProperty parsed))
 				{

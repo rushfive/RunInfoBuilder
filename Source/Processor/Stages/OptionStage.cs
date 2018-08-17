@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 
 namespace R5.RunInfoBuilder.Processor.Stages
@@ -9,34 +11,56 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class OptionStage<TRunInfo> : Stage<TRunInfo>
 			where TRunInfo : class
 	{
-		private OptionsInfo<TRunInfo> _optionsInfo { get; }
+		private OptionsProcessInfo<TRunInfo> _optionsInfo { get; }
 		private List<string> _availableSubCommands { get; }
+		private IArgumentParser _parser { get; }
 
 		internal OptionStage(
-			OptionsInfo<TRunInfo> optionsInfo,
-			ArgumentsQueue argumentsQueue,
+			OptionsProcessInfo<TRunInfo> optionsInfo,
 			List<string> availableSubCommands,
+			IArgumentParser parser,
+			ArgumentsQueue argumentsQueue,
 			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
 			: base(argumentsQueue, callback)
 		{
 			_optionsInfo = optionsInfo;
 			_availableSubCommands = availableSubCommands;
+			_parser = parser;
 		}
 		
 		protected override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
-			while (HasNext())
+			while (MoreProgramArgumentsExist())
 			{
-				string nextProgramArgument = PeekNext();
-
-				if (NextIsSubCommand(nextProgramArgument))
+				if (NextIsSubCommand())
 				{
 					return ProcessResult.Continue;
 				}
 
-				nextProgramArgument = DequeueNext();
+				string next = Dequeue();
 
-				List<(Action<TRunInfo, object> setter, Type valueType)> setters = _optionsInfo.GetSetters(nextProgramArgument);
+				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(next);
+
+				string value = ResolveValue(valueFromToken, next);
+
+				switch (type)
+				{
+					case OptionType.Full:
+						ProcessFull(fullKey, value);
+						break;
+					case OptionType.Short:
+						ProcessShort(shortKeys.Single(), value);
+						break;
+					case OptionType.Stacked:
+						ProcessStacked(shortKeys, value);
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(type), $"'{type}' is not a valid option type.");
+				}
+
+				//List<(Action<TRunInfo, object> setter, Type valueType)> setters = _optionsInfo.GetSetters(nextProgramArgument);
+
+				//bool isStackedOption = setters.Count > 1;
 
 				// if single, check if next is argument. if type != bool, MUST have a next argumment value so we can set.
 				//                 if bool, no argument means set to true.
@@ -47,41 +71,102 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 
 
-				bool nextIsArgument = NextIsArgument();
+				bool nextIsArgument = NextProgramArgumentIsOption();
 
-				//OptionType? type = _optionsInfo.GetType(nextProgramArgument);
-
-				//if (!type.HasValue)
-				//{
-				//	throw new InvalidOperationException($"'{nextProgramArgument}' is not a valid option.");
-				//}
-
-				//switch (type.Value)
-				//{
-				//	case OptionType.Full:
-				//		break;
-				//	case OptionType.Short:
-				//		break;
-				//	case OptionType.Stacked: // can only flag mapped options!
-				//		break;
-				//	default:
-				//		throw new ArgumentOutOfRangeException($"'{type.Value}' is not a valid option type.");
-				//}
 			}
 
 			return ProcessResult.End;
 		}
 
-		private bool NextIsSubCommand(string nextProgramArgument) => _availableSubCommands.Contains(nextProgramArgument);
-
-		private bool NextIsArgument()
+		private string ResolveValue(string valueFromToken, string optionToken)
 		{
-			if (!HasNext())
+			if (NextProgramArgumentIsOption())
+			{
+				return valueFromToken;
+			}
+
+			if (valueFromToken != null)
+			{
+				throw new InvalidOperationException($"Ambiguous option value: Contains a value in '{optionToken}' "
+					+ $"but also in the next program argument '{Peek()}'");
+			}
+
+			return Dequeue();
+		}
+
+		private void ProcessFull(string key, string valueString)
+		{
+			var (setter, valueType) = _optionsInfo.GetSetter(key);
+
+			object value = GetParsedValue(valueType, valueString);
+			
+		}
+
+		private void ProcessShort(char key, string valueString)
+		{
+
+		}
+
+		private void ProcessStacked(List<char> keys, string valueString)
+		{
+
+		}
+
+		private object GetParsedValue(Type valueType, string valueString)
+		{
+			if (valueType == typeof(string))
+			{
+				return valueString;
+			}
+
+			if (valueType == typeof(bool))
+			{
+				return getForBoolType();
+			}
+
+			return getByParsing();
+
+			// local functions
+			bool getForBoolType()
+			{
+				if (valueString == null)
+				{
+					return true;
+				}
+
+				if (!_parser.TryParseAs(valueString, out bool parsed))
+				{
+					throw new ArgumentException($"'{valueString}' could not be parsed as a 'bool' type.", nameof(valueString));
+				}
+				return parsed;
+			}
+
+			object getByParsing()
+			{
+				if (valueString == null)
+				{
+					throw new ArgumentException("Options mapped to a non-boolean property must have a value.", nameof(valueString));
+				}
+
+				if (!_parser.TryParseAs(valueType, valueString, out object parsed))
+				{
+					throw new ArgumentException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.", nameof(valueString));
+				}
+
+				return parsed;
+			}
+		}
+
+		private bool NextIsSubCommand() => _availableSubCommands.Contains(Peek());
+
+		private bool NextProgramArgumentIsOption()
+		{
+			if (!MoreProgramArgumentsExist())
 			{
 				return false;
 			}
 
-			return _optionsInfo.IsOption(PeekNext());
+			return _optionsInfo.IsOption(Peek());
 		}
 	}
 }
