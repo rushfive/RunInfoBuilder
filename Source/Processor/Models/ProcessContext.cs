@@ -16,16 +16,19 @@ namespace R5.RunInfoBuilder.Processor.Models
 
     internal class ProcessContext<TRunInfo> where TRunInfo : class
     {
+		private TRunInfo _runInfo { get; }
 		private ArgumentsQueue _programArguments { get; }
 		private HashSet<string> _subCommands { get; }
 		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; }
 		private Dictionary<char, (Action<TRunInfo, object> setter, Type valueType)> _shortOptionSetters { get; }
 
 		internal ProcessContext(
+			TRunInfo runInfo,
 			string[] args,
 			List<Command<TRunInfo>> subCommands,
 			List<IOption> options)
 		{
+			_runInfo = runInfo;
 			_programArguments = new ArgumentsQueue(args);
 			_subCommands = new HashSet<string>(subCommands.Select(c => c.Key));
 			_fullOptionSetters = new Dictionary<string, (Action<TRunInfo, object>, Type)>();
@@ -33,6 +36,8 @@ namespace R5.RunInfoBuilder.Processor.Models
 
 			InitializeSetterMaps(options);
 		}
+
+		internal TRunInfo RunInfo => _runInfo;
 
 		internal bool HasNext() => _programArguments.HasNext();
 

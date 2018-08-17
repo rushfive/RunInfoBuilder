@@ -32,8 +32,4 @@
 	  <Folder Include="Models\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\Source\OLD.csproj" />
-	</ItemGroup>
-
 </Project>

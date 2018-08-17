@@ -21,7 +21,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_property = property;
 		}
 
-		internal override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
+		internal ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
 		{
 			//ProcessStageResult result = InvokeCallback(context);
 			//if (result != ProcessResult.Continue)

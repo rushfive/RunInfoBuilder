@@ -9,7 +9,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
     internal abstract class Stage<TRunInfo>
 		where TRunInfo : class
     {
-		private ProcessContext<TRunInfo> _context { get; }
+		protected ProcessContext<TRunInfo> _context { get; }
 
 		protected Stage(
 			ProcessContext<TRunInfo> context)
@@ -17,7 +17,9 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_context = context;
 		}
 
-		internal abstract ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context);
+		// making NOT abstract because options dont require a callback context, but commands
+		// and arguments do
+		//internal abstract ProcessStageResult ProcessStage();
 
 		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 
@@ -28,5 +30,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		protected bool NextIsSubCommand() => _context.NextIsSubCommand();
 
 		protected bool NextIsOption() => _context.NextIsOption();
+
+		protected TRunInfo RunInfo => _context.RunInfo;
 	}
 }
