@@ -15,31 +15,24 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
 		private IArgumentParser _parser { get; }
-		private OptionsProcessInfo<TRunInfo> _optionsInfo { get; }
-		private List<string> _availableSubCommands { get; }
 
 		internal ArgumentSequenceStage(
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
 			IArgumentParser parser,
-			OptionsProcessInfo<TRunInfo> optionsInfo,
-			List<string> availableSubCommands,
-			ArgumentsQueue argumentsQueue,
-			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
-			: base(argumentsQueue, callback)
+			ProcessContext<TRunInfo> context)
+			: base(context)
 		{
 			_listProperty = listProperty;
 			_parser = parser;
-			_optionsInfo = optionsInfo;
-			_availableSubCommands = availableSubCommands;
 		}
 
-		protected override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		protected override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
 		{
-			ProcessStageResult result = InvokeCallback(context);
-			if (result != ProcessResult.Continue)
-			{
-				return result;
-			}
+			//ProcessStageResult result = InvokeCallback(context);
+			//if (result != ProcessResult.Continue)
+			//{
+			//	return result;
+			//}
 
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
 
@@ -55,25 +48,21 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			// has been identified.
 			while (MoreProgramArgumentsExist())
 			{
-				string nextProgramArgument = Peek();
-
-				bool nextIsOption = _optionsInfo.IsOption(nextProgramArgument);
-				if (nextIsOption)
+				if (NextIsOption())
 				{
 					return ProcessResult.Continue;
 				}
 
-				bool nextIsSubCommand = _availableSubCommands.Contains(nextProgramArgument);
-				if (nextIsSubCommand)
+				if (NextIsSubCommand())
 				{
 					return ProcessResult.Continue;
 				}
 
-				nextProgramArgument = Dequeue();
+				string next = Dequeue();
 
-				if (!_parser.TryParseAs(nextProgramArgument, out TListProperty parsed))
+				if (!_parser.TryParseAs(next, out TListProperty parsed))
 				{
-					throw new ArgumentException($"Failed to parse '{nextProgramArgument}' as type '{typeof(TListProperty).Name}'.");
+					throw new ArgumentException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.");
 				}
 
 				list.Add(parsed);
@@ -81,5 +70,15 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			return ProcessResult.End;
 		}
+
+		//private ProcessStageResult InvokeCallback(CallbackContext<TRunInfo> context)
+		//{
+		//	if (_callback == null)
+		//	{
+		//		return ProcessResult.Continue;
+		//	}
+
+		//	return _callback(context);
+		//}
 	}
 }

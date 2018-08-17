@@ -11,24 +11,19 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class OptionStage<TRunInfo> : Stage<TRunInfo>
 			where TRunInfo : class
 	{
-		private OptionsProcessInfo<TRunInfo> _optionsInfo { get; }
-		private List<string> _availableSubCommands { get; }
 		private IArgumentParser _parser { get; }
+		private ProcessContext<TRunInfo> _context { get; }
 
 		internal OptionStage(
-			OptionsProcessInfo<TRunInfo> optionsInfo,
-			List<string> availableSubCommands,
 			IArgumentParser parser,
-			ArgumentsQueue argumentsQueue,
-			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
-			: base(argumentsQueue, callback)
+			ProcessContext<TRunInfo> context)
+			: base(context)
 		{
-			_optionsInfo = optionsInfo;
-			_availableSubCommands = availableSubCommands;
 			_parser = parser;
+			_context = context;
 		}
 		
-		protected override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		protected override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
 		{
 			while (MoreProgramArgumentsExist())
 			{
@@ -46,33 +41,17 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				switch (type)
 				{
 					case OptionType.Full:
-						ProcessFull(fullKey, value);
+						ProcessFull(fullKey, value, context.RunInfo);
 						break;
 					case OptionType.Short:
-						ProcessShort(shortKeys.Single(), value);
+						ProcessShort(shortKeys.Single(), value, context.RunInfo);
 						break;
 					case OptionType.Stacked:
-						ProcessStacked(shortKeys, value);
+						ProcessStacked(shortKeys, value, context.RunInfo);
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(type), $"'{type}' is not a valid option type.");
 				}
-
-				//List<(Action<TRunInfo, object> setter, Type valueType)> setters = _optionsInfo.GetSetters(nextProgramArgument);
-
-				//bool isStackedOption = setters.Count > 1;
-
-				// if single, check if next is argument. if type != bool, MUST have a next argumment value so we can set.
-				//                 if bool, no argument means set to true.
-
-				// if < 1, means its stacked short keys and they must ALL be bool types
-				// if next is argument, set it to that (ensuring it can be parsed into a bool)
-				// if next is NOT argument, set all to true
-
-
-
-				bool nextIsArgument = NextProgramArgumentIsOption();
-
 			}
 
 			return ProcessResult.End;
@@ -80,7 +59,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		private string ResolveValue(string valueFromToken, string optionToken)
 		{
-			if (NextProgramArgumentIsOption())
+			if (NextIsOption())
 			{
 				return valueFromToken;
 			}
@@ -94,22 +73,34 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			return Dequeue();
 		}
 
-		private void ProcessFull(string key, string valueString)
+		private void ProcessFull(string key, string valueString, TRunInfo runInfo)
 		{
-			var (setter, valueType) = _optionsInfo.GetSetter(key);
+			var (setter, valueType) = _context.GetOptionValueSetter(key);
 
 			object value = GetParsedValue(valueType, valueString);
-			
+
+			setter(runInfo, value);
 		}
 
-		private void ProcessShort(char key, string valueString)
+		private void ProcessShort(char key, string valueString, TRunInfo runInfo)
 		{
+			var (setter, valueType) = _context.GetOptionValueSetter(key);
 
+			object value = GetParsedValue(valueType, valueString);
+
+			setter(runInfo, value);
 		}
 
-		private void ProcessStacked(List<char> keys, string valueString)
+		private void ProcessStacked(List<char> keys, string valueString, TRunInfo runInfo)
 		{
+			List<(Action<TRunInfo, object> setter, Type valueType)> setters = _context.GetOptionValueSetters(keys);
 
+			object value = GetParsedValue(setters.First().valueType, valueString);
+
+			foreach((Action<TRunInfo, object> setter, _) in setters)
+			{
+				setter(runInfo, value);
+			}
 		}
 
 		private object GetParsedValue(Type valueType, string valueString)
@@ -155,18 +146,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				return parsed;
 			}
-		}
-
-		private bool NextIsSubCommand() => _availableSubCommands.Contains(Peek());
-
-		private bool NextProgramArgumentIsOption()
-		{
-			if (!MoreProgramArgumentsExist())
-			{
-				return false;
-			}
-
-			return _optionsInfo.IsOption(Peek());
 		}
 	}
 }

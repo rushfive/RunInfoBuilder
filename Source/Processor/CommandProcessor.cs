@@ -77,11 +77,11 @@ namespace R5.RunInfoBuilder.Processor
 		where TRunInfo : class
 	{
 		private Queue<string> _programArguments { get; }
-		private Func<ProcessContext<TRunInfo>, ProcessStageResult> _callback { get; }
+		private Func<CallbackContext<TRunInfo>, ProcessStageResult> _callback { get; }
 
 		protected ProcessTreeNode(
 			Queue<string> programArguments,
-			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
+			Func<CallbackContext<TRunInfo>, ProcessStageResult> callback)
 		{
 			_programArguments = programArguments;
 			_callback = callback;
@@ -93,7 +93,7 @@ namespace R5.RunInfoBuilder.Processor
 
 		protected string GetNext() => _programArguments.Dequeue();
 
-		protected ProcessStageResult InvokeCallback(ProcessContext<TRunInfo> context)
+		protected ProcessStageResult InvokeCallback(CallbackContext<TRunInfo> context)
 		{
 			if (_callback == null)
 			{
@@ -103,7 +103,7 @@ namespace R5.RunInfoBuilder.Processor
 			return _callback(context);
 		}
 
-		protected abstract ProcessStageResult ProcessNode(ProcessContext<TRunInfo> context); // todo: return type of some result?
+		protected abstract ProcessStageResult ProcessNode(CallbackContext<TRunInfo> context); // todo: return type of some result?
 	}
 
 	//internal class CallbackNode<TRunInfo> : ProcessTreeNode<TRunInfo>
@@ -288,13 +288,13 @@ namespace R5.RunInfoBuilder.Processor
 		internal OptionAsFlagNode(
 			Expression<Func<TRunInfo, bool>> property,
 			Queue<string> programArguments,
-			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
+			Func<CallbackContext<TRunInfo>, ProcessStageResult> callback)
 			: base(programArguments, callback)
 		{
 			_property = property;
 		}
 
-		protected override ProcessStageResult ProcessNode(ProcessContext<TRunInfo> context)
+		protected override ProcessStageResult ProcessNode(CallbackContext<TRunInfo> context)
 		{
 			ProcessStageResult result = InvokeCallback(context);
 			if (result != ProcessResult.Continue)

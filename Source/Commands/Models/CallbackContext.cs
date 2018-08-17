@@ -5,7 +5,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public class ProcessContext<TRunInfo> where TRunInfo : class
+	public class CallbackContext<TRunInfo> where TRunInfo : class
 	{
 		//public ProgramArgumentType ArgumentType { get; }
 		public string Token { get; }
@@ -14,7 +14,7 @@ namespace R5.RunInfoBuilder.Commands
 		public string[] ProgramArguments { get; }
 		public IArgumentParser Parser { get; }
 
-		internal ProcessContext()
+		internal CallbackContext()
 		{
 			throw new NotImplementedException("todo");
 		}

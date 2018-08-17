@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,33 +9,24 @@ namespace R5.RunInfoBuilder.Processor.Stages
     internal abstract class Stage<TRunInfo>
 		where TRunInfo : class
     {
-		private ArgumentsQueue _queue { get; }
-		private Func<ProcessContext<TRunInfo>, ProcessStageResult> _callback { get; }
+		private ProcessContext<TRunInfo> _context { get; }
 
 		protected Stage(
-			ArgumentsQueue queue,
-			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
+			ProcessContext<TRunInfo> context)
 		{
-			_queue = queue;
-			_callback = callback;
+			_context = context;
 		}
 
-		protected abstract ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context);
+		protected abstract ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context);
 
-		protected bool MoreProgramArgumentsExist() => _queue.HasNext();
+		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 
-		protected string Peek() => _queue.Peek();
+		protected string Peek() => _context.Peek();
 
-		protected string Dequeue() => _queue.Dequeue();
-		
-		protected ProcessStageResult InvokeCallback(ProcessContext<TRunInfo> context)
-		{
-			if (_callback == null)
-			{
-				return ProcessResult.Continue;
-			}
+		protected string Dequeue() => _context.Dequeue();
 
-			return _callback(context);
-		}
+		protected bool NextIsSubCommand() => _context.NextIsSubCommand();
+
+		protected bool NextIsOption() => _context.NextIsOption();
 	}
 }

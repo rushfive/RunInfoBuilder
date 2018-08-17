@@ -8,7 +8,7 @@ namespace R5.RunInfoBuilder.Commands
     {
 		public string Description { get; set; }
 		public string HelpText { get; set; }
-		public Func<ProcessContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
+		public Func<CallbackContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
 		public List<IOption> Options { get; set; } = new List<IOption>();
 
 		internal void Validate(Type parentType, string parentKey)

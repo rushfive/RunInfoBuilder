@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -14,20 +15,19 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal ArgumentPropertyMappedStage(
 			Expression<Func<TRunInfo, TProperty>> property,
-			ArgumentsQueue argumentsQueue,
-			Func<ProcessContext<TRunInfo>, ProcessStageResult> callback)
-			: base(argumentsQueue, callback)
+			ProcessContext<TRunInfo> context)
+			: base(context)
 		{
 			_property = property;
 		}
 
-		protected override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		protected override ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
 		{
-			ProcessStageResult result = InvokeCallback(context);
-			if (result != ProcessResult.Continue)
-			{
-				return result;
-			}
+			//ProcessStageResult result = InvokeCallback(context);
+			//if (result != ProcessResult.Continue)
+			//{
+			//	return result;
+			//}
 
 			if (!context.Parser.HandlesType<TProperty>())
 			{
