@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Processor
+namespace R5.RunInfoBuilder.Processor.Models
 {
     internal class ArgumentsQueue
     {

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Validators
 {
-	internal interface ICommandConfigurationValidator
+	internal interface ICommandValidator
 	{
 		void Validate<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class;
@@ -14,11 +14,11 @@ namespace R5.RunInfoBuilder.Validators
 			where TRunInfo : class;
 	}
 
-	internal class CommandConfigurationValidator : ICommandConfigurationValidator
+	internal class CommandValidator : ICommandValidator
 	{
 		private IRestrictedKeyValidator _keyValidator { get; }
 
-		public CommandConfigurationValidator(IRestrictedKeyValidator keyValidator)
+		public CommandValidator(IRestrictedKeyValidator keyValidator)
 		{
 			_keyValidator = keyValidator;
 		}

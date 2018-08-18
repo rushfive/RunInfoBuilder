@@ -1,4 +1,6 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Processor.Models;
+using R5.RunInfoBuilder.Processor.Stages;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
@@ -17,6 +19,11 @@ namespace R5.RunInfoBuilder.Commands
 				throw new ConfigurationException("Property mapping expression must be provided.",
 					typeof(ArgumentPropertyMapped<TRunInfo, TProperty>), parentType, parentKey);
 			}
+		}
+
+		internal override Stage<TRunInfo> ToStage(ProcessContext<TRunInfo> context)
+		{
+			return new ArgumentPropertyMappedStage<TRunInfo, TProperty>(Property, context);
 		}
 	}
 }

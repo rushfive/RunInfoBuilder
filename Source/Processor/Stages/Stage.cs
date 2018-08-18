@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,9 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		// making NOT abstract because options dont require a callback context, but commands
 		// and arguments do
-		//internal abstract ProcessStageResult ProcessStage();
+		internal abstract ProcessStageResult ProcessStage();
+
+		protected IArgumentParser Parser => _context.Parser;
 
 		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 

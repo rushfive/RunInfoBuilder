@@ -23,7 +23,7 @@ namespace R5.RunInfoBuilder.Commands
 	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>, ICommandStoreInternal<TRunInfo>
 		where TRunInfo : class
 	{
-		private ICommandConfigurationValidator _validator { get; }
+		private ICommandValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 
 		// keep values as object because we dont know their generic types until runtime
@@ -31,7 +31,7 @@ namespace R5.RunInfoBuilder.Commands
 		private object _defaultCommand { get; set; }
 
 		public CommandStore(
-			ICommandConfigurationValidator validator,
+			ICommandValidator validator,
 			IRestrictedKeyValidator keyValidator)
 		{
 			_validator = validator;

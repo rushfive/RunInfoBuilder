@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Commands
+namespace R5.RunInfoBuilder
 {
-	public class Command<TRunInfo>
+	public class Command<TRunInfo> : ICallbackElement<TRunInfo>
 		where TRunInfo : class
 	{
 		public string Key { get; set; }

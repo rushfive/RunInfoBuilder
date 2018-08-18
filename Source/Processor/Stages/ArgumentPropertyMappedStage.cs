@@ -21,7 +21,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_property = property;
 		}
 
-		internal ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage()
 		{
 			//ProcessStageResult result = InvokeCallback(context);
 			//if (result != ProcessResult.Continue)
@@ -29,26 +29,28 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			//	return result;
 			//}
 
-			if (!context.Parser.HandlesType<TProperty>())
+			string valueToken = Dequeue();
+
+			if (!Parser.HandlesType<TProperty>())
 			{
-				throw new InvalidOperationException($"Failed to process program argument '{context.Token}' because the "
+				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
 					+ $"parser cannot handle the property type of '{typeof(TProperty).Name}'.");
 			}
 
 			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(_property, out string propertyName))
 			{
-				throw new InvalidOperationException($"Failed to process program argument '{context.Token}' because the "
+				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
 					+ $"property '{propertyName}' is not writable.");
 			}
 
-			if (!context.Parser.TryParseAs<TProperty>(context.Token, out TProperty parsed))
+			if (!Parser.TryParseAs<TProperty>(valueToken, out TProperty parsed))
 			{
-				throw new InvalidOperationException($"Failed to process program argument '{context.Token}' because it "
+				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because it "
 					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.");
 			}
 
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_property);
-			propertyInfo.SetValue(context.RunInfo, parsed);
+			propertyInfo.SetValue(RunInfo, parsed);
 
 			return ProcessResult.Continue;
 		}

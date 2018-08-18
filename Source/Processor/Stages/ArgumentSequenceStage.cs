@@ -14,33 +14,24 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		where TRunInfo : class
 	{
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
-		private IArgumentParser _parser { get; }
-
+		
 		internal ArgumentSequenceStage(
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
-			IArgumentParser parser,
 			ProcessContext<TRunInfo> context)
 			: base(context)
 		{
 			_listProperty = listProperty;
-			_parser = parser;
 		}
 
-		internal ProcessStageResult ProcessStage(CallbackContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage()
 		{
-			//ProcessStageResult result = InvokeCallback(context);
-			//if (result != ProcessResult.Continue)
-			//{
-			//	return result;
-			//}
-
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
 
 			// initialize list if null
-			var list = (IList<TListProperty>)propertyInfo.GetValue(context.RunInfo, null);
+			var list = (IList<TListProperty>)propertyInfo.GetValue(_context.RunInfo, null);
 			if (list == null)
 			{
-				propertyInfo.SetValue(context.RunInfo, Activator.CreateInstance(propertyInfo.PropertyType));
+				propertyInfo.SetValue(_context.RunInfo, Activator.CreateInstance(propertyInfo.PropertyType));
 			}
 
 			// Iterate over proceeding program args, adding parseable items to list.
@@ -60,7 +51,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				string next = Dequeue();
 
-				if (!_parser.TryParseAs(next, out TListProperty parsed))
+				if (!Parser.TryParseAs(next, out TListProperty parsed))
 				{
 					throw new ArgumentException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.");
 				}

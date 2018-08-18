@@ -16,7 +16,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor.Stages
 			TestRunInfo runInfo = null,
 			string[] args = null,
 			List<Command<TestRunInfo>> subCommands = null,
-			List<IOption> options = null)
+			List<IOption> options = null,
+			Func<CallbackContext<TestRunInfo>> callbackContextFactory = null)
 		{
 			if (runInfo == null)
 			{
@@ -35,10 +36,15 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor.Stages
 			{
 				options = new List<IOption>();
 			}
+			if (callbackContextFactory == null)
+			{
+				callbackContextFactory = () => throw new NotImplementedException("TODO");
+			}
 			
-			var context = new ProcessContext<TestRunInfo>(runInfo, args, subCommands, options);
+			var context = new ProcessContext<TestRunInfo>(new ArgumentParser(), 
+				runInfo, callbackContextFactory, args, subCommands, options);
 
-			return new OptionStage<TestRunInfo>(new ArgumentParser(), context);
+			return new OptionStage<TestRunInfo>(context);
 		}
 
 		[Fact]

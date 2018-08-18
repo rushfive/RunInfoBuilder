@@ -24,8 +24,4 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Folder Include="Processor\TreeNodes\" />
-	</ItemGroup>
 </Project>
