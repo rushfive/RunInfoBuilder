@@ -60,6 +60,17 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor
 			}
 
 			[Theory]
+			[InlineData("-aa")]
+			[InlineData("-aba")]
+			[InlineData("-aab")]
+			[InlineData("-baa")]
+			public void Stacked_ContainsDuplicates_Throws(string input)
+			{
+				Assert.Throws<ArgumentException>(
+					() => OptionTokenizer.TokenizeProgramArgument(input));
+			}
+
+			[Theory]
 			[InlineData("--full", OptionType.Full, "full", null)]
 			[InlineData("--full=value", OptionType.Full, "full", "value")]
 			[InlineData("-f", OptionType.Short, null, null, 'f')]
