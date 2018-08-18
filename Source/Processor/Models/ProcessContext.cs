@@ -130,7 +130,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 			{
 				(Action<TRunInfo, object>, Type) setter = createSetter(option);
 
-				var (fullKey, shortKey) = OptionTokenizer.TokenizeKey(option.Key);
+				var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(option.Key);
 
 				_fullOptionSetters.Add(fullKey, setter);
 

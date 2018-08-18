@@ -8,7 +8,8 @@ namespace R5.RunInfoBuilder.Processor
 {
 	internal static class OptionTokenizer
 	{
-		internal static (string FullKey, char? ShortKey) TokenizeKey(string input)
+		// assumes input is valid, shoudl be validated before here!
+		internal static (string FullKey, char? ShortKey) TokenizeKeyConfiguration(string input)
 		{
 			if (input.Contains("|"))
 			{
@@ -30,6 +31,12 @@ namespace R5.RunInfoBuilder.Processor
 			if (chars.Count(c => c == '=') > 1 || chars.Last() == '=')
 			{
 				throw new ArgumentException("Options can only contain a single '=' and must not be the last character.", nameof(argument));
+			}
+
+			int invalidEqualsIndex = argument.StartsWith("--") ? 2 : 1;
+			if (argument[invalidEqualsIndex] == '=')
+			{
+				throw new ArgumentException("Option keys cannot begin with '='.");
 			}
 
 			string value = null;

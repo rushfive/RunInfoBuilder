@@ -44,9 +44,32 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor.Stages
 		[Fact]
 		public void NoMore_ProgramArguments_ReturnsEndResult()
 		{
-			var stage = GetBaseStage();
+			OptionStage<TestRunInfo> stage = GetBaseStage();
 
-			var result = stage.ProcessStage();
+			ProcessStageResult result = stage.ProcessStage();
+
+			Assert.Equal(ProcessResult.End, result);
 		}
+
+		[Fact]
+		public void NextIsSubCommand_Returns_ContinueResult()
+		{
+			var args = new string[] { "subcommand" };
+			var subCommands = new List<Command<TestRunInfo>>
+			{
+				new Command<TestRunInfo>
+				{
+					Key = "subcommand"
+				}
+			};
+
+			OptionStage<TestRunInfo> stage = GetBaseStage(args: args, subCommands: subCommands);
+
+			ProcessStageResult result = stage.ProcessStage();
+
+			Assert.Equal(ProcessResult.Continue, result);
+		}
+
+		// TODO: further processing tests
 	}
 }
