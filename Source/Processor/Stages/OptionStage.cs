@@ -25,11 +25,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					return ProcessResult.Continue;
 				}
 
-				string next = Dequeue();
+				if (!NextIsOption())
+				{
+					throw new InvalidOperationException($"Processing failed because '{Peek()}' is not a valid option.");
+				}
 
-				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(next);
+				string option = Dequeue();
+				
+				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(option);
 
-				string value = ResolveValue(valueFromToken, next);
+				string value = ResolveValue(valueFromToken, option);
 
 				switch (type)
 				{

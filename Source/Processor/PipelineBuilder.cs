@@ -8,18 +8,55 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal class PipelineBuilder<TRunInfo> where TRunInfo : class
+	internal interface IPipelineBuilder<TRunInfo> where TRunInfo : class
 	{
+		Queue<Stage<TRunInfo>> Build(Command<TRunInfo> command);
+
+		Queue<Stage<TRunInfo>> Build(DefaultCommand<TRunInfo> defaultCommand);
+	}
+
+	internal class PipelineBuilder<TRunInfo> : IPipelineBuilder<TRunInfo>
+		where TRunInfo : class
+	{
+		public PipelineBuilder() { }
+		
 		private ProcessContext<TRunInfo> GetProcessContext()
 			=> throw new NotImplementedException("TODO!");
 
+		public Queue<Stage<TRunInfo>> Build(Command<TRunInfo> command)
+		{
+			ProcessContext<TRunInfo> processContext = GetProcessContext();
 
+			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command, processContext);
 
-		internal Queue<Stage<TRunInfo>> Build(Command<TRunInfo> command)
+			// recursively add subcommand pipelines
+			if (command.SubCommands.Any())
+			{
+				var subCommandPipelineMap = new Dictionary<string, Queue<Stage<TRunInfo>>>();
+
+				foreach (Command<TRunInfo> subCommand in command.SubCommands)
+				{
+					Queue<Stage<TRunInfo>> subCommandPipeline = Build(subCommand);
+					subCommandPipelineMap.Add(subCommand.Key, subCommandPipeline);
+				}
+
+				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandPipelineMap, processContext));
+			}
+
+			return pipeline;
+		}
+
+		public Queue<Stage<TRunInfo>> Build(DefaultCommand<TRunInfo> defaultCommand)
+		{
+			ProcessContext<TRunInfo> processContext = GetProcessContext();
+
+			return BuildCommonPipelineStages(defaultCommand, processContext);
+		}
+
+		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages(CommandBase<TRunInfo> command,
+			ProcessContext<TRunInfo> processContext)
 		{
 			var pipeline = new Queue<Stage<TRunInfo>>();
-
-			ProcessContext<TRunInfo> processContext = GetProcessContext();
 			
 			AddCallbackStageIfExistsFor(command);
 
@@ -33,21 +70,7 @@ namespace R5.RunInfoBuilder.Processor
 			{
 				pipeline.Enqueue(new OptionStage<TRunInfo>(processContext));
 			}
-
-			// recursively add subcommand pipelines
-			if (command.SubCommands.Any())
-			{
-				var subCommandPipelineMap = new Dictionary<string, Queue<Stage<TRunInfo>>>();
-
-				foreach(Command<TRunInfo> subCommand in command.SubCommands)
-				{
-					Queue<Stage<TRunInfo>> subCommandPipeline = Build(subCommand);
-					subCommandPipelineMap.Add(subCommand.Key, subCommandPipeline);
-				}
-
-				// create and add sub command stage tthat uses this map...
-			}
-
+			
 			return pipeline;
 
 			// local functions

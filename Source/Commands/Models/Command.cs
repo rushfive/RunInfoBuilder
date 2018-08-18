@@ -5,17 +5,11 @@ using System.Text;
 
 namespace R5.RunInfoBuilder
 {
-	public class Command<TRunInfo> : ICallbackElement<TRunInfo>
+	public class Command<TRunInfo> : CommandBase<TRunInfo>
 		where TRunInfo : class
 	{
 		public string Key { get; set; }
-		public string Description { get; set; }
-		public string HelpText { get; set; }
-		public Func<CallbackContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
-
 		public List<Command<TRunInfo>> SubCommands { get; set; } = new List<Command<TRunInfo>>();
-		public List<ArgumentBase<TRunInfo>> Arguments { get; set; } = new List<ArgumentBase<TRunInfo>>();
-		public List<IOption> Options { get; set; } = new List<IOption>();
 
 		internal void Validate(Type parentType, string parentKey)
 		{

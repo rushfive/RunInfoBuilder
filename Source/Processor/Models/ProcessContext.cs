@@ -1,5 +1,6 @@
 ﻿using R5.RunInfoBuilder.Commands;
 using R5.RunInfoBuilder.Parser;
+using R5.RunInfoBuilder.Processor.Stages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace R5.RunInfoBuilder.Processor.Models
     {
 		internal IArgumentParser Parser { get; }
 		internal TRunInfo RunInfo { get; }
+		private Queue<Stage<TRunInfo>> _processPipeline { get; }
 		private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
 		private ArgumentsQueue _programArguments { get; }
 		private HashSet<string> _subCommands { get; }
@@ -28,6 +30,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal ProcessContext(
 			IArgumentParser parser,
 			TRunInfo runInfo,
+			Queue<Stage<TRunInfo>> processPipeline,
 			Func<CallbackContext<TRunInfo>> callbackContextFactory,
 			string[] args,
 			List<Command<TRunInfo>> subCommands,
@@ -35,6 +38,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		{
 			Parser = parser;
 			RunInfo = runInfo;
+			_processPipeline = processPipeline;
 			_callbackContextFactory = callbackContextFactory;
 			_programArguments = new ArgumentsQueue(args);
 			_subCommands = new HashSet<string>(subCommands.Select(c => c.Key));
@@ -45,6 +49,14 @@ namespace R5.RunInfoBuilder.Processor.Models
 		}
 		
 		internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
+
+		internal void ExtendPipelineWithSubCommandStages(Queue<Stage<TRunInfo>> subCommandPipeline)
+		{
+			while (subCommandPipeline.Any())
+			{
+				_processPipeline.Enqueue(subCommandPipeline.Dequeue());
+			}
+		}
 
 		internal bool HasNext() => _programArguments.HasNext();
 

@@ -22,7 +22,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		// and arguments do
 		internal abstract ProcessStageResult ProcessStage();
 
+		protected TRunInfo RunInfo => _context.RunInfo;
+
 		protected IArgumentParser Parser => _context.Parser;
+
+		protected void ExtendPipelineWithSubCommandStages(Queue<Stage<TRunInfo>> subCommandPipeline)
+			=> _context.ExtendPipelineWithSubCommandStages(subCommandPipeline);
 
 		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 
@@ -34,6 +39,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		protected bool NextIsOption() => _context.NextIsOption();
 
-		protected TRunInfo RunInfo => _context.RunInfo;
+		
 	}
 }
