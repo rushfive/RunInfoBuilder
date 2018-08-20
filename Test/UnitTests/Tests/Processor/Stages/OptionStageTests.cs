@@ -42,7 +42,7 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor.Stages
 			}
 			
 			var context = new ProcessContext<TestRunInfo>(runInfo, 
-				callbackContextFactory, args, subCommands, options);
+				args, subCommands, options);
 
 			return new OptionStage<TestRunInfo>(new ArgumentParser(), context);
 		}

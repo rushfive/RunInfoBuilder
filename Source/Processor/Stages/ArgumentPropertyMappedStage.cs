@@ -25,14 +25,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_property = property;
 		}
 
-		internal override ProcessStageResult ProcessStage()
+		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
 		{
-			//ProcessStageResult result = InvokeCallback(context);
-			//if (result != ProcessResult.Continue)
-			//{
-			//	return result;
-			//}
-
 			string valueToken = Dequeue();
 
 			if (!_parser.HandlesType<TProperty>())

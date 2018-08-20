@@ -21,7 +21,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		//internal IArgumentParser Parser { get; }
 		internal TRunInfo RunInfo { get; }
 		//private Queue<Stage<TRunInfo>> _processPipeline { get; }
-		private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
+		//private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
 		private ArgumentsQueue _programArguments { get; }
 		private HashSet<string> _subCommands { get; }
 		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; }
@@ -31,14 +31,14 @@ namespace R5.RunInfoBuilder.Processor.Models
 			//IArgumentParser parser,
 			TRunInfo runInfo,
 			//Queue<Stage<TRunInfo>> processPipeline,
-			Func<CallbackContext<TRunInfo>> callbackContextFactory,
+			//Func<CallbackContext<TRunInfo>> callbackContextFactory,
 			string[] args,
 			List<Command<TRunInfo>> subCommands,
 			List<IOption> options)
 		{
 			//Parser = parser;
 			RunInfo = runInfo;
-			_callbackContextFactory = callbackContextFactory;
+			//_callbackContextFactory = callbackContextFactory;
 			_programArguments = new ArgumentsQueue(args);
 			_subCommands = new HashSet<string>(subCommands.Select(c => c.Key));
 			_fullOptionSetters = new Dictionary<string, (Action<TRunInfo, object>, Type)>();
@@ -47,7 +47,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 			InitializeSetterMaps(options);
 		}
 		
-		internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
+		//internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
 
 		internal bool HasNext() => _programArguments.HasNext();
 

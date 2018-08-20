@@ -26,7 +26,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_listProperty = listProperty;
 		}
 
-		internal override ProcessStageResult ProcessStage()
+		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
 		{
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
 

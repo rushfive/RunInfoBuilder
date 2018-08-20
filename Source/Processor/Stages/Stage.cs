@@ -20,15 +20,10 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		// making NOT abstract because options dont require a callback context, but commands
 		// and arguments do
-		internal abstract ProcessStageResult ProcessStage();
+		internal abstract ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null);
 
 		protected TRunInfo RunInfo => _context.RunInfo;
-
-		//protected IArgumentParser Parser => _context.Parser;
-
-		//protected void ExtendPipelineWithSubCommandStages(Queue<Stage<TRunInfo>> subCommandPipeline)
-		//	=> _context.ExtendPipelineWithSubCommandStages(subCommandPipeline);
-
+		
 		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 
 		protected string Peek() => _context.Peek();

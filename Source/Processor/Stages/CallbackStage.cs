@@ -10,7 +10,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		where TRunInfo : class
 	{
 		private Func<CallbackContext<TRunInfo>, ProcessStageResult> _callback { get; }
-		private ProcessContext<TRunInfo> _context { get; }
 
 		internal CallbackStage(
 			Func<CallbackContext<TRunInfo>, ProcessStageResult> callback,
@@ -18,12 +17,13 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			: base(context)
 		{
 			_callback = callback;
-			_context = context;
 		}
 
-		internal override ProcessStageResult ProcessStage()
+		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
 		{
-			throw new NotImplementedException("TODO!!!!");
+			CallbackContext<TRunInfo> context = callbackContextFactory();
+
+			return _callback(context);
 		}
 	}
 }

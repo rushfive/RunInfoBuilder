@@ -24,7 +24,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_context = context;
 		}
 
-		internal override ProcessStageResult ProcessStage()
+		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
 		{
 			if (!MoreProgramArgumentsExist())
 			{

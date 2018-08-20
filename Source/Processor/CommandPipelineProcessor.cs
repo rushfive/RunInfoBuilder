@@ -32,7 +32,8 @@ namespace R5.RunInfoBuilder.Processor
 			{
 				throw new ArgumentException("At least one program argument must be provided.");
 			}
-
+			// TODO: abstract await the queue into a Pipeline object, helps
+			// getting the cb context
 			Queue<Stage<TRunInfo>> pipeline = _pipelineFactory.Create(args);
 
 			return ProcessPipeline(pipeline);
@@ -45,6 +46,11 @@ namespace R5.RunInfoBuilder.Processor
 			while (pipeline.Any())
 			{
 				Stage<TRunInfo> next = pipeline.Dequeue();
+
+				Func<CallbackContext<TRunInfo>> callbackContextFactory = () =>
+				{
+
+				};
 
 				ProcessStageResult result = next.ProcessStage();
 
