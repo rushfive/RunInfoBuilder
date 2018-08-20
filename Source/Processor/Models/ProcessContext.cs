@@ -18,7 +18,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 
     internal class ProcessContext<TRunInfo> where TRunInfo : class
     {
-		internal IArgumentParser Parser { get; }
+		//internal IArgumentParser Parser { get; }
 		internal TRunInfo RunInfo { get; }
 		private Queue<Stage<TRunInfo>> _processPipeline { get; }
 		private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
@@ -28,7 +28,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		private Dictionary<char, (Action<TRunInfo, object> setter, Type valueType)> _shortOptionSetters { get; }
 		
 		internal ProcessContext(
-			IArgumentParser parser,
+			//IArgumentParser parser,
 			TRunInfo runInfo,
 			Queue<Stage<TRunInfo>> processPipeline,
 			Func<CallbackContext<TRunInfo>> callbackContextFactory,
@@ -36,7 +36,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 			List<Command<TRunInfo>> subCommands,
 			List<IOption> options)
 		{
-			Parser = parser;
+			//Parser = parser;
 			RunInfo = runInfo;
 			_processPipeline = processPipeline;
 			_callbackContextFactory = callbackContextFactory;

@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
@@ -11,13 +12,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class ArgumentPropertyMappedStage<TRunInfo, TProperty> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
+		private IArgumentParser _parser { get; }
 		private Expression<Func<TRunInfo, TProperty>> _property { get; }
 
 		internal ArgumentPropertyMappedStage(
+			IArgumentParser parser,
 			Expression<Func<TRunInfo, TProperty>> property,
 			ProcessContext<TRunInfo> context)
 			: base(context)
 		{
+			_parser = parser;
 			_property = property;
 		}
 
@@ -31,7 +35,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			string valueToken = Dequeue();
 
-			if (!Parser.HandlesType<TProperty>())
+			if (!_parser.HandlesType<TProperty>())
 			{
 				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
 					+ $"parser cannot handle the property type of '{typeof(TProperty).Name}'.");
@@ -43,7 +47,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					+ $"property '{propertyName}' is not writable.");
 			}
 
-			if (!Parser.TryParseAs<TProperty>(valueToken, out TProperty parsed))
+			if (!_parser.TryParseAs<TProperty>(valueToken, out TProperty parsed))
 			{
 				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because it "
 					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.");

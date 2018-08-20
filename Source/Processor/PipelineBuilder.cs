@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
@@ -18,8 +19,13 @@ namespace R5.RunInfoBuilder.Processor
 	internal class PipelineBuilder<TRunInfo> : IPipelineBuilder<TRunInfo>
 		where TRunInfo : class
 	{
-		public PipelineBuilder() { }
-		
+		private IArgumentParser _parser { get; }
+
+		public PipelineBuilder(IArgumentParser parser)
+		{
+			_parser = parser;
+		}
+
 		private ProcessContext<TRunInfo> GetProcessContext()
 			=> throw new NotImplementedException("TODO!");
 
@@ -57,20 +63,20 @@ namespace R5.RunInfoBuilder.Processor
 			ProcessContext<TRunInfo> processContext)
 		{
 			var pipeline = new Queue<Stage<TRunInfo>>();
-			
+
 			AddCallbackStageIfExistsFor(command);
 
-			foreach(ArgumentBase<TRunInfo> argument in command.Arguments)
+			foreach (ArgumentBase<TRunInfo> argument in command.Arguments)
 			{
 				AddCallbackStageIfExistsFor(argument);
-				pipeline.Enqueue(argument.ToStage(processContext));
+				pipeline.Enqueue(argument.ToStage(processContext, _parser));
 			}
 
 			if (command.Options.Any())
 			{
-				pipeline.Enqueue(new OptionStage<TRunInfo>(processContext));
+				pipeline.Enqueue(new OptionStage<TRunInfo>(_parser, processContext));
 			}
-			
+
 			return pipeline;
 
 			// local functions

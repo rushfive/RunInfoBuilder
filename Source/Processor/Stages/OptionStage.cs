@@ -11,9 +11,14 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class OptionStage<TRunInfo> : Stage<TRunInfo>
 			where TRunInfo : class
 	{
-		internal OptionStage(ProcessContext<TRunInfo> context)
+		private IArgumentParser _parser { get; }
+
+		internal OptionStage(
+			IArgumentParser parser,
+			ProcessContext<TRunInfo> context)
 			: base(context)
 		{
+			_parser = parser;
 		}
 		
 		internal override ProcessStageResult ProcessStage()
@@ -123,7 +128,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					return true;
 				}
 
-				if (!Parser.TryParseAs(valueString, out bool parsed))
+				if (!_parser.TryParseAs(valueString, out bool parsed))
 				{
 					throw new ArgumentException($"'{valueString}' could not be parsed as a 'bool' type.", nameof(valueString));
 				}
@@ -137,7 +142,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					throw new ArgumentException("Options mapped to a non-boolean property must have a value.", nameof(valueString));
 				}
 
-				if (!Parser.TryParseAs(valueType, valueString, out object parsed))
+				if (!_parser.TryParseAs(valueType, valueString, out object parsed))
 				{
 					throw new ArgumentException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.", nameof(valueString));
 				}

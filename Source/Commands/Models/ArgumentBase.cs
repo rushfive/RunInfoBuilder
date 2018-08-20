@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Processor.Models;
+﻿using R5.RunInfoBuilder.Parser;
+using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace R5.RunInfoBuilder.Commands
 
 		internal abstract void Validate(Type parentType, string parentKey);
 
-		internal abstract Stage<TRunInfo> ToStage(ProcessContext<TRunInfo> context);
+		internal abstract Stage<TRunInfo> ToStage(ProcessContext<TRunInfo> context,
+			IArgumentParser parser);
 	}
 }

@@ -13,13 +13,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class ArgumentSequenceStage<TRunInfo, TListProperty> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
+		private IArgumentParser _parser { get; }
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
 		
 		internal ArgumentSequenceStage(
+			IArgumentParser parser,
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
 			ProcessContext<TRunInfo> context)
 			: base(context)
 		{
+			_parser = parser;
 			_listProperty = listProperty;
 		}
 
@@ -51,7 +54,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				string next = Dequeue();
 
-				if (!Parser.TryParseAs(next, out TListProperty parsed))
+				if (!_parser.TryParseAs(next, out TListProperty parsed))
 				{
 					throw new ArgumentException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.");
 				}

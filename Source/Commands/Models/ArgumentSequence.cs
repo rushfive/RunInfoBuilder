@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 
@@ -21,9 +22,10 @@ namespace R5.RunInfoBuilder.Commands
 			}
 		}
 
-		internal override Stage<TRunInfo> ToStage(ProcessContext<TRunInfo> context)
+		internal override Stage<TRunInfo> ToStage(ProcessContext<TRunInfo> context, 
+			IArgumentParser parser)
 		{
-			return new ArgumentSequenceStage<TRunInfo, TListProperty>(ListProperty, context);
+			return new ArgumentSequenceStage<TRunInfo, TListProperty>(parser, ListProperty, context);
 		}
 	}
 }

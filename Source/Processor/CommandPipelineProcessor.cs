@@ -34,6 +34,8 @@ namespace R5.RunInfoBuilder.Processor
 			}
 
 			Queue<Stage<TRunInfo>> pipeline = _pipelineFactory.Create(args);
+
+			return ProcessPipeline(pipeline);
 		}
 
 		private TRunInfo ProcessPipeline(Queue<Stage<TRunInfo>> pipeline)
@@ -44,6 +46,9 @@ namespace R5.RunInfoBuilder.Processor
 
 				ProcessStageResult result = next.ProcessStage();
 			}
+
+
+			throw new NotImplementedException();
 		}
 	}
 }
