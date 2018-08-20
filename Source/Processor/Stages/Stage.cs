@@ -26,8 +26,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		//protected IArgumentParser Parser => _context.Parser;
 
-		protected void ExtendPipelineWithSubCommandStages(Queue<Stage<TRunInfo>> subCommandPipeline)
-			=> _context.ExtendPipelineWithSubCommandStages(subCommandPipeline);
+		//protected void ExtendPipelineWithSubCommandStages(Queue<Stage<TRunInfo>> subCommandPipeline)
+		//	=> _context.ExtendPipelineWithSubCommandStages(subCommandPipeline);
 
 		protected bool MoreProgramArgumentsExist() => _context.HasNext();
 

@@ -41,7 +41,8 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor.Stages
 				callbackContextFactory = () => throw new NotImplementedException("TODO");
 			}
 			
-			var context = new ProcessContext<TestRunInfo>(runInfo, new Queue<Stage<TestRunInfo>>(), callbackContextFactory, args, subCommands, options);
+			var context = new ProcessContext<TestRunInfo>(runInfo, 
+				callbackContextFactory, args, subCommands, options);
 
 			return new OptionStage<TestRunInfo>(new ArgumentParser(), context);
 		}

@@ -10,14 +10,17 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		where TRunInfo : class
 	{
 		private Dictionary<string, Queue<Stage<TRunInfo>>> _subCommandPipelineMap { get; }
+		private Action<Queue<Stage<TRunInfo>>> _extendPipelineCallback { get; }
 		private ProcessContext<TRunInfo> _context { get; }
 
 		internal SubCommandStage(
 			Dictionary<string, Queue<Stage<TRunInfo>>> subCommandPipelineMap,
+			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback,
 			ProcessContext<TRunInfo> context)
 			: base(context)
 		{
 			_subCommandPipelineMap = subCommandPipelineMap;
+			_extendPipelineCallback = extendPipelineCallback;
 			_context = context;
 		}
 
@@ -35,7 +38,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				throw new InvalidOperationException($"'{subCommand}' is not a valid sub command.");
 			}
 
-			ExtendPipelineWithSubCommandStages(pipeline);
+			_extendPipelineCallback(pipeline);
 
 			return ProcessResult.Continue;
 		}

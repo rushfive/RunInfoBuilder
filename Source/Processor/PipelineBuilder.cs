@@ -46,7 +46,16 @@ namespace R5.RunInfoBuilder.Processor
 					subCommandPipelineMap.Add(subCommand.Key, subCommandPipeline);
 				}
 
-				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandPipelineMap, processContext));
+				Action<Queue<Stage<TRunInfo>>> extendPipelineCallback = subCommandPipeline =>
+				{
+					while (subCommandPipeline.Any())
+					{
+						pipeline.Enqueue(subCommandPipeline.Dequeue());
+					}
+				};
+
+				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandPipelineMap, 
+					extendPipelineCallback, processContext));
 			}
 
 			return pipeline;

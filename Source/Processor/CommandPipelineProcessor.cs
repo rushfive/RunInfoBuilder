@@ -40,11 +40,15 @@ namespace R5.RunInfoBuilder.Processor
 
 		private TRunInfo ProcessPipeline(Queue<Stage<TRunInfo>> pipeline)
 		{
+			int position = 0;
+
 			while (pipeline.Any())
 			{
 				Stage<TRunInfo> next = pipeline.Dequeue();
 
 				ProcessStageResult result = next.ProcessStage();
+
+				position++;
 			}
 
 
