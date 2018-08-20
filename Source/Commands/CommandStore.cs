@@ -10,25 +10,23 @@ namespace R5.RunInfoBuilder.Commands
 		ICommandStore<TRunInfo> Add(Command<TRunInfo> command);
 
 		ICommandStore<TRunInfo> AddDefault(DefaultCommand<TRunInfo> defaultCommand);
+
+		bool TryGetCommand(string key, out Command<TRunInfo> command);
+
+		bool TryGetDefaultCommand(out DefaultCommand<TRunInfo> defaultCommand);
+
+		bool IsCommand(string key);
+
+		bool DefaultIsConfigured();
 	}
 
-	internal interface ICommandStoreInternal<TRunInfo> : ICommandStore<TRunInfo>
-		where TRunInfo : class
-	{
-		object Get(string key);
-
-		object GetDefault();
-	}
-
-	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>, ICommandStoreInternal<TRunInfo>
+	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>
 		where TRunInfo : class
 	{
 		private ICommandValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
-
-		// keep values as object because we dont know their generic types until runtime
 		private Dictionary<string, Command<TRunInfo>> _commandMap { get; }
-		private object _defaultCommand { get; set; }
+		private DefaultCommand<TRunInfo> _defaultCommand { get; set; }
 
 		public CommandStore(
 			ICommandValidator validator,
@@ -69,25 +67,28 @@ namespace R5.RunInfoBuilder.Commands
 			return this;
 		}
 
-		public object Get(string key)
+		public bool TryGetCommand(string key, out Command<TRunInfo> command)
 		{
+			command = null;
+
 			if (!_commandMap.ContainsKey(key))
 			{
-				throw new InvalidOperationException($"Command with key '{key}' hasn't been configured.");
+				return false;
 			}
 
-			return _commandMap[key];
+			command = _commandMap[key];
+			return true;
 		}
 
-		public object GetDefault()
+		public bool TryGetDefaultCommand(out DefaultCommand<TRunInfo> defaultCommand)
 		{
-			if (_defaultCommand == null)
-			{
-				throw new InvalidOperationException("Default command hasn't been configured.");
-			}
-
-			return _defaultCommand;
+			defaultCommand = _defaultCommand;
+			return _defaultCommand != null;
 		}
+
+		public bool IsCommand(string key) => _commandMap.ContainsKey(key);
+
+		public bool DefaultIsConfigured() => _defaultCommand != null;
 	}
 
 }
