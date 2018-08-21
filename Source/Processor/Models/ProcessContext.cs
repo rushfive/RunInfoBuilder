@@ -20,8 +20,8 @@ namespace R5.RunInfoBuilder.Processor.Models
     {
 		private TRunInfo _runInfo { get; }
 		private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
-		internal StageQueueCallbacks<TRunInfo> Stages { get; }
-		internal ProgramArgumentQueueCallbacks<TRunInfo> ProgramArguments { get; }
+		internal StageCallbacks<TRunInfo> Stages { get; }
+		internal ProgramArgumentCallbacks<TRunInfo> ProgramArguments { get; }
 		internal Action<Queue<Stage<TRunInfo>>> ExtendPipeline { get; }
 
 		// "Refreshed" per command/subCommand
@@ -32,8 +32,8 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal ProcessContext(
 			TRunInfo runInfo,
 			Func<CallbackContext<TRunInfo>> callbackContextFactory,
-			StageQueueCallbacks<TRunInfo> stageQueueCallbacks,
-			ProgramArgumentQueueCallbacks<TRunInfo> programArgsQueueCallback,
+			StageCallbacks<TRunInfo> stageQueueCallbacks,
+			ProgramArgumentCallbacks<TRunInfo> programArgsQueueCallback,
 			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
 		{
 			_runInfo = runInfo;

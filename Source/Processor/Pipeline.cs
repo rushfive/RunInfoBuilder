@@ -41,11 +41,11 @@ namespace R5.RunInfoBuilder.Processor
 		internal Func<CallbackContext<TRunInfo>> GetCallbackContextFactory(string[] args, TRunInfo runInfo) => 
 			() => new CallbackContext<TRunInfo>(args[_position], _position, runInfo, (string[])args.Clone());
 
-		internal StageQueueCallbacks<TRunInfo> GetStageQueueCallbacks()
-			=> new StageQueueCallbacks<TRunInfo>(_stages.Any, _stages.Dequeue);
+		internal StageCallbacks<TRunInfo> GetStageCallbacks()
+			=> new StageCallbacks<TRunInfo>(_stages.Any, _stages.Dequeue);
 
-		internal ProgramArgumentQueueCallbacks<TRunInfo> GetProgramArgumentQueueCallbacks()
-			=> new ProgramArgumentQueueCallbacks<TRunInfo>(_programArguments.Any, _programArguments.Peek, DequeueProgramArgument);
+		internal ProgramArgumentCallbacks<TRunInfo> GetProgramArgumentCallbacks()
+			=> new ProgramArgumentCallbacks<TRunInfo>(_programArguments.Any, _programArguments.Peek, DequeueProgramArgument);
 
 		private string DequeueProgramArgument()
 		{

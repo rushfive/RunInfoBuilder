@@ -48,40 +48,39 @@ namespace R5.RunInfoBuilder.Processor
 			// - list of subcommands
 			// - list of full/short options, and their setter funcs
 
-			StageQueueCallbacks<TRunInfo> stageQueueCallbacks = pipeline.GetStageQueueCallbacks();
-			ProgramArgumentQueueCallbacks<TRunInfo> programArgumentQueueCallbacks = pipeline.GetProgramArgumentQueueCallbacks();
+			StageCallbacks<TRunInfo> stageCallbacks = pipeline.GetStageCallbacks();
+			ProgramArgumentCallbacks<TRunInfo> programArgumentCallbacks = pipeline.GetProgramArgumentCallbacks();
 
 			var processContext = new ProcessContext<TRunInfo>(
 				runInfo,
 				pipeline.GetCallbackContextFactory(args, runInfo),
-				stageQueueCallbacks,
-				programArgumentQueueCallbacks,
+				stageCallbacks,
+				programArgumentCallbacks,
 				pipeline.ExtendPipeline);
 
-
-			return ProcessPipeline(pipeline);
+			return pipeline.Process(runInfo);
 		}
 
-		private TRunInfo ProcessPipeline(Queue<Stage<TRunInfo>> pipeline)
-		{
-			int position = 0;
+		//private TRunInfo ProcessPipeline(Queue<Stage<TRunInfo>> pipeline)
+		//{
+		//	int position = 0;
 
-			while (pipeline.Any())
-			{
-				Stage<TRunInfo> next = pipeline.Dequeue();
+		//	while (pipeline.Any())
+		//	{
+		//		Stage<TRunInfo> next = pipeline.Dequeue();
 
-				Func<CallbackContext<TRunInfo>> callbackContextFactory = () =>
-				{
+		//		Func<CallbackContext<TRunInfo>> callbackContextFactory = () =>
+		//		{
 
-				};
+		//		};
 
-				ProcessStageResult result = next.ProcessStage();
+		//		ProcessStageResult result = next.ProcessStage();
 
-				position++;
-			}
+		//		position++;
+		//	}
 
 
-			throw new NotImplementedException();
-		}
+		//	throw new NotImplementedException();
+		//}
 	}
 }
