@@ -17,15 +17,13 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal ArgumentPropertyMappedStage(
 			IArgumentParser parser,
-			Expression<Func<TRunInfo, TProperty>> property,
-			ProcessContext<TRunInfo> context)
-			: base(context)
+			Expression<Func<TRunInfo, TProperty>> property)
 		{
 			_parser = parser;
 			_property = property;
 		}
 
-		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
 			string valueToken = Dequeue();
 

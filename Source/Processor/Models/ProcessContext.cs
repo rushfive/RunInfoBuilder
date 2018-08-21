@@ -18,46 +18,83 @@ namespace R5.RunInfoBuilder.Processor.Models
 
     internal class ProcessContext<TRunInfo> where TRunInfo : class
     {
-		//internal IArgumentParser Parser { get; }
-		internal TRunInfo RunInfo { get; }
-		//private Queue<Stage<TRunInfo>> _processPipeline { get; }
-		//private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
-		private ArgumentsQueue _programArguments { get; }
-		private HashSet<string> _subCommands { get; }
-		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; }
-		private Dictionary<char, (Action<TRunInfo, object> setter, Type valueType)> _shortOptionSetters { get; }
+		private TRunInfo _runInfo { get; }
+		private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
+		internal StageQueueCallbacks<TRunInfo> Stages { get; }
+		internal ProgramArgumentQueueCallbacks<TRunInfo> ProgramArguments { get; }
+
+		// "Refreshed" per command/subCommand
+		private HashSet<string> _subCommands { get; set; }
+		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; set; }
+		private Dictionary<char, (Action<TRunInfo, object> setter, Type valueType)> _shortOptionSetters { get; set; }
 		
 		internal ProcessContext(
-			//IArgumentParser parser,
 			TRunInfo runInfo,
-			//Queue<Stage<TRunInfo>> processPipeline,
-			//Func<CallbackContext<TRunInfo>> callbackContextFactory,
-			string[] args,
-			List<Command<TRunInfo>> subCommands,
-			List<IOption> options)
+			Func<CallbackContext<TRunInfo>> callbackContextFactory,
+			StageQueueCallbacks<TRunInfo> stageQueueCallbacks,
+			ProgramArgumentQueueCallbacks<TRunInfo> programArgsQueueCallback)
 		{
-			//Parser = parser;
-			RunInfo = runInfo;
-			//_callbackContextFactory = callbackContextFactory;
-			_programArguments = new ArgumentsQueue(args);
-			_subCommands = new HashSet<string>(subCommands.Select(c => c.Key));
+			_runInfo = runInfo;
+			_callbackContextFactory = callbackContextFactory;
+			Stages = stageQueueCallbacks;
+			ProgramArguments = programArgsQueueCallback;
+		}
+
+		internal ProcessContext<TRunInfo> RefreshForCommand(CommandBase<TRunInfo> command)
+		{
 			_fullOptionSetters = new Dictionary<string, (Action<TRunInfo, object>, Type)>();
 			_shortOptionSetters = new Dictionary<char, (Action<TRunInfo, object>, Type)>();
+			_subCommands = new HashSet<string>();
 
-			InitializeSetterMaps(options);
+			InitializeSetterMaps(command.Options);
+
+			if (command is Command<TRunInfo> cmd)
+			{
+				_subCommands = new HashSet<string>(cmd.SubCommands.Select(c => c.Key));
+			}
+
+			return this;
 		}
-		
-		//internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
 
-		internal bool HasNext() => _programArguments.HasNext();
+		private void InitializeSetterMaps(List<IOption> options)
+		{
+			foreach (IOption option in options)
+			{
+				(Action<TRunInfo, object>, Type) setter = createSetter(option);
 
-		internal string Peek() => _programArguments.Peek();
+				var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(option.Key);
 
-		internal string Dequeue() => _programArguments.Dequeue();
+				_fullOptionSetters.Add(fullKey, setter);
 
-		internal bool NextIsSubCommand() => HasNext() && _subCommands.Contains(_programArguments.Peek());
+				if (shortKey != null)
+				{
+					_shortOptionSetters.Add(shortKey.Value, setter);
+				}
+			}
 
-		internal bool NextIsOption() => HasNext() && IsOption(Peek());
+			// local functions
+			(Action<TRunInfo, object> setter, Type valueType) createSetter(IOption option)
+			{
+				dynamic opt = option;
+				PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(opt.Property);
+
+				Type valueType = propertyInfo.PropertyType;
+
+				Action<TRunInfo, object> setter = (runInfo, value) =>
+				{
+					if (value.GetType() != valueType)
+					{
+						throw new InvalidOperationException($"'{value}' is not a valid '{valueType}' type.");
+					}
+
+					propertyInfo.SetValue(runInfo, value);
+				};
+
+				return (setter, valueType);
+			}
+		}
+
+		internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
 
 		internal (Action<TRunInfo, object> Setter, Type ValueType) GetOptionValueSetter(string fullKey)
 		{
@@ -134,42 +171,6 @@ namespace R5.RunInfoBuilder.Processor.Models
 			}
 		}
 
-		private void InitializeSetterMaps(List<IOption> options)
-		{
-			foreach (IOption option in options)
-			{
-				(Action<TRunInfo, object>, Type) setter = createSetter(option);
-
-				var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(option.Key);
-
-				_fullOptionSetters.Add(fullKey, setter);
-
-				if (shortKey != null)
-				{
-					_shortOptionSetters.Add(shortKey.Value, setter);
-				}
-			}
-
-			// local functions
-			(Action<TRunInfo, object> setter, Type valueType) createSetter(IOption option)
-			{
-				dynamic opt = option;
-				PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(opt.Property);
-
-				Type valueType = propertyInfo.PropertyType;
-
-				Action<TRunInfo, object> setter = (runInfo, value) =>
-				{
-					if (value.GetType() != valueType)
-					{
-						throw new InvalidOperationException($"'{value}' is not a valid '{valueType}' type.");
-					}
-
-					propertyInfo.SetValue(runInfo, value);
-				};
-
-				return (setter, valueType);
-			}
-		}
+		
 	}
 }

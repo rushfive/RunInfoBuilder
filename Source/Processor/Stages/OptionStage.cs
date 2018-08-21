@@ -13,15 +13,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private IArgumentParser _parser { get; }
 
-		internal OptionStage(
-			IArgumentParser parser,
-			ProcessContext<TRunInfo> context)
-			: base(context)
+		internal OptionStage(IArgumentParser parser)
 		{
 			_parser = parser;
 		}
 		
-		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
 			while (MoreProgramArgumentsExist())
 			{
@@ -44,13 +41,13 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				switch (type)
 				{
 					case OptionType.Full:
-						ProcessFull(fullKey, value, _context.RunInfo);
+						ProcessFull(fullKey, value, _context._runInfo);
 						break;
 					case OptionType.Short:
-						ProcessShort(shortKeys.Single(), value, _context.RunInfo);
+						ProcessShort(shortKeys.Single(), value, _context._runInfo);
 						break;
 					case OptionType.Stacked:
-						ProcessStacked(shortKeys, value, _context.RunInfo);
+						ProcessStacked(shortKeys, value, _context._runInfo);
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(type), $"'{type}' is not a valid option type.");

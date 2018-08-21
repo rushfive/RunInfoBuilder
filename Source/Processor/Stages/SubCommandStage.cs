@@ -11,20 +11,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Dictionary<string, Queue<Stage<TRunInfo>>> _subCommandPipelineMap { get; }
 		private Action<Queue<Stage<TRunInfo>>> _extendPipelineCallback { get; }
-		private ProcessContext<TRunInfo> _context { get; }
 
 		internal SubCommandStage(
 			Dictionary<string, Queue<Stage<TRunInfo>>> subCommandPipelineMap,
-			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback,
-			ProcessContext<TRunInfo> context)
-			: base(context)
+			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
 		{
 			_subCommandPipelineMap = subCommandPipelineMap;
 			_extendPipelineCallback = extendPipelineCallback;
-			_context = context;
 		}
 
-		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
 			if (!MoreProgramArgumentsExist())
 			{

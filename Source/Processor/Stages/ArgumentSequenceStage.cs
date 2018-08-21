@@ -18,23 +18,21 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		
 		internal ArgumentSequenceStage(
 			IArgumentParser parser,
-			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
-			ProcessContext<TRunInfo> context)
-			: base(context)
+			Expression<Func<TRunInfo, List<TListProperty>>> listProperty)
 		{
 			_parser = parser;
 			_listProperty = listProperty;
 		}
 
-		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
 
 			// initialize list if null
-			var list = (IList<TListProperty>)propertyInfo.GetValue(_context.RunInfo, null);
+			var list = (IList<TListProperty>)propertyInfo.GetValue(_context._runInfo, null);
 			if (list == null)
 			{
-				propertyInfo.SetValue(_context.RunInfo, Activator.CreateInstance(propertyInfo.PropertyType));
+				propertyInfo.SetValue(_context._runInfo, Activator.CreateInstance(propertyInfo.PropertyType));
 			}
 
 			// Iterate over proceeding program args, adding parseable items to list.

@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Processor.Stages;
+﻿using R5.RunInfoBuilder.Processor.Models;
+using R5.RunInfoBuilder.Processor.Stages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,28 @@ namespace R5.RunInfoBuilder.Processor
 			}
 			// TODO: abstract await the queue into a Pipeline object, helps
 			// getting the cb context
-			Queue<Stage<TRunInfo>> pipeline = _pipelineFactory.Create(args);
+			//Queue<Stage<TRunInfo>> pipeline = _pipelineFactory.Create(args);
+
+			var pipeline = new Pipeline<TRunInfo>(new Queue<Stage<TRunInfo>>(), args); // TODO
+
+			// common: 
+			// - callbackcontext, 
+			// - anything related to stage and program args queues,  ***
+			// - runInfo
+
+			// unique per command/sub-command level: 
+			// - list of subcommands
+			// - list of full/short options, and their setter funcs
+
+			StageQueueCallbacks<TRunInfo> stageQueueCallbacks = pipeline.GetStageQueueCallbacks();
+			ProgramArgumentQueueCallbacks<TRunInfo> programArgumentQueueCallbacks = pipeline.GetProgramArgumentQueueCallbacks();
+
+			var processContext = new ProcessContext<TRunInfo>(
+				runInfo,
+				pipeline.GetCallbackContextFactory(args, runInfo),
+				stageQueueCallbacks,
+				programArgumentQueueCallbacks);
+
 
 			return ProcessPipeline(pipeline);
 		}

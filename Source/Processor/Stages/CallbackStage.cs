@@ -11,15 +11,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Func<CallbackContext<TRunInfo>, ProcessStageResult> _callback { get; }
 
-		internal CallbackStage(
-			Func<CallbackContext<TRunInfo>, ProcessStageResult> callback,
-			ProcessContext<TRunInfo> context)
-			: base(context)
+		internal CallbackStage(Func<CallbackContext<TRunInfo>, ProcessStageResult> callback)
 		{
 			_callback = callback;
 		}
 
-		internal override ProcessStageResult ProcessStage(Func<CallbackContext<TRunInfo>> callbackContextFactory = null)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
 			CallbackContext<TRunInfo> context = callbackContextFactory();
 
