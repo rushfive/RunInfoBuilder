@@ -54,8 +54,7 @@ namespace R5.RunInfoBuilder.Processor
 					}
 				};
 
-				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandPipelineMap, 
-					extendPipelineCallback, processContext));
+				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandPipelineMap));
 			}
 
 			return pipeline;
@@ -78,12 +77,12 @@ namespace R5.RunInfoBuilder.Processor
 			foreach (ArgumentBase<TRunInfo> argument in command.Arguments)
 			{
 				AddCallbackStageIfExistsFor(argument);
-				pipeline.Enqueue(argument.ToStage(processContext, _parser));
+				pipeline.Enqueue(argument.ToStage(_parser));
 			}
 
 			if (command.Options.Any())
 			{
-				pipeline.Enqueue(new OptionStage<TRunInfo>(_parser, processContext));
+				pipeline.Enqueue(new OptionStage<TRunInfo>(_parser));
 			}
 
 			return pipeline;
@@ -93,7 +92,7 @@ namespace R5.RunInfoBuilder.Processor
 			{
 				if (element.Callback != null)
 				{
-					pipeline.Enqueue(new CallbackStage<TRunInfo>(element.Callback, processContext));
+					pipeline.Enqueue(new CallbackStage<TRunInfo>(element.Callback));
 				}
 			}
 		}

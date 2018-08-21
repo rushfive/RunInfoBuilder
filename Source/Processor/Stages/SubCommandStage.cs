@@ -13,21 +13,21 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		private Action<Queue<Stage<TRunInfo>>> _extendPipelineCallback { get; }
 
 		internal SubCommandStage(
-			Dictionary<string, Queue<Stage<TRunInfo>>> subCommandPipelineMap,
-			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
+			Dictionary<string, Queue<Stage<TRunInfo>>> subCommandPipelineMap)
+			//Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
 		{
 			_subCommandPipelineMap = subCommandPipelineMap;
-			_extendPipelineCallback = extendPipelineCallback;
+			//_extendPipelineCallback = extendPipelineCallback;
 		}
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
-			if (!MoreProgramArgumentsExist())
+			if (!context.ProgramArguments.HasMore())
 			{
 				return ProcessResult.End;
 			}
 
-			string subCommand = Dequeue();
+			string subCommand = context.ProgramArguments.Dequeue();
 
 			if (!_subCommandPipelineMap.TryGetValue(subCommand, out Queue<Stage<TRunInfo>> pipeline))
 			{

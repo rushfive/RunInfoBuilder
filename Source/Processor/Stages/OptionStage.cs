@@ -20,7 +20,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
-			while (MoreProgramArgumentsExist())
+			while (context.ProgramArguments.HasMore())
 			{
 				if (NextIsSubCommand())
 				{

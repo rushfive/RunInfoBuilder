@@ -15,7 +15,6 @@ namespace R5.RunInfoBuilder.Commands
 
 		internal abstract void Validate(Type parentType, string parentKey);
 
-		internal abstract Stage<TRunInfo> ToStage(ProcessContext<TRunInfo> context,
-			IArgumentParser parser);
+		internal abstract Stage<TRunInfo> ToStage(IArgumentParser parser);
 	}
 }

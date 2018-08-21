@@ -25,7 +25,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
-			string valueToken = Dequeue();
+			string valueToken = context.ProgramArguments.Dequeue();
 
 			if (!_parser.HandlesType<TProperty>())
 			{
@@ -46,7 +46,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			}
 
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_property);
-			propertyInfo.SetValue(RunInfo, parsed);
+			propertyInfo.SetValue(context.RunInfo, parsed);
 
 			return ProcessResult.Continue;
 		}
