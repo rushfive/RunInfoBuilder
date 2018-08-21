@@ -41,15 +41,11 @@ namespace R5.RunInfoBuilder.Processor
 		internal Func<CallbackContext<TRunInfo>> GetCallbackContextFactory(string[] args, TRunInfo runInfo) => 
 			() => new CallbackContext<TRunInfo>(args[_position], _position, runInfo, (string[])args.Clone());
 
-		private bool HasMoreStages() => _stages.Any();
+		internal StageQueueCallbacks<TRunInfo> GetStageQueueCallbacks()
+			=> new StageQueueCallbacks<TRunInfo>(_stages.Any, _stages.Dequeue);
 
-		private Stage<TRunInfo> DequeueStage() => _stages.Dequeue();
-
-
-		// program args
-		private bool HasMoreProgramArguments() => _programArguments.Any();
-		
-		private string PeekProgramArgument() => _programArguments.Peek();
+		internal ProgramArgumentQueueCallbacks<TRunInfo> GetProgramArgumentQueueCallbacks()
+			=> new ProgramArgumentQueueCallbacks<TRunInfo>(_programArguments.Any, _programArguments.Peek, DequeueProgramArgument);
 
 		private string DequeueProgramArgument()
 		{
@@ -62,10 +58,12 @@ namespace R5.RunInfoBuilder.Processor
 			return _programArguments.Dequeue();
 		}
 
-		internal StageQueueCallbacks<TRunInfo> GetStageQueueCallbacks()
-			=> new StageQueueCallbacks<TRunInfo>(HasMoreStages, DequeueStage);
-
-		internal ProgramArgumentQueueCallbacks<TRunInfo> GetProgramArgumentQueueCallbacks()
-			=> new ProgramArgumentQueueCallbacks<TRunInfo>(HasMoreProgramArguments, PeekProgramArgument, DequeueProgramArgument);
+		internal void ExtendPipeline(Queue<Stage<TRunInfo>> subCommandPipeline)
+		{
+			while (subCommandPipeline.Any())
+			{
+				_stages.Enqueue(subCommandPipeline.Dequeue());
+			}
+		}
 	}
 }

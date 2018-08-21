@@ -55,7 +55,8 @@ namespace R5.RunInfoBuilder.Processor
 				runInfo,
 				pipeline.GetCallbackContextFactory(args, runInfo),
 				stageQueueCallbacks,
-				programArgumentQueueCallbacks);
+				programArgumentQueueCallbacks,
+				pipeline.ExtendPipeline);
 
 
 			return ProcessPipeline(pipeline);
