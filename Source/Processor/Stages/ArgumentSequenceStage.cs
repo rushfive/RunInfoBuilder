@@ -1,12 +1,9 @@
-﻿using R5.RunInfoBuilder.Commands;
-using R5.RunInfoBuilder.Parser;
+﻿using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace R5.RunInfoBuilder.Processor.Stages
 {
@@ -29,28 +26,28 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
 
 			// initialize list if null
-			var list = (IList<TListProperty>)propertyInfo.GetValue(_context._runInfo, null);
+			var list = (IList<TListProperty>)propertyInfo.GetValue(context.RunInfo, null);
 			if (list == null)
 			{
-				propertyInfo.SetValue(_context._runInfo, Activator.CreateInstance(propertyInfo.PropertyType));
+				propertyInfo.SetValue(context.RunInfo, Activator.CreateInstance(propertyInfo.PropertyType));
 			}
 
 			// Iterate over proceeding program args, adding parseable items to list.
 			// Ends when all program args are exhausted or when an option or subcommand 
 			// has been identified.
-			while (MoreProgramArgumentsExist())
+			while (context.ProgramArguments.HasMore())
 			{
-				if (NextIsOption())
+				if (context.NextIsOption())
 				{
 					return ProcessResult.Continue;
 				}
 
-				if (NextIsSubCommand())
+				if (context.NextIsSubCommand())
 				{
 					return ProcessResult.Continue;
 				}
 
-				string next = Dequeue();
+				string next = context.ProgramArguments.Dequeue();
 
 				if (!_parser.TryParseAs(next, out TListProperty parsed))
 				{
@@ -62,15 +59,5 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			return ProcessResult.End;
 		}
-
-		//private ProcessStageResult InvokeCallback(CallbackContext<TRunInfo> context)
-		//{
-		//	if (_callback == null)
-		//	{
-		//		return ProcessResult.Continue;
-		//	}
-
-		//	return _callback(context);
-		//}
 	}
 }

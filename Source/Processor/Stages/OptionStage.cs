@@ -22,32 +22,32 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			while (context.ProgramArguments.HasMore())
 			{
-				if (NextIsSubCommand())
+				if (context.NextIsSubCommand())
 				{
 					return ProcessResult.Continue;
 				}
 
-				if (!NextIsOption())
+				if (!context.NextIsOption())
 				{
-					throw new InvalidOperationException($"Processing failed because '{Peek()}' is not a valid option.");
+					throw new InvalidOperationException($"Processing failed because '{context.ProgramArguments.Peek()}' is not a valid option.");
 				}
 
-				string option = Dequeue();
+				string option = context.ProgramArguments.Dequeue();
 				
 				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(option);
 
-				string value = ResolveValue(valueFromToken, option);
+				string value = ResolveValue(valueFromToken, option, context);
 
 				switch (type)
 				{
 					case OptionType.Full:
-						ProcessFull(fullKey, value, _context._runInfo);
+						ProcessFull(fullKey, value, context);
 						break;
 					case OptionType.Short:
-						ProcessShort(shortKeys.Single(), value, _context._runInfo);
+						ProcessShort(shortKeys.Single(), value, context);
 						break;
 					case OptionType.Stacked:
-						ProcessStacked(shortKeys, value, _context._runInfo);
+						ProcessStacked(shortKeys, value, context);
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(type), $"'{type}' is not a valid option type.");
@@ -57,49 +57,51 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			return ProcessResult.End;
 		}
 
-		private string ResolveValue(string valueFromToken, string optionToken)
+		private string ResolveValue(string valueFromToken, string optionToken, ProcessContext<TRunInfo> context)
 		{
-			if (NextIsOption())
+			if (context.NextIsOption() || !context.ProgramArguments.HasMore())
 			{
 				return valueFromToken;
 			}
 
+			string next = context.ProgramArguments.Dequeue();
+
 			if (valueFromToken != null)
 			{
 				throw new InvalidOperationException($"Ambiguous option value: Contains a value in '{optionToken}' "
-					+ $"but also in the next program argument '{Peek()}'");
+					+ $"but also in the next program argument '{next}'");
 			}
 
-			return Dequeue();
+			return next;
 		}
 
-		private void ProcessFull(string key, string valueString, TRunInfo runInfo)
+		private void ProcessFull(string key, string valueString, ProcessContext<TRunInfo> context)
 		{
-			var (setter, valueType) = _context.GetOptionValueSetter(key);
+			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
 
 			object value = GetParsedValue(valueType, valueString);
 
-			setter(runInfo, value);
+			setter(context.RunInfo, value);
 		}
 
-		private void ProcessShort(char key, string valueString, TRunInfo runInfo)
+		private void ProcessShort(char key, string valueString, ProcessContext<TRunInfo> context)
 		{
-			var (setter, valueType) = _context.GetOptionValueSetter(key);
+			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
 
 			object value = GetParsedValue(valueType, valueString);
 
-			setter(runInfo, value);
+			setter(context.RunInfo, value);
 		}
 
-		private void ProcessStacked(List<char> keys, string valueString, TRunInfo runInfo)
+		private void ProcessStacked(List<char> keys, string valueString, ProcessContext<TRunInfo> context)
 		{
-			List<(Action<TRunInfo, object> setter, Type valueType)> setters = _context.GetOptionValueSetters(keys);
+			List<(Action<TRunInfo, object> setter, Type valueType)> setters = context.Options.GetOptionValueSetters(keys);
 
 			object value = GetParsedValue(setters.First().valueType, valueString);
 
 			foreach((Action<TRunInfo, object> setter, _) in setters)
 			{
-				setter(runInfo, value);
+				setter(context.RunInfo, value);
 			}
 		}
 

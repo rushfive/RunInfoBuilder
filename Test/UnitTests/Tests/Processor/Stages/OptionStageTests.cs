@@ -40,41 +40,69 @@ namespace R5.RunInfoBuilder.UnitTests.Tests.Processor.Stages
 			{
 				callbackContextFactory = () => throw new NotImplementedException("TODO");
 			}
-			
-			var context = new ProcessContext<TestRunInfo>(runInfo, 
-				args, subCommands, options);
 
-			return new OptionStage<TestRunInfo>(new ArgumentParser(), context);
+			return new OptionStage<TestRunInfo>(new ArgumentParser());
 		}
 
-		[Fact]
-		public void NoMore_ProgramArguments_ReturnsEndResult()
+		private ProcessContext<TestRunInfo> GetProcessContext(
+			TestRunInfo runInfo = null,
+			Func<CallbackContext<TestRunInfo>> callbackContextFactory = null,
+			StageCallbacks<TestRunInfo> stageCallbacks = null,
+			ProgramArgumentCallbacks<TestRunInfo> programArgumentCallbacks = null,
+			Action<Queue<Stage<TestRunInfo>>> extendPipelineCallback = null)
 		{
-			OptionStage<TestRunInfo> stage = GetBaseStage();
-
-			ProcessStageResult result = stage.ProcessStage();
-
-			Assert.Equal(ProcessResult.End, result);
-		}
-
-		[Fact]
-		public void NextIsSubCommand_Returns_ContinueResult()
-		{
-			var args = new string[] { "subcommand" };
-			var subCommands = new List<Command<TestRunInfo>>
+			if (runInfo == null)
 			{
-				new Command<TestRunInfo>
-				{
-					Key = "subcommand"
-				}
-			};
+				runInfo = new TestRunInfo();
+			}
+			if (callbackContextFactory == null)
+			{
+				callbackContextFactory = () => new CallbackContext<TestRunInfo>(null, 0, null, new string[] { });
+			}
+			if (stageCallbacks == null)
+			{
+				stageCallbacks = new StageCallbacks<TestRunInfo>(null, null);
+			}
+			if (programArgumentCallbacks == null)
+			{
+				programArgumentCallbacks = new ProgramArgumentCallbacks<TestRunInfo>(null, null, null);
+			}
+			if (extendPipelineCallback == null)
+			{
+				extendPipelineCallback = queue => { };
+			}
 
-			OptionStage<TestRunInfo> stage = GetBaseStage(args: args, subCommands: subCommands);
-
-			ProcessStageResult result = stage.ProcessStage();
-
-			Assert.Equal(ProcessResult.Continue, result);
+			return new ProcessContext<TestRunInfo>(runInfo, callbackContextFactory, stageCallbacks, programArgumentCallbacks, extendPipelineCallback);
 		}
+
+		//[Fact]
+		//public void NoMore_ProgramArguments_ReturnsEndResult()
+		//{
+		//	OptionStage<TestRunInfo> stage = GetBaseStage();
+
+		//	ProcessStageResult result = stage.ProcessStage();
+
+		//	Assert.Equal(ProcessResult.End, result);
+		//}
+
+		//[Fact]
+		//public void NextIsSubCommand_Returns_ContinueResult()
+		//{
+		//	var args = new string[] { "subcommand" };
+		//	var subCommands = new List<Command<TestRunInfo>>
+		//	{
+		//		new Command<TestRunInfo>
+		//		{
+		//			Key = "subcommand"
+		//		}
+		//	};
+
+		//	OptionStage<TestRunInfo> stage = GetBaseStage(args: args, subCommands: subCommands);
+
+		//	ProcessStageResult result = stage.ProcessStage();
+
+		//	Assert.Equal(ProcessResult.Continue, result);
+		//}
 
 		// TODO: further processing tests
 	}

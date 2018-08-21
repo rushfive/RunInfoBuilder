@@ -31,14 +31,14 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal ProcessContext(
 			TRunInfo runInfo,
 			Func<CallbackContext<TRunInfo>> callbackContextFactory,
-			StageCallbacks<TRunInfo> stageQueueCallbacks,
-			ProgramArgumentCallbacks<TRunInfo> programArgsQueueCallback,
+			StageCallbacks<TRunInfo> stageCallbacks,
+			ProgramArgumentCallbacks<TRunInfo> programArgumentCallbacks,
 			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
 		{
 			RunInfo = runInfo;
 			_callbackContextFactory = callbackContextFactory;
-			Stages = stageQueueCallbacks;
-			ProgramArguments = programArgsQueueCallback;
+			Stages = stageCallbacks;
+			ProgramArguments = programArgumentCallbacks;
 			ExtendPipeline = extendPipelineCallback;
 		}
 
@@ -56,5 +56,9 @@ namespace R5.RunInfoBuilder.Processor.Models
 		}
 
 		internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
+
+		internal bool NextIsSubCommand() => _subCommands.Contains(ProgramArguments.Peek());
+
+		internal bool NextIsOption() => Options.IsOption(ProgramArguments.Peek());
 	}
 }
