@@ -5,37 +5,38 @@ using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal interface IPipelineFactory<TRunInfo>
-		where TRunInfo : class
+	internal interface IPipelineFactory
 	{
-		Pipeline<TRunInfo> Create(string[] args);
+		Pipeline<TRunInfo> Create<TRunInfo>(string[] args)
+			where TRunInfo : class;
 	}
 
-	internal class PipelineFactory<TRunInfo> : IPipelineFactory<TRunInfo>
-		where TRunInfo : class
+	internal class PipelineFactory : IPipelineFactory
 	{
-		private ICommandStore<TRunInfo> _commandStore { get; }
-		private IStagesQueueFactory<TRunInfo> _stagesQueueFactory { get; }
+		private ICommandStoreInternal _commandStore { get; }
+		private IStagesQueueFactory _stagesQueueFactory { get; }
 
 		public PipelineFactory(
-			ICommandStore<TRunInfo> commandStore,
-			IStagesQueueFactory<TRunInfo> stagesQueueFactory)
+			ICommandStoreInternal commandStore,
+			IStagesQueueFactory stagesQueueFactory)
 		{
 			_commandStore = commandStore;
 			_stagesQueueFactory = stagesQueueFactory;
 		}
 
-		public Pipeline<TRunInfo> Create(string[] args)
+		public Pipeline<TRunInfo> Create<TRunInfo>(string[] args)
+			where TRunInfo : class
 		{
 			if (args.Length == 0 || !_commandStore.IsCommand(args[0]))
 			{
-				return CreateForDefaultCommand(args);
+				return CreateForDefaultCommand<TRunInfo>(args);
 			}
 
-			return CreateForCommand(args);
+			return CreateForCommand<TRunInfo>(args);
 		}
 
-		private Pipeline<TRunInfo> CreateForCommand(string[] args)
+		private Pipeline<TRunInfo> CreateForCommand<TRunInfo>(string[] args)
+			where TRunInfo : class
 		{
 			if (!_commandStore.TryGetCommand(args[0], out Command<TRunInfo> command))
 			{
@@ -46,7 +47,8 @@ namespace R5.RunInfoBuilder.Processor
 			return new Pipeline<TRunInfo>(stages, args);
 		}
 
-		private Pipeline<TRunInfo> CreateForDefaultCommand(string[] args)
+		private Pipeline<TRunInfo> CreateForDefaultCommand<TRunInfo>(string[] args)
+			where TRunInfo : class
 		{
 			if (!_commandStore.TryGetDefaultCommand(out DefaultCommand<TRunInfo> defaultCommand))
 			{

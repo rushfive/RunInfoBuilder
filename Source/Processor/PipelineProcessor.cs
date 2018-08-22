@@ -9,24 +9,24 @@ namespace R5.RunInfoBuilder.Processor
 {
 	// might just dump this and handle this directly from runinfobuilder
 	// possibly unnecessary layer of abstraction
-	internal interface IPipelineProcessor<TRunInfo>
-		where TRunInfo : class
+	internal interface IPipelineProcessor
 	{
-		TRunInfo Process(string[] args, TRunInfo runInfo);
+		TRunInfo Process<TRunInfo>(string[] args, TRunInfo runInfo)
+			where TRunInfo : class;
 	}
 
-	internal class PipelineProcessor<TRunInfo> : IPipelineProcessor<TRunInfo>
-		   where TRunInfo : class
+	internal class PipelineProcessor : IPipelineProcessor
 	{
-		private IPipelineFactory<TRunInfo> _pipelineFactory { get; }
+		private IPipelineFactory _pipelineFactory { get; }
 
 		public PipelineProcessor(
-			IPipelineFactory<TRunInfo> pipelineFactory)
+			IPipelineFactory pipelineFactory)
 		{
 			_pipelineFactory = pipelineFactory;
 		}
 
-		public TRunInfo Process(string[] args, TRunInfo runInfo)
+		public TRunInfo Process<TRunInfo>(string[] args, TRunInfo runInfo)
+			where TRunInfo : class
 		{
 			if (args == null)
 			{
@@ -40,7 +40,7 @@ namespace R5.RunInfoBuilder.Processor
 			// getting the cb context
 			//Queue<Stage<TRunInfo>> pipeline = _pipelineFactory.Create(args);
 
-			Pipeline<TRunInfo> pipeline = _pipelineFactory.Create(args);
+			Pipeline<TRunInfo> pipeline = _pipelineFactory.Create<TRunInfo>(args);
 			// common: 
 			// - callbackcontext, 
 			// - anything related to stage and program args queues,  ***

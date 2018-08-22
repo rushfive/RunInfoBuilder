@@ -5,31 +5,34 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public interface ICommandStore<TRunInfo> 
-		where TRunInfo : class
+	public interface ICommandStore
 	{
-		ICommandStore<TRunInfo> Add(Command<TRunInfo> command);
+		ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
+			where TRunInfo : class;
 
-		ICommandStore<TRunInfo> AddDefault(DefaultCommand<TRunInfo> defaultCommand);
+		ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+			where TRunInfo : class;
 	}
 
-	internal interface ICommandStoreInternal<TRunInfo>
-		where TRunInfo : class
+	internal interface ICommandStoreInternal
 	{
-		bool TryGetCommand(string key, out Command<TRunInfo> command);
+		bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
+			where TRunInfo : class;
 
-		bool TryGetDefaultCommand(out DefaultCommand<TRunInfo> defaultCommand);
+		bool TryGetDefaultCommand<TRunInfo>(out DefaultCommand<TRunInfo> defaultCommand)
+			where TRunInfo : class;
 
 		bool IsCommand(string key);
 	}
 
-	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>, ICommandStoreInternal<TRunInfo>
-		where TRunInfo : class
+	internal class CommandStore : ICommandStore, ICommandStoreInternal
 	{
 		private ICommandValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
-		private Dictionary<string, Command<TRunInfo>> _commandMap { get; }
-		private DefaultCommand<TRunInfo> _defaultCommand { get; set; }
+		// store as objects because we dont know the generic run info types
+		// until runtime
+		private Dictionary<string, object> _commandMap { get; }
+		private object _defaultCommand { get; set; }
 
 		public CommandStore(
 			ICommandValidator validator,
@@ -37,10 +40,11 @@ namespace R5.RunInfoBuilder.Commands
 		{
 			_validator = validator;
 			_keyValidator = keyValidator;
-			_commandMap = new Dictionary<string, Command<TRunInfo>>();
+			_commandMap = new Dictionary<string, object>();
 		}
 
-		public ICommandStore<TRunInfo> Add(Command<TRunInfo> command)
+		public ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
+			where TRunInfo : class
 		{
 			_validator.Validate(command);
 
@@ -56,7 +60,8 @@ namespace R5.RunInfoBuilder.Commands
 			return this;
 		}
 
-		public ICommandStore<TRunInfo> AddDefault(DefaultCommand<TRunInfo> defaultCommand)
+		public ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+			where TRunInfo : class
 		{
 			_validator.Validate(defaultCommand);
 
@@ -70,7 +75,8 @@ namespace R5.RunInfoBuilder.Commands
 			return this;
 		}
 
-		public bool TryGetCommand(string key, out Command<TRunInfo> command)
+		public bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
+			where TRunInfo : class
 		{
 			command = null;
 
@@ -79,13 +85,14 @@ namespace R5.RunInfoBuilder.Commands
 				return false;
 			}
 
-			command = _commandMap[key];
+			command = _commandMap[key] as Command<TRunInfo>;
 			return true;
 		}
 
-		public bool TryGetDefaultCommand(out DefaultCommand<TRunInfo> defaultCommand)
+		public bool TryGetDefaultCommand<TRunInfo>(out DefaultCommand<TRunInfo> defaultCommand)
+			where TRunInfo : class
 		{
-			defaultCommand = _defaultCommand;
+			defaultCommand = _defaultCommand as DefaultCommand<TRunInfo>;
 			return _defaultCommand != null;
 		}
 

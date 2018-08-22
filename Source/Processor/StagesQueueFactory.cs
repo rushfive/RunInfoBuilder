@@ -9,15 +9,16 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal interface IStagesQueueFactory<TRunInfo> where TRunInfo : class
+	internal interface IStagesQueueFactory
 	{
-		Queue<Stage<TRunInfo>> Create(Command<TRunInfo> command);
+		Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
+			 where TRunInfo : class;
 
-		Queue<Stage<TRunInfo>> Create(DefaultCommand<TRunInfo> defaultCommand);
+		Queue<Stage<TRunInfo>> Create<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+			 where TRunInfo : class;
 	}
 
-	internal class StagesQueueFactory<TRunInfo> : IStagesQueueFactory<TRunInfo>
-		where TRunInfo : class
+	internal class StagesQueueFactory : IStagesQueueFactory
 	{
 		private IArgumentParser _parser { get; }
 
@@ -25,15 +26,11 @@ namespace R5.RunInfoBuilder.Processor
 		{
 			_parser = parser;
 		}
-
-		private ProcessContext<TRunInfo> GetProcessContext()
-			=> throw new NotImplementedException("TODO!");
-
-		public Queue<Stage<TRunInfo>> Create(Command<TRunInfo> command)
+		
+		public Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
+			 where TRunInfo : class
 		{
-			ProcessContext<TRunInfo> processContext = GetProcessContext();
-
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command, processContext);
+			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command);
 
 			// recursively add subcommand pipelines
 			if (command.SubCommands.Any())
@@ -60,15 +57,14 @@ namespace R5.RunInfoBuilder.Processor
 			return pipeline;
 		}
 
-		public Queue<Stage<TRunInfo>> Create(DefaultCommand<TRunInfo> defaultCommand)
+		public Queue<Stage<TRunInfo>> Create<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+			 where TRunInfo : class
 		{
-			ProcessContext<TRunInfo> processContext = GetProcessContext();
-
-			return BuildCommonPipelineStages(defaultCommand, processContext);
+			return BuildCommonPipelineStages(defaultCommand);
 		}
 
-		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages(CommandBase<TRunInfo> command,
-			ProcessContext<TRunInfo> processContext)
+		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages<TRunInfo>(CommandBase<TRunInfo> command)
+			 where TRunInfo : class
 		{
 			var pipeline = new Queue<Stage<TRunInfo>>();
 
