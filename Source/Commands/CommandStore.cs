@@ -14,7 +14,7 @@ namespace R5.RunInfoBuilder.Commands
 			where TRunInfo : class;
 	}
 
-	internal interface ICommandStoreInternal
+	internal interface ICommandStoreInternal : ICommandStore
 	{
 		bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
 			where TRunInfo : class;
