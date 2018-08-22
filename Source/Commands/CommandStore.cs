@@ -1,4 +1,6 @@
-﻿using R5.RunInfoBuilder.Validators;
+﻿using R5.RunInfoBuilder.Processor;
+using R5.RunInfoBuilder.Processor.Stages;
+using R5.RunInfoBuilder.Validators;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,31 +31,56 @@ namespace R5.RunInfoBuilder.Commands
 	{
 		private ICommandValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
-		// store as objects because we dont know the generic run info types
-		// until runtime
-		private Dictionary<string, object> _commandMap { get; }
-		private object _defaultCommand { get; set; }
+		private IStagesFactory _stagesFactory { get; }
+		
+
+		// new setup
+		internal const string DefaultKey = "__DEFAULT__";
+		private Dictionary<string, object> _pipelineFactoryMap { get; }
+
+
 
 		public CommandStore(
 			ICommandValidator validator,
-			IRestrictedKeyValidator keyValidator)
+			IRestrictedKeyValidator keyValidator,
+			IStagesFactory stagesFactory)
 		{
 			_validator = validator;
 			_keyValidator = keyValidator;
-			_commandMap = new Dictionary<string, object>();
+			_stagesFactory = stagesFactory;
+			
+			//
+
+
+			// Key: Command key (or DefaultKey)
+			// Value: Func<string[], Pipeline<TRunInfo>>
+			//        pass args[] to get the corresponding pipeline
+			_pipelineFactoryMap = new Dictionary<string, object>();
 		}
+
+		// this ADD method shuold create the pipeline HERE, since it has the generic truninfo
+		// param ref. create the pipeline OR a callback to get it and save it as an object.
+		// when the ruinfobuilder starts building, parse args and find the correct pipeline from this
+		// store. ref it as "dynamic" in runinfobuilder and call process!
+
 
 		public ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
 			_validator.Validate(command);
 
-			if (_commandMap.ContainsKey(command.Key))
+			if (IsCommand(command.Key))
 			{
 				throw new InvalidOperationException($"Command with key '{command.Key}' has already been configured.");
 			}
 
-			_commandMap.Add(command.Key, command);
+			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
+			{
+				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(command);
+				return new Pipeline<TRunInfo>(stages, args);
+			};
+
+			_pipelineFactoryMap.Add(command.Key, pipelineFactory);
 
 			_keyValidator.Add(command.Key);
 
@@ -65,14 +92,35 @@ namespace R5.RunInfoBuilder.Commands
 		{
 			_validator.Validate(defaultCommand);
 
-			if (_defaultCommand != null)
+			if (IsCommand(CommandStore.DefaultKey))
 			{
 				throw new InvalidOperationException("Default command has already been configured.");
 			}
 
-			_defaultCommand = defaultCommand;
+			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
+			{
+				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand);
+				return new Pipeline<TRunInfo>(stages, args);
+			};
+
+			_pipelineFactoryMap.Add(CommandStore.DefaultKey, pipelineFactory);
+			
 
 			return this;
+		}
+
+		public bool TryGetCommandPipeline(string key, out object pipeline)
+		{
+			pipeline = null;
+
+			if (!_pipelineFactoryMap.ContainsKey(key))
+			{
+				return false;
+			}
+
+			dynamic factory = _pipelineFactoryMap[key];
+			pipeline = factory.Invoke();
+			return true;
 		}
 
 		public bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
@@ -96,7 +144,7 @@ namespace R5.RunInfoBuilder.Commands
 			return _defaultCommand != null;
 		}
 
-		public bool IsCommand(string key) => _commandMap.ContainsKey(key);
+		public bool IsCommand(string key) => _pipelineFactoryMap.ContainsKey(key);
 	}
 
 }

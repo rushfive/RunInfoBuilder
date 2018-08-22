@@ -9,7 +9,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal interface IStagesQueueFactory
+	internal interface IStagesFactory
 	{
 		Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
 			 where TRunInfo : class;
@@ -18,11 +18,11 @@ namespace R5.RunInfoBuilder.Processor
 			 where TRunInfo : class;
 	}
 
-	internal class StagesQueueFactory : IStagesQueueFactory
+	internal class StagesFactory : IStagesFactory
 	{
 		private IArgumentParser _parser { get; }
 
-		public StagesQueueFactory(IArgumentParser parser)
+		public StagesFactory(IArgumentParser parser)
 		{
 			_parser = parser;
 		}

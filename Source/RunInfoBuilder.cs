@@ -23,7 +23,7 @@ namespace R5.RunInfoBuilder
 
 			var argPArser = new ArgumentParser();
 
-			IStagesQueueFactory stagesQueueFactory = new StagesQueueFactory(argPArser);
+			IStagesFactory stagesQueueFactory = new StagesFactory(argPArser);
 
 			_pipelineFactory = new PipelineFactory((ICommandStoreInternal)Commands, stagesQueueFactory);
 		}

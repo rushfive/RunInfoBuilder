@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Commands;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -22,7 +23,7 @@ namespace R5.RunInfoBuilder.Validators
 
 		public RestrictedKeyValidator()
 		{
-
+			_restricted.Add(CommandStore.DefaultKey);
 		}
 
 		public bool IsRestricted(string key)
