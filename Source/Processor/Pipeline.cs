@@ -7,11 +7,11 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-    internal class Pipeline<TRunInfo>
+	internal class Pipeline<TRunInfo>
 		where TRunInfo : class
-    {
+	{
 		private Queue<Stage<TRunInfo>> _stages { get; }
-		
+
 
 		private string[] _args { get; }
 
@@ -31,39 +31,50 @@ namespace R5.RunInfoBuilder.Processor
 
 		internal TRunInfo Process(TRunInfo runInfo)
 		{
-
+			ProcessContext<TRunInfo> processContext = GetProcessContext(runInfo);
 
 
 			return runInfo;
 		}
 
-		// todo: access modifier
-		internal Func<CallbackContext<TRunInfo>> GetCallbackContextFactory(string[] args, TRunInfo runInfo) => 
-			() => new CallbackContext<TRunInfo>(args[_position], _position, runInfo, (string[])args.Clone());
-
-		internal StageCallbacks<TRunInfo> GetStageCallbacks()
-			=> new StageCallbacks<TRunInfo>(_stages.Any, _stages.Dequeue);
-
-		internal ProgramArgumentCallbacks<TRunInfo> GetProgramArgumentCallbacks()
-			=> new ProgramArgumentCallbacks<TRunInfo>(_programArguments.Any, _programArguments.Peek, DequeueProgramArgument);
-
-		private string DequeueProgramArgument()
+		private ProcessContext<TRunInfo> GetProcessContext(TRunInfo runInfo)
 		{
-			if (!_programArguments.Any())
+			Func<string> dequeueProgramArgument = () =>
 			{
-				throw new InvalidOperationException("Cannot dequeue because there's no more items.");
-			}
+				if (!_programArguments.Any())
+				{
+					throw new InvalidOperationException("Cannot dequeue because there's no more items.");
+				}
 
-			_position++;
-			return _programArguments.Dequeue();
-		}
+				_position++;
+				return _programArguments.Dequeue();
+			};
 
-		internal void ExtendPipeline(Queue<Stage<TRunInfo>> subCommandPipeline)
-		{
-			while (subCommandPipeline.Any())
+			Func<CallbackContext<TRunInfo>> callbackContextFactory =
+				() => new CallbackContext<TRunInfo>(_args[_position], _position, runInfo, (string[])_args.Clone());
+
+			var stageCallbacks = new StageCallbacks<TRunInfo>(_stages.Any, _stages.Dequeue);
+
+			var programArgumentCallbacks = new ProgramArgumentCallbacks<TRunInfo>(
+				_programArguments.Any, 
+				_programArguments.Peek, 
+				dequeueProgramArgument);
+
+			Action<Queue<Stage<TRunInfo>>> extendPipeline = stagesQueue =>
 			{
-				_stages.Enqueue(subCommandPipeline.Dequeue());
-			}
+				while (stagesQueue.Any())
+				{
+					_stages.Enqueue(stagesQueue.Dequeue());
+				}
+			};
+
+			return new ProcessContext<TRunInfo>(
+				runInfo,
+				callbackContextFactory,
+				stageCallbacks,
+				programArgumentCallbacks,
+				extendPipeline);
 		}
+		
 	}
 }

@@ -5,22 +5,25 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public interface ICommandStore<TRunInfo> where TRunInfo : class
+	public interface ICommandStore<TRunInfo> 
+		where TRunInfo : class
 	{
 		ICommandStore<TRunInfo> Add(Command<TRunInfo> command);
 
 		ICommandStore<TRunInfo> AddDefault(DefaultCommand<TRunInfo> defaultCommand);
+	}
 
+	internal interface ICommandStoreInternal<TRunInfo>
+		where TRunInfo : class
+	{
 		bool TryGetCommand(string key, out Command<TRunInfo> command);
 
 		bool TryGetDefaultCommand(out DefaultCommand<TRunInfo> defaultCommand);
 
 		bool IsCommand(string key);
-
-		bool DefaultIsConfigured();
 	}
 
-	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>
+	internal class CommandStore<TRunInfo> : ICommandStore<TRunInfo>, ICommandStoreInternal<TRunInfo>
 		where TRunInfo : class
 	{
 		private ICommandValidator _validator { get; }
@@ -87,8 +90,6 @@ namespace R5.RunInfoBuilder.Commands
 		}
 
 		public bool IsCommand(string key) => _commandMap.ContainsKey(key);
-
-		public bool DefaultIsConfigured() => _defaultCommand != null;
 	}
 
 }

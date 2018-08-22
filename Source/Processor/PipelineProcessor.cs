@@ -7,18 +7,21 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal interface ICommandPipelineProcessor
+	// might just dump this and handle this directly from runinfobuilder
+	// possibly unnecessary layer of abstraction
+	internal interface IPipelineProcessor<TRunInfo>
+		where TRunInfo : class
 	{
-
+		TRunInfo Process(string[] args, TRunInfo runInfo);
 	}
 
-	internal class CommandPipelineProcessor<TRunInfo> : ICommandPipelineProcessor
+	internal class PipelineProcessor<TRunInfo> : IPipelineProcessor<TRunInfo>
 		   where TRunInfo : class
 	{
-		private ICommandPipelineFactory<TRunInfo> _pipelineFactory { get; }
+		private IPipelineFactory<TRunInfo> _pipelineFactory { get; }
 
-		public CommandPipelineProcessor(
-			ICommandPipelineFactory<TRunInfo> pipelineFactory)
+		public PipelineProcessor(
+			IPipelineFactory<TRunInfo> pipelineFactory)
 		{
 			_pipelineFactory = pipelineFactory;
 		}
@@ -37,8 +40,7 @@ namespace R5.RunInfoBuilder.Processor
 			// getting the cb context
 			//Queue<Stage<TRunInfo>> pipeline = _pipelineFactory.Create(args);
 
-			var pipeline = new Pipeline<TRunInfo>(new Queue<Stage<TRunInfo>>(), args); // TODO
-
+			Pipeline<TRunInfo> pipeline = _pipelineFactory.Create(args);
 			// common: 
 			// - callbackcontext, 
 			// - anything related to stage and program args queues,  ***
@@ -47,17 +49,7 @@ namespace R5.RunInfoBuilder.Processor
 			// unique per command/sub-command level: 
 			// - list of subcommands
 			// - list of full/short options, and their setter funcs
-
-			StageCallbacks<TRunInfo> stageCallbacks = pipeline.GetStageCallbacks();
-			ProgramArgumentCallbacks<TRunInfo> programArgumentCallbacks = pipeline.GetProgramArgumentCallbacks();
-
-			var processContext = new ProcessContext<TRunInfo>(
-				runInfo,
-				pipeline.GetCallbackContextFactory(args, runInfo),
-				stageCallbacks,
-				programArgumentCallbacks,
-				pipeline.ExtendPipeline);
-
+			
 			return pipeline.Process(runInfo);
 		}
 

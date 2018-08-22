@@ -9,19 +9,19 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal interface IPipelineBuilder<TRunInfo> where TRunInfo : class
+	internal interface IStagesQueueFactory<TRunInfo> where TRunInfo : class
 	{
-		Queue<Stage<TRunInfo>> Build(Command<TRunInfo> command);
+		Queue<Stage<TRunInfo>> Create(Command<TRunInfo> command);
 
-		Queue<Stage<TRunInfo>> Build(DefaultCommand<TRunInfo> defaultCommand);
+		Queue<Stage<TRunInfo>> Create(DefaultCommand<TRunInfo> defaultCommand);
 	}
 
-	internal class PipelineBuilder<TRunInfo> : IPipelineBuilder<TRunInfo>
+	internal class StagesQueueFactory<TRunInfo> : IStagesQueueFactory<TRunInfo>
 		where TRunInfo : class
 	{
 		private IArgumentParser _parser { get; }
 
-		public PipelineBuilder(IArgumentParser parser)
+		public StagesQueueFactory(IArgumentParser parser)
 		{
 			_parser = parser;
 		}
@@ -29,7 +29,7 @@ namespace R5.RunInfoBuilder.Processor
 		private ProcessContext<TRunInfo> GetProcessContext()
 			=> throw new NotImplementedException("TODO!");
 
-		public Queue<Stage<TRunInfo>> Build(Command<TRunInfo> command)
+		public Queue<Stage<TRunInfo>> Create(Command<TRunInfo> command)
 		{
 			ProcessContext<TRunInfo> processContext = GetProcessContext();
 
@@ -42,7 +42,7 @@ namespace R5.RunInfoBuilder.Processor
 
 				foreach (Command<TRunInfo> subCommand in command.SubCommands)
 				{
-					Queue<Stage<TRunInfo>> subCommandPipeline = Build(subCommand);
+					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand);
 					subCommandPipelineMap.Add(subCommand.Key, subCommandPipeline);
 				}
 
@@ -60,7 +60,7 @@ namespace R5.RunInfoBuilder.Processor
 			return pipeline;
 		}
 
-		public Queue<Stage<TRunInfo>> Build(DefaultCommand<TRunInfo> defaultCommand)
+		public Queue<Stage<TRunInfo>> Create(DefaultCommand<TRunInfo> defaultCommand)
 		{
 			ProcessContext<TRunInfo> processContext = GetProcessContext();
 
