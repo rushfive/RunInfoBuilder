@@ -9,23 +9,27 @@ namespace R5.RunInfoBuilder
 	public class RunInfoBuilder
 	{
 		public ICommandStore Commands { get; }
-		private IPipelineFactory _pipelineFactory { get; }
+		//private IPipelineFactory _pipelineFactory { get; }
 
+		private CommandStore _commandStore { get; }
 
 		public RunInfoBuilder()
 		{
 			// temp
 			var keyValidator = new RestrictedKeyValidator();
 
-			Commands = new CommandStore(
-				new CommandValidator(keyValidator),
-				keyValidator);
-
 			var argPArser = new ArgumentParser();
 
 			IStagesFactory stagesQueueFactory = new StagesFactory(argPArser);
 
-			_pipelineFactory = new PipelineFactory((ICommandStoreInternal)Commands, stagesQueueFactory);
+			Commands = _commandStore = new CommandStore(
+				new CommandValidator(keyValidator),
+				keyValidator,
+				stagesQueueFactory);
+
+			
+
+			//_pipelineFactory = new PipelineFactory((ICommandStoreInternal)Commands, stagesQueueFactory);
 		}
 
 
@@ -35,8 +39,10 @@ namespace R5.RunInfoBuilder
 
 		public object Build(string[] args)
 		{
-			var pipeline = _pipelineFactory.Create(args);
-
+			dynamic pipeline = _commandStore.ResolvePipelineFromArgs(args);
+			var runInfo = pipeline.Process();
+			return runInfo;
+			
 
 		}
 	}

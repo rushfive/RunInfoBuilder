@@ -16,29 +16,35 @@ namespace R5.RunInfoBuilder.Commands
 			where TRunInfo : class;
 	}
 
-	internal interface ICommandStoreInternal : ICommandStore
+	//internal interface ICommandStoreInternal : ICommandStore
+	//{
+	//	bool TryGetCommandPipeline(string key, out object pipeline);
+
+	//	bool TryGetDefaultPipeline(out object pipeline);
+	//	//bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
+	//	//	where TRunInfo : class;
+
+	//	//bool TryGetDefaultCommand<TRunInfo>(out DefaultCommand<TRunInfo> defaultCommand)
+	//	//	where TRunInfo : class;
+
+	//	bool IsCommand(string key);
+	//}
+
+	internal class CommandStore : ICommandStore
 	{
-		bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
-			where TRunInfo : class;
+		internal const string DefaultKey = "__DEFAULT__";
 
-		bool TryGetDefaultCommand<TRunInfo>(out DefaultCommand<TRunInfo> defaultCommand)
-			where TRunInfo : class;
-
-		bool IsCommand(string key);
-	}
-
-	internal class CommandStore : ICommandStore, ICommandStoreInternal
-	{
 		private ICommandValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 		private IStagesFactory _stagesFactory { get; }
 		
-
-		// new setup
-		internal const string DefaultKey = "__DEFAULT__";
+		// Key: Command key (or DefaultKey)
+		// Value: Func<string[], Pipeline<TRunInfo>> (pass args[] to get the corresponding pipeline)
 		private Dictionary<string, object> _pipelineFactoryMap { get; }
 
-
+		// Key: Command key (or DefaultKey)
+		// Value: CommandBase<TRunInfo>
+		private Dictionary<string, object> _commandMap { get; }
 
 		public CommandStore(
 			ICommandValidator validator,
@@ -48,14 +54,9 @@ namespace R5.RunInfoBuilder.Commands
 			_validator = validator;
 			_keyValidator = keyValidator;
 			_stagesFactory = stagesFactory;
-			
-			//
 
-
-			// Key: Command key (or DefaultKey)
-			// Value: Func<string[], Pipeline<TRunInfo>>
-			//        pass args[] to get the corresponding pipeline
 			_pipelineFactoryMap = new Dictionary<string, object>();
+			_commandMap = new Dictionary<string, object>();
 		}
 
 		// this ADD method shuold create the pipeline HERE, since it has the generic truninfo
@@ -109,40 +110,73 @@ namespace R5.RunInfoBuilder.Commands
 			return this;
 		}
 
-		public bool TryGetCommandPipeline(string key, out object pipeline)
+		internal object ResolvePipelineFromArgs(string[] args)
 		{
-			pipeline = null;
-
-			if (!_pipelineFactoryMap.ContainsKey(key))
+			if (args.Length == 0 || !IsCommand(args[0]))
 			{
-				return false;
+				if (!_pipelineFactoryMap.ContainsKey(CommandStore.DefaultKey))
+				{
+					throw new Exception();
+				}
+
+				dynamic defaultFactory = _pipelineFactoryMap[CommandStore.DefaultKey];//.Invoke(args);
+				return defaultFactory.Invoke(args);
+
+				// default
+				//if (!TryGetDefaultPipeline(out dynamic defaultPipelineFactory))
+				//{
+				//	throw new Exception();
+				//}
+
+				//return defaultPipelineFactory.Invoke(args);
 			}
 
-			dynamic factory = _pipelineFactoryMap[key];
-			pipeline = factory.Invoke();
-			return true;
-		}
-
-		public bool TryGetCommand<TRunInfo>(string key, out Command<TRunInfo> command)
-			where TRunInfo : class
-		{
-			command = null;
-
-			if (!_commandMap.ContainsKey(key))
+			if (!_pipelineFactoryMap.ContainsKey(args[0]))
 			{
-				return false;
+				throw new Exception();
 			}
 
-			command = _commandMap[key] as Command<TRunInfo>;
-			return true;
+			dynamic factory = _pipelineFactoryMap[args[0]];//.Invoke(args);
+			return factory.Invoke(args);
+
+			//
+			//if (!TryGetCommandPipelineFactory(args[0], out dynamic pipelineFactory))
+			//{
+			//	throw new Exception();
+			//}
+
+			//return pipelineFactory.Invoke(args);
 		}
 
-		public bool TryGetDefaultCommand<TRunInfo>(out DefaultCommand<TRunInfo> defaultCommand)
-			where TRunInfo : class
-		{
-			defaultCommand = _defaultCommand as DefaultCommand<TRunInfo>;
-			return _defaultCommand != null;
-		}
+		//private bool TryGetCommandPipelineFactory(string key, out object factory)
+		//{
+		//	factory = null;
+
+		//	if (!_pipelineFactoryMap.ContainsKey(key))
+		//	{
+		//		return false;
+		//	}
+
+		//	object factory = _pipelineFactoryMap[key];
+		//	//pipeline = factory.Invoke();
+		//	return true;
+		//}
+
+		//private bool TryGetDefaultPipeline(out object pipeline)
+		//{
+		//	pipeline = null;
+
+		//	if (!_pipelineFactoryMap.ContainsKey(CommandStore.DefaultKey))
+		//	{
+		//		return false;
+		//	}
+
+		//	dynamic factory = _pipelineFactoryMap[CommandStore.DefaultKey];
+		//	pipeline = factory.Invoke();
+		//	return true;
+		//}
+
+		//internal object GetCommand(string key) => _commandMap[key];
 
 		public bool IsCommand(string key) => _pipelineFactoryMap.ContainsKey(key);
 	}

@@ -11,10 +11,7 @@ namespace R5.RunInfoBuilder.Processor
 		where TRunInfo : class
 	{
 		private Queue<Stage<TRunInfo>> _stages { get; }
-
-
 		private string[] _args { get; }
-
 		private int _position { get; set; }
 		private Queue<string> _programArguments { get; }
 
@@ -24,15 +21,28 @@ namespace R5.RunInfoBuilder.Processor
 		{
 			_stages = stages;
 			_args = args;
-
 			_position = 0;
 			_programArguments = new Queue<string>(args);
 		}
 
-		internal TRunInfo Process(TRunInfo runInfo)
+		internal TRunInfo Process()
 		{
+			TRunInfo runInfo = (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
+
 			ProcessContext<TRunInfo> processContext = GetProcessContext(runInfo);
 
+			while (_stages.Any())
+			{
+				Stage<TRunInfo> current = _stages.Dequeue();
+
+				ProcessStageResult result = current.ProcessStage(processContext);
+
+				if (result == ProcessResult.End)
+				{
+					break;
+				}
+
+			}
 
 			return runInfo;
 		}

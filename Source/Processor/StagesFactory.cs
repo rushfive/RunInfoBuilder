@@ -35,12 +35,12 @@ namespace R5.RunInfoBuilder.Processor
 			// recursively add subcommand pipelines
 			if (command.SubCommands.Any())
 			{
-				var subCommandPipelineMap = new Dictionary<string, Queue<Stage<TRunInfo>>>();
+				var subCommandInfoMap = new Dictionary<string, (Queue<Stage<TRunInfo>>, Command<TRunInfo>)>();
 
 				foreach (Command<TRunInfo> subCommand in command.SubCommands)
 				{
 					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand);
-					subCommandPipelineMap.Add(subCommand.Key, subCommandPipeline);
+					subCommandInfoMap.Add(subCommand.Key, (subCommandPipeline, subCommand));
 				}
 
 				Action<Queue<Stage<TRunInfo>>> extendPipelineCallback = subCommandPipeline =>
@@ -51,7 +51,7 @@ namespace R5.RunInfoBuilder.Processor
 					}
 				};
 
-				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandPipelineMap));
+				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandInfoMap));
 			}
 
 			return pipeline;

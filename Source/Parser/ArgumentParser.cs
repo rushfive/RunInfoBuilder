@@ -30,6 +30,8 @@ namespace R5.RunInfoBuilder.Parser
 
 		public ArgumentParser()
 		{
+			_predicatesMap = new Dictionary<Type, object>();
+			this.AddSystemTypePredicates();
 		}
 
 		public IArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)

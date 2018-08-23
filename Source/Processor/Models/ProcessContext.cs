@@ -42,7 +42,8 @@ namespace R5.RunInfoBuilder.Processor.Models
 			ExtendPipeline = extendPipelineCallback;
 		}
 
-		internal ProcessContext<TRunInfo> RefreshForCommand(CommandBase<TRunInfo> command)
+		// only refreshed on subcommands so dont use CommandBase or DefaultCommand
+		internal ProcessContext<TRunInfo> RefreshForCommand(Command<TRunInfo> command)
 		{
 			_subCommands = new HashSet<string>();
 			Options = new ProcessOptions<TRunInfo>(command.Options);
