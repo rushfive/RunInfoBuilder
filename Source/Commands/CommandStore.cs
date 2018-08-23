@@ -3,6 +3,7 @@ using R5.RunInfoBuilder.Processor.Stages;
 using R5.RunInfoBuilder.Validators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
@@ -78,7 +79,11 @@ namespace R5.RunInfoBuilder.Commands
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
 				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(command);
-				return new Pipeline<TRunInfo>(stages, args);
+
+				// skip the first arg (command key)
+				args = args.Skip(1).ToArray();
+
+				return new Pipeline<TRunInfo>(stages, args, command);
 			};
 
 			_pipelineFactoryMap.Add(command.Key, pipelineFactory);
@@ -101,7 +106,7 @@ namespace R5.RunInfoBuilder.Commands
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
 				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand);
-				return new Pipeline<TRunInfo>(stages, args);
+				return new Pipeline<TRunInfo>(stages, args, defaultCommand);
 			};
 
 			_pipelineFactoryMap.Add(CommandStore.DefaultKey, pipelineFactory);
@@ -137,6 +142,7 @@ namespace R5.RunInfoBuilder.Commands
 			}
 
 			dynamic factory = _pipelineFactoryMap[args[0]];//.Invoke(args);
+			//dynamic pipeline = factory.Invoke(args);
 			return factory.Invoke(args);
 
 			//

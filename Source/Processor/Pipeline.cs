@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Processor.Models;
+﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
 using System.Collections.Generic;
@@ -14,22 +15,25 @@ namespace R5.RunInfoBuilder.Processor
 		private string[] _args { get; }
 		private int _position { get; set; }
 		private Queue<string> _programArguments { get; }
+		private CommandBase<TRunInfo> _initialCommand { get; }
 
 		internal Pipeline(
 			Queue<Stage<TRunInfo>> stages,
-			string[] args)
+			string[] args,
+			CommandBase<TRunInfo> initialCommand)
 		{
 			_stages = stages;
 			_args = args;
 			_position = 0;
 			_programArguments = new Queue<string>(args);
+			_initialCommand = initialCommand;
 		}
 
 		internal TRunInfo Process()
 		{
 			TRunInfo runInfo = (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
 
-			ProcessContext<TRunInfo> processContext = GetProcessContext(runInfo);
+			ProcessContext<TRunInfo> processContext = GetProcessContext(runInfo).RefreshForCommand(_initialCommand);
 
 			while (_stages.Any())
 			{
