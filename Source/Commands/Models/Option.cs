@@ -9,6 +9,7 @@ namespace R5.RunInfoBuilder.Commands
 	public interface IOption
 	{
 		string Key { get; }
+		Type Type { get; }
 	}
 
 	public class Option<TRunInfo, TProperty> : IOption
@@ -19,6 +20,8 @@ namespace R5.RunInfoBuilder.Commands
 		public string HelpText { get; set; }
 
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
+
+		public Type Type => typeof(TProperty);
 
 		internal void Validate(Type parentType, string parentKey)
 		{

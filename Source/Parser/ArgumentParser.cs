@@ -31,6 +31,7 @@ namespace R5.RunInfoBuilder.Parser
 		public ArgumentParser()
 		{
 			_predicatesMap = new Dictionary<Type, object>();
+
 			this.AddSystemTypePredicates();
 		}
 

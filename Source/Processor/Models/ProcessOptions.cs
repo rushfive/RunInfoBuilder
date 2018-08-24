@@ -7,23 +7,40 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor.Models
 {
-internal    class ProcessOptions<TRunInfo>
-		where TRunInfo : class
-    {
+	internal class ProcessOptions<TRunInfo>
+			where TRunInfo : class
+	{
 		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; set; }
 		private Dictionary<char, (Action<TRunInfo, object> setter, Type valueType)> _shortOptionSetters { get; set; }
+		
+		private HashSet<string> _fullBoolTypeKeys { get; }
+		private HashSet<char> _shortBoolTypeKeys { get; }
+
 
 		internal ProcessOptions(List<IOption> options)
 		{
 			_fullOptionSetters = new Dictionary<string, (Action<TRunInfo, object>, Type)>();
 			_shortOptionSetters = new Dictionary<char, (Action<TRunInfo, object>, Type)>();
+			_fullBoolTypeKeys = new HashSet<string>();
+			_shortBoolTypeKeys = new HashSet<char>();
 
-			InitializeSetters(options);
+			InitializeMaps(options);
 		}
 
-		private void InitializeSetters(List<IOption> options)
+		private void InitializeMaps(List<IOption> options)
 		{
 			foreach (IOption option in options)
+			{
+				AddSetters(option);
+
+				if (option.Type == typeof(bool))
+				{
+					AddToBoolMaps(option);
+				}
+			}
+
+			// local functions
+			void AddSetters(IOption option)
 			{
 				(Action<TRunInfo, object>, Type) setter = createSetter(option);
 
@@ -37,7 +54,6 @@ internal    class ProcessOptions<TRunInfo>
 				}
 			}
 
-			// local functions
 			(Action<TRunInfo, object> setter, Type valueType) createSetter(IOption option)
 			{
 				dynamic opt = option;
@@ -56,6 +72,18 @@ internal    class ProcessOptions<TRunInfo>
 				};
 
 				return (setter, valueType);
+			}
+
+			void AddToBoolMaps(IOption option)
+			{
+				var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(option.Key);
+
+				_fullBoolTypeKeys.Add(fullKey);
+
+				if (shortKey != null)
+				{
+					_shortBoolTypeKeys.Add(shortKey.Value);
+				}
 			}
 		}
 
@@ -103,36 +131,63 @@ internal    class ProcessOptions<TRunInfo>
 
 		internal bool IsOption(string programArgument)
 		{
-			if (!programArgument.StartsWith("--") && !programArgument.StartsWith("-"))
+			try
+			{
+				(OptionType type, string fullKey, List<char> shortKeys, _) = OptionTokenizer.TokenizeProgramArgument(programArgument);
+
+				switch (type)
+				{
+					case OptionType.Full:
+						return IsFullOption(fullKey);
+					case OptionType.Short:
+						return IsShortOption(shortKeys.Single());
+					case OptionType.Stacked:
+						return shortKeys.Count == shortKeys.Distinct().Count()
+							&& shortKeys.All(_shortOptionSetters.ContainsKey);
+					default:
+						throw new ArgumentOutOfRangeException($"'{type}' is not a valid option type.");
+				}
+			}
+			catch (ArgumentException)
 			{
 				return false;
 			}
 
-			if (programArgument.StartsWith("--"))
-			{
-				return IsFullOption(programArgument);
-			}
 
-			if (programArgument.Length == 2)
-			{
-				return IsShortOption(programArgument.Skip(1).Single());
-			}
+			//if (!programArgument.StartsWith("--") && !programArgument.StartsWith("-"))
+			//{
+			//	return false;
+			//}
 
-			return IsStackedOption(new string(programArgument.Skip(1).ToArray()));
+
+			//if (programArgument.StartsWith("--"))
+			//{
+			//	return IsFullOption(programArgument);
+			//}
+
+			//if (programArgument.Length == 2)
+			//{
+			//	return IsShortOption(programArgument.Skip(1).Single());
+			//}
+
+			//return IsStackedOption(new string(programArgument.Skip(1).ToArray()));
 
 			// local functions
 			bool IsFullOption(string s) => _fullOptionSetters.ContainsKey(s);
 
 			bool IsShortOption(char c) => _shortOptionSetters.ContainsKey(c);
 
-			bool IsStackedOption(string s)
-			{
-				var chars = s.ToCharArray();
+			//bool IsStackedOption(string s)
+			//{
+			//	var chars = s.ToCharArray();
 
-				return chars.Length == chars.Distinct().Count()
-					&& chars.All(_shortOptionSetters.ContainsKey);
-			}
+			//	return chars.Length == chars.Distinct().Count()
+			//		&& chars.All(_shortOptionSetters.ContainsKey);
+			//}
 		}
 
+		internal bool IsBoolType(string fullKey) => _fullBoolTypeKeys.Contains(fullKey);
+
+		internal bool IsBoolType(char shortKey) => _shortBoolTypeKeys.Contains(shortKey);
 	}
 }

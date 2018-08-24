@@ -26,15 +26,15 @@ namespace R5.RunInfoBuilder.FunctionalTests
 				},
 				Options =
 				{
-					new Option<TestRunInfo, bool>
+					new Option<TestRunInfo, string>
 					{
-						Key = "bool2",
-						Property = ri => ri.Bool2
+						Key = "string1",
+						Property = ri => ri.String1
 					}
 				}
 			});
 
-			var runInfo = builder.Build(new string[] { "test", "1", "bool2=true" });
+			var runInfo = builder.Build(new string[] { "test", "1", "--string1=what" });
 		}
 	}
 }

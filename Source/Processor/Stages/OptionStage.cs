@@ -35,8 +35,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				string option = context.ProgramArguments.Dequeue();
 				
 				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(option);
-
-				string value = ResolveValue(valueFromToken, option, context);
+				
+				string value = ResolveValue(valueFromToken, context.Options.IsBoolType(fullKey), context);
 
 				switch (type)
 				{
@@ -57,22 +57,43 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			return ProcessResult.End;
 		}
 
-		private string ResolveValue(string valueFromToken, string optionToken, ProcessContext<TRunInfo> context)
+		private string ResolveValue(string valueFromToken, bool isBoolTypeOption,
+			ProcessContext<TRunInfo> context)
 		{
-			if (context.NextIsOption() || !context.ProgramArguments.HasMore())
+			if (!string.IsNullOrWhiteSpace(valueFromToken))
 			{
 				return valueFromToken;
 			}
 
-			string next = context.ProgramArguments.Dequeue();
-
-			if (valueFromToken != null)
+			if (!context.ProgramArguments.HasMore())
 			{
-				throw new InvalidOperationException($"Ambiguous option value: Contains a value in '{optionToken}' "
-					+ $"but also in the next program argument '{next}'");
+				if (!isBoolTypeOption)
+				{
+					throw new InvalidOperationException("Expected a value but reached the end of program args.");
+				}
+
+				// TODO: need the parser to always handle some strnig constant for true
+				// if the user resets the predicate, we need to also add our own for 
+				// handling this case
+				return "true";
 			}
 
-			return next;
+			// more program args exist
+			string next = context.ProgramArguments.Peek();
+
+			if (context.NextIsOption())
+			{
+				throw new InvalidOperationException("Expected a value for the next program argument "
+					+ $"but found an option instead: '{next}'");
+			}
+
+			if (context.NextIsSubCommand())
+			{
+				throw new InvalidOperationException("Expected a value for the next program argument "
+					+ $"but found an sub command instead: '{next}'");
+			}
+
+			return context.ProgramArguments.Dequeue();
 		}
 
 		private void ProcessFull(string key, string valueString, ProcessContext<TRunInfo> context)

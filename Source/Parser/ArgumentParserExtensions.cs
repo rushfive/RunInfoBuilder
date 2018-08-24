@@ -8,6 +8,9 @@ namespace R5.RunInfoBuilder.Parser
 	{
 		internal static void AddSystemTypePredicates(this ArgumentParser parser)
 		{
+			// string
+			parser.SetPredicateForType<string>(value => (true, value));
+
 			// bool
 			parser.SetPredicateForType<bool>(value =>
 			{
