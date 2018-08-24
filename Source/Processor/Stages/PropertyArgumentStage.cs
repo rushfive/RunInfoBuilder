@@ -9,13 +9,13 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor.Stages
 {
-	internal class ArgumentPropertyMappedStage<TRunInfo, TProperty> : Stage<TRunInfo>
+	internal class PropertyArgumentStage<TRunInfo, TProperty> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
 		private IArgumentParser _parser { get; }
 		private Expression<Func<TRunInfo, TProperty>> _property { get; }
 
-		internal ArgumentPropertyMappedStage(
+		internal PropertyArgumentStage(
 			IArgumentParser parser,
 			Expression<Func<TRunInfo, TProperty>> property)
 		{
@@ -25,6 +25,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
+			if (!context.ProgramArguments.HasMore())
+			{
+				throw new InvalidOperationException("Expected an argument but reached the end of program args.");
+			}
+
 			string valueToken = context.ProgramArguments.Dequeue();
 
 			if (!_parser.HandlesType<TProperty>())

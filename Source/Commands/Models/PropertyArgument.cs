@@ -8,7 +8,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public class ArgumentPropertyMapped<TRunInfo, TProperty> : ArgumentBase<TRunInfo>
+	public class PropertyArgument<TRunInfo, TProperty> : ArgumentBase<TRunInfo>
 		where TRunInfo : class
 	{
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
@@ -18,13 +18,13 @@ namespace R5.RunInfoBuilder.Commands
 			if (Property == null)
 			{
 				throw new ConfigurationException("Property mapping expression must be provided.",
-					typeof(ArgumentPropertyMapped<TRunInfo, TProperty>), parentType, parentKey);
+					typeof(PropertyArgument<TRunInfo, TProperty>), parentType, parentKey);
 			}
 		}
 
 		internal override Stage<TRunInfo> ToStage(IArgumentParser parser)
 		{
-			return new ArgumentPropertyMappedStage<TRunInfo, TProperty>(parser, Property);
+			return new PropertyArgumentStage<TRunInfo, TProperty>(parser, Property);
 		}
 	}
 }

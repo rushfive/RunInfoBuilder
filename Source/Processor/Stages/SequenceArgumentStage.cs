@@ -7,13 +7,13 @@ using System.Reflection;
 
 namespace R5.RunInfoBuilder.Processor.Stages
 {
-	internal class ArgumentSequenceStage<TRunInfo, TListProperty> : Stage<TRunInfo>
+	internal class SequenceArgumentStage<TRunInfo, TListProperty> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
 		private IArgumentParser _parser { get; }
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
 		
-		internal ArgumentSequenceStage(
+		internal SequenceArgumentStage(
 			IArgumentParser parser,
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty)
 		{

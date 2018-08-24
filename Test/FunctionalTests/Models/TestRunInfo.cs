@@ -1,21 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace R5.RunInfoBuilder.FunctionalTests.Models
+﻿namespace R5.RunInfoBuilder.FunctionalTests.Models
 {
-	//public interface ITestRunInfo
-	//{
-	//	bool Bool1 { get; set; }
-	//	bool Bool2 { get; set; }
-	//	bool Bool3 { get; set; }
-	//	int Int1 { get; set; }
-	//	int Int2 { get; set; }
-	//	int Int3 { get; set; }
-	//	bool UnwritableBool { get; }
-	//}
-
-	public class TestRunInfo// : ITestRunInfo
+	public class TestRunInfo
 	{
 		public string String1 { get; set; }
 		public bool Bool1 { get; set; }

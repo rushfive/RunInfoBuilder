@@ -8,7 +8,7 @@ using R5.RunInfoBuilder.Processor.Stages;
 
 namespace R5.RunInfoBuilder.Commands
 {
-	public class ArgumentSequence<TRunInfo, TListProperty> : ArgumentBase<TRunInfo>
+	public class SequenceArgument<TRunInfo, TListProperty> : ArgumentBase<TRunInfo>
 			where TRunInfo : class
 	{
 		public Expression<Func<TRunInfo, List<TListProperty>>> ListProperty { get; set; }
@@ -18,13 +18,13 @@ namespace R5.RunInfoBuilder.Commands
 			if (ListProperty == null)
 			{
 				throw new ConfigurationException("Property expression for list must be provided.",
-					typeof(ArgumentSequence<TRunInfo, TListProperty>), parentType, parentKey);
+					typeof(SequenceArgument<TRunInfo, TListProperty>), parentType, parentKey);
 			}
 		}
 
 		internal override Stage<TRunInfo> ToStage(IArgumentParser parser)
 		{
-			return new ArgumentSequenceStage<TRunInfo, TListProperty>(parser, ListProperty);
+			return new SequenceArgumentStage<TRunInfo, TListProperty>(parser, ListProperty);
 		}
 	}
 }
