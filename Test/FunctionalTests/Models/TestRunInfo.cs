@@ -1,7 +1,10 @@
-﻿namespace R5.RunInfoBuilder.FunctionalTests.Models
+﻿using System.Collections.Generic;
+
+namespace R5.RunInfoBuilder.FunctionalTests.Models
 {
 	public class TestRunInfo
 	{
+		public List<string> StringList1 { get; set; }
 		public string String1 { get; set; }
 		public bool Bool1 { get; set; }
 		public bool Bool2 { get; set; }

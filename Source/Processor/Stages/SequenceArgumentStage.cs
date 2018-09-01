@@ -23,13 +23,20 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
+			if (!context.ProgramArguments.HasMore())
+			{
+				throw new InvalidOperationException("Expected a sequence of arguments but reached "
+					+ "the end of program args.");
+			}
+
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
 
 			// initialize list if null
 			var list = (IList<TListProperty>)propertyInfo.GetValue(context.RunInfo, null);
 			if (list == null)
 			{
-				propertyInfo.SetValue(context.RunInfo, Activator.CreateInstance(propertyInfo.PropertyType));
+				list = (IList<TListProperty>)Activator.CreateInstance(propertyInfo.PropertyType);
+				propertyInfo.SetValue(context.RunInfo, list);
 			}
 
 			// Iterate over proceeding program args, adding parseable items to list.

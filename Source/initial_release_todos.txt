@@ -1,0 +1,8 @@
+- callbacks for arguments
+- assign default values / optional arguments?
+- mutually exclusive arguments?
+
+sequence argument:
+- extra options to allow for empty/non-empty lists? require at least one? make min required items configurable????? WHAT
+
+- stacked options should only be for bool types

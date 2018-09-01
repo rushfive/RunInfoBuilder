@@ -36,7 +36,26 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				
 				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(option);
 				
-				string value = ResolveValue(valueFromToken, context.Options.IsBoolType(fullKey), context);
+				bool isBoolType = fullKey != null
+					? context.Options.IsBoolType(fullKey)
+					: shortKeys.All(context.Options.IsBoolType);
+
+				if (type == OptionType.Stacked && !isBoolType)
+				{
+					throw new InvalidOperationException($"Stacked options can only be mapped to "
+						+ $"boolean properties but found one or more invalid options in: {string.Join("", shortKeys)}");
+				}
+
+				// if stacked option, must ensure that all is bool type
+				//bool allStackedAreBoolType = shortKeys != null
+				//	&& shortKeys.Count > 1 && isBoolType;
+				//if (!allStackedAreBoolType)
+				//{
+				//	throw new InvalidOperationException($"Stacked options can only be mapped to "
+				//		+ $"boolean properties but found one or more invalid options in: {string.Join("", shortKeys)}");
+				//}
+
+				string value = ResolveValue(valueFromToken, isBoolType, context);
 
 				switch (type)
 				{
