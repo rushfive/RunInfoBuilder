@@ -19,7 +19,7 @@ namespace R5.RunInfoBuilder.Commands
 		{
 			if (Property == null)
 			{
-				throw new InvalidOperationException("Property argument must provide the mapping expression.");
+				throw new InvalidOperationException("Property mapping expression must be provided.");
 			}
 
 			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(Property, out string propertyName))

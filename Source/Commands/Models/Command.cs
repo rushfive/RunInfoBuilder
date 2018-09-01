@@ -47,6 +47,17 @@ namespace R5.RunInfoBuilder
 
 				Options.ForEach(o => o.Validate(context));
 			}
+
+			if (SubCommands != null)
+			{
+				if (SubCommands.Any(o => o == null))
+				{
+					throw new InvalidOperationException($"Command '{Key}' contains a null sub command.");
+				}
+
+				var subContext = new ValidationContext(Key);
+				SubCommands.ForEach(o => o.Validate(subContext));
+			}
 		}
 	}
 }

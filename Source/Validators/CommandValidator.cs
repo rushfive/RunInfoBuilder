@@ -37,7 +37,9 @@ namespace R5.RunInfoBuilder.Validators
 				throw new ArgumentException($"'{command.Key}' is already configured as a top level key.");
 			}
 
-			command.Validate(parentType: null, parentKey: null);
+			// todo: insert correct version and help keys
+			var context = new ValidationContext(new HashSet<string>(), new HashSet<string>());
+			command.Validate(context);
 		}
 
 		public void Validate<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)

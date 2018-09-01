@@ -17,7 +17,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		private HashSet<char> _shortBoolTypeKeys { get; }
 
 
-		internal ProcessOptions(List<IOption> options)
+		internal ProcessOptions(List<OptionBase<TRunInfo>> options)
 		{
 			_fullOptionSetters = new Dictionary<string, (Action<TRunInfo, object>, Type)>();
 			_shortOptionSetters = new Dictionary<char, (Action<TRunInfo, object>, Type)>();
@@ -27,9 +27,9 @@ namespace R5.RunInfoBuilder.Processor.Models
 			InitializeMaps(options);
 		}
 
-		private void InitializeMaps(List<IOption> options)
+		private void InitializeMaps(List<OptionBase<TRunInfo>> options)
 		{
-			foreach (IOption option in options)
+			foreach (OptionBase<TRunInfo> option in options)
 			{
 				AddSetters(option);
 
@@ -40,7 +40,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 			}
 
 			// local functions
-			void AddSetters(IOption option)
+			void AddSetters(OptionBase<TRunInfo> option)
 			{
 				(Action<TRunInfo, object>, Type) setter = createSetter(option);
 
@@ -54,7 +54,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 				}
 			}
 
-			(Action<TRunInfo, object> setter, Type valueType) createSetter(IOption option)
+			(Action<TRunInfo, object> setter, Type valueType) createSetter(OptionBase<TRunInfo> option)
 			{
 				dynamic opt = option;
 				PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(opt.Property);
@@ -74,7 +74,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 				return (setter, valueType);
 			}
 
-			void AddToBoolMaps(IOption option)
+			void AddToBoolMaps(OptionBase<TRunInfo> option)
 			{
 				var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(option.Key);
 
