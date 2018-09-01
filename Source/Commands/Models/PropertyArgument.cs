@@ -15,7 +15,7 @@ namespace R5.RunInfoBuilder.Commands
 	{
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
 
-		internal override void Validate(ValidationContext context)
+		internal override void Validate()
 		{
 			if (Property == null)
 			{

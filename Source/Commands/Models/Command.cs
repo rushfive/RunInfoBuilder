@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Validators;
 using System;
 using System.Collections.Generic;
@@ -13,21 +14,18 @@ namespace R5.RunInfoBuilder
 		public string Key { get; set; }
 		public List<Command<TRunInfo>> SubCommands { get; set; } = new List<Command<TRunInfo>>();
 
-		internal void Validate(ValidationContext context)
+		internal void Validate()
 		{
 			if (string.IsNullOrWhiteSpace(Key))
 			{
 				throw new InvalidOperationException("Command key must be provided.");
 			}
 
-			if (!context.IsValidCommand(Key))
-			{
-				throw new InvalidOperationException($"Command key '{Key}' is invalid because "
-					+ "it clashes with an already configured key.");
-			}
-
-			context.MarkCommandSeen(Key);
+			// validating key clashes against other same level commands should
+			// be done by the caller
 			
+			// for now, dont care about specific error messaging.
+
 			if (Arguments != null)
 			{
 				if (Arguments.Any(a => a == null))
@@ -35,7 +33,7 @@ namespace R5.RunInfoBuilder
 					throw new InvalidOperationException($"Command '{Key}' contains a null argument.");
 				}
 
-				Arguments.ForEach(a => a.Validate(context));
+				Arguments.ForEach(a => a.Validate());
 			}
 
 			if (Options != null)
@@ -45,7 +43,43 @@ namespace R5.RunInfoBuilder
 					throw new InvalidOperationException($"Command '{Key}' contains a null option.");
 				}
 
-				Options.ForEach(o => o.Validate(context));
+				bool invalidFormat = Options
+					.Select(o => o.Key)
+					.Any(OptionTokenizer.IsValidConfiguration);
+
+				if (invalidFormat)
+				{
+					throw new InvalidOperationException($"Command '{Key}' contains an option with an invalid key.");
+				}
+
+				var fullKeys = new List<string>();
+				var shortKeys = new List<char>();
+
+				Options.ForEach(o =>
+				{
+					var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(o.Key);
+
+					fullKeys.Add(fullKey);
+
+					if (shortKey.HasValue)
+					{
+						shortKeys.Add(shortKey.Value);
+					}
+				});
+
+				bool duplicateFull = fullKeys.Count != fullKeys.Distinct().Count();
+				if (duplicateFull)
+				{
+					throw new InvalidCastException();
+				}
+
+				bool duplicateShort = shortKeys.Count != shortKeys.Distinct().Count();
+				if (duplicateFull)
+				{
+					throw new InvalidCastException();
+				}
+				
+				Options.ForEach(o => o.Validate());
 			}
 
 			if (SubCommands != null)
@@ -55,8 +89,14 @@ namespace R5.RunInfoBuilder
 					throw new InvalidOperationException($"Command '{Key}' contains a null sub command.");
 				}
 
-				var subContext = new ValidationContext(Key);
-				SubCommands.ForEach(o => o.Validate(subContext));
+				bool hasDuplicate = SubCommands.Count != SubCommands.Distinct().Count();
+				if (hasDuplicate)
+				{
+					throw new InvalidOperationException($"Command key '{Key}' is invalid because "
+						+ "it clashes with an already configured key.");
+				}
+
+				SubCommands.ForEach(o => o.Validate());
 			}
 		}
 	}

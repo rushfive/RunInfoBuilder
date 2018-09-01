@@ -27,7 +27,7 @@ namespace R5.RunInfoBuilder.Commands
 			Type = type;
 		}
 
-		internal abstract void Validate(ValidationContext context);
+		internal abstract void Validate();
 	}
 
 	public class Option<TRunInfo, TProperty> : OptionBase<TRunInfo>
@@ -42,10 +42,8 @@ namespace R5.RunInfoBuilder.Commands
 
 		public Option() : base(typeof(TProperty)) { }
 
-		internal override void Validate(ValidationContext context)
+		internal override void Validate()
 		{
-			ValidateKeys(context);
-
 			if (Property == null)
 			{
 				throw new InvalidOperationException("Property mapping expression must be provided.");
@@ -55,41 +53,6 @@ namespace R5.RunInfoBuilder.Commands
 			{
 				throw new InvalidOperationException($"Property '{propertyName}' is not writable. Try adding a setter.");
 			}
-		}
-
-		private void ValidateKeys(ValidationContext context)
-		{
-			if (string.IsNullOrWhiteSpace(Key))
-			{
-				throw new InvalidOperationException("Option key must be provided.");
-			}
-
-			if (!OptionTokenizer.IsValidConfiguration(Key))
-			{
-				throw new InvalidOperationException($"Option key '{Key}' is not formatted correctly.");
-			}
-
-			var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(Key);
-
-			if (!context.IsValidFullOption(fullKey))
-			{
-				throw new InvalidOperationException($"Full option key '{fullKey}' has already been configured.");
-			}
-
-			context.MarkFullOptionSeen(fullKey);
-
-			if (!shortKey.HasValue)
-			{
-				return;
-			}
-
-			if (!context.IsValidShortOption(shortKey.Value))
-			{
-				throw new InvalidOperationException($"Short option key '{shortKey.Value}' has already been configured.");
-			}
-
-			context.MarkShortOptionSeen(shortKey.Value);
-
 		}
 	}
 }
