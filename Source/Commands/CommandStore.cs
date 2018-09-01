@@ -69,6 +69,11 @@ namespace R5.RunInfoBuilder.Commands
 		public ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
+			if (command == null)
+			{
+				throw new ArgumentNullException(nameof(command), "Command must be provided.");
+			}
+
 			_validator.Validate(command);
 
 			if (IsCommand(command.Key))

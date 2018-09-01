@@ -11,7 +11,7 @@ namespace R5.RunInfoBuilder.Commands
 		public string HelpText { get; set; }
 		public Func<CallbackContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
 		public List<ArgumentBase<TRunInfo>> Arguments { get; set; } = new List<ArgumentBase<TRunInfo>>();
-		public List<IOption> Options { get; set; } = new List<IOption>();
+		public List<OptionBase<TRunInfo>> Options { get; set; } = new List<OptionBase<TRunInfo>>();
 	}
 
     public class DefaultCommand<TRunInfo> : CommandBase<TRunInfo>

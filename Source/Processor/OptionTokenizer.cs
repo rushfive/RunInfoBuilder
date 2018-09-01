@@ -8,6 +8,12 @@ namespace R5.RunInfoBuilder.Processor
 {
 	internal static class OptionTokenizer
 	{
+		internal static bool IsValidConfiguration(string input)
+		{
+			// todo: regex match
+			return true;
+		}
+
 		// assumes input is valid, shoudl be validated before here!
 		internal static (string FullKey, char? ShortKey) TokenizeKeyConfiguration(string input)
 		{

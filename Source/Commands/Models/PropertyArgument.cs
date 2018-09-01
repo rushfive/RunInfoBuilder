@@ -15,11 +15,11 @@ namespace R5.RunInfoBuilder.Commands
 	{
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
 
-		internal override void Validate(ValidationContext context)
+		internal override void Validate()
 		{
 			if (Property == null)
 			{
-				throw new InvalidOperationException("Property argument must provide the mapping expression.");
+				throw new InvalidOperationException("Property mapping expression must be provided.");
 			}
 
 			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(Property, out string propertyName))
