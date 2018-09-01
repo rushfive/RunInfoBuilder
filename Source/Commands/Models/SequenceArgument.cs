@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using R5.RunInfoBuilder.Parser;
+using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
+using R5.RunInfoBuilder.Validators;
 
 namespace R5.RunInfoBuilder.Commands
 {
@@ -13,12 +15,16 @@ namespace R5.RunInfoBuilder.Commands
 	{
 		public Expression<Func<TRunInfo, List<TListProperty>>> ListProperty { get; set; }
 		
-		internal override void Validate(Type parentType, string parentKey)
+		internal override void Validate(ValidationContext context)
 		{
 			if (ListProperty == null)
 			{
-				throw new ConfigurationException("Property expression for list must be provided.",
-					typeof(SequenceArgument<TRunInfo, TListProperty>), parentType, parentKey);
+				throw new InvalidOperationException("Sequence argument must provide the mapping expression.");
+			}
+
+			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(ListProperty, out string propertyName))
+			{
+				throw new InvalidOperationException($"Property '{propertyName}' is not writable. Try adding a setter.");
 			}
 		}
 

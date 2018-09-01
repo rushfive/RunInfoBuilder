@@ -1,6 +1,8 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Validators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace R5.RunInfoBuilder
@@ -11,30 +13,40 @@ namespace R5.RunInfoBuilder
 		public string Key { get; set; }
 		public List<Command<TRunInfo>> SubCommands { get; set; } = new List<Command<TRunInfo>>();
 
-		internal void Validate(Type parentType, string parentKey)
+		internal void Validate(ValidationContext context)
 		{
-			//var type = typeof(Command<TRunInfo>);
+			if (string.IsNullOrWhiteSpace(Key))
+			{
+				throw new InvalidOperationException("Command key must be provided.");
+			}
 
-			//if (string.IsNullOrWhiteSpace(Key))
-			//{
-			//	throw new ConfigurationException("Key must be provided.",
-			//		type, parentType, parentKey);
-			//}
+			if (!context.IsValidCommand(Key))
+			{
+				throw new InvalidOperationException($"Command key '{Key}' is invalid because "
+					+ "it clashes with an already configured key.");
+			}
 
-			//if (!Arguments.NullOrEmpty())
-			//{
-			//	Arguments.ForEach(a => a.Validate(type, Key));
-			//}
+			context.MarkCommandSeen(Key);
+			
+			if (Arguments != null)
+			{
+				if (Arguments.Any(a => a == null))
+				{
+					throw new InvalidOperationException($"Command '{Key}' contains a null argument.");
+				}
 
-			//if (!Options.NullOrEmpty())
-			//{
-			//	Options.ForEach(o => o.Validate(type, Key));
-			//}
+				Arguments.ForEach(a => a.Validate(context));
+			}
 
-			//if (!SubCommands.NullOrEmpty())
-			//{
-			//	SubCommands.ForEach(o => o.Validate(type, Key));
-			//}
+			if (Options != null)
+			{
+				if (Options.Any(o => o == null))
+				{
+					throw new InvalidOperationException($"Command '{Key}' contains a null option.");
+				}
+
+				Options.ForEach(o => o.Validate(context));
+			}
 		}
 	}
 }

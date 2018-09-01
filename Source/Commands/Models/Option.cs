@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Validators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,10 +7,13 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Commands
 {
+	// ioption because we dont know tproperty until runtime
 	public interface IOption
 	{
 		string Key { get; }
 		Type Type { get; }
+
+		//void Validate(ValidationContext context);
 	}
 
 	public class Option<TRunInfo, TProperty> : IOption
@@ -23,7 +27,7 @@ namespace R5.RunInfoBuilder.Commands
 
 		public Type Type => typeof(TProperty);
 
-		internal void Validate(Type parentType, string parentKey)
+		internal void Validate(ValidationContext context)
 		{
 			var type = typeof(Option<TRunInfo, TProperty>);
 
