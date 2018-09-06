@@ -1,31 +1,33 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-//namespace R5.RunInfoBuilder
-//{
-//    public class ConfigurationException : Exception
-//	{
-//		public Type Type { get; }
-//		public Type ParentType { get; }
-//		public string ParentKey { get; }
+namespace R5.RunInfoBuilder
+{
+	// todo standard overloads
+	public class CommandValidationException : Exception
+	{
+		public CommandValidationError ErrorType { get; }
+		public int CommandLevel { get; }
+		public object[] Metadata { get; }
 
-//		public ConfigurationException(string message, Type type,
-//			Type parentType, string parentKey)
-//			: base (message)
-//		{
-//			Type = type;
-//			ParentType = parentType;
-//			ParentKey = parentKey;
-//		}
+		public CommandValidationException(
+			string message,
+			CommandValidationError errorType,
+			int commandLevel,
+			params object[] metadata)
+			: base(message)
+		{
+			ErrorType = errorType;
+			CommandLevel = commandLevel;
+			Metadata = metadata;
+		}
+	}
 
-//		public ConfigurationException(string message, Exception innerException, Type type,
-//			Type parentType, string parentKey)
-//			: base(message, innerException)
-//		{
-//			Type = type;
-//			ParentType = parentType;
-//			ParentKey = parentKey;
-//		}
-//	}
-//}
+	public enum CommandValidationError
+	{
+		RestrictedKey,
+		KeyNotProvided,
+		NullObject
+	}
+}

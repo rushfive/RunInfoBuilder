@@ -2,6 +2,7 @@
 using R5.RunInfoBuilder.FunctionalTests.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -19,15 +20,23 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 		[InlineData("")]
 		public void NullOrEmptyKey_Throws(string key)
 		{
-			RunInfoBuilder builder = GetBuilder();
-
-			Assert.Throws<InvalidOperationException>(() =>
+			Action testCode = () =>
 			{
+				RunInfoBuilder builder = GetBuilder();
+
 				builder.Commands.Add(new Command<TestRunInfo>
 				{
 					Key = key
 				});
-			});
+			};
+
+			Exception exception = Record.Exception(testCode);
+
+			var validationException = exception as CommandValidationException;
+
+			Assert.NotNull(validationException);
+			Assert.Equal(CommandValidationError.KeyNotProvided, validationException.ErrorType);
+			Assert.Equal(0, validationException.CommandLevel);
 		}
 
 		public class ArgumentsTests
@@ -35,19 +44,32 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[Fact]
 			public void HasNullArguments_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
 						Arguments =
-					{
-						null
-					}
+						{
+							null
+						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullObject, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+
+				bool correctIndex = validationException.Metadata.Single() is int nullIndex
+					&& nullIndex == 0;
+
+				Assert.True(correctIndex);
 			}
 		}
 
@@ -56,10 +78,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[Fact]
 			public void HasNullOptions_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -68,7 +90,20 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							null
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullObject, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+
+				bool correctIndex = validationException.Metadata.Single() is int nullIndex
+					&& nullIndex == 0;
+
+				Assert.True(correctIndex);
 			}
 
 			[Fact]
@@ -194,10 +229,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[Fact]
 			public void HasNullSubCommands_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -206,7 +241,20 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							null
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullObject, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+
+				bool correctIndex = validationException.Metadata.Single() is int nullIndex
+					&& nullIndex == 0;
+
+				Assert.True(correctIndex);
 			}
 
 			[Fact]

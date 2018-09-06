@@ -26,12 +26,19 @@ namespace R5.RunInfoBuilder.Validators
 		public void Validate<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
+			if (command == null)
+			{
+				throw new ArgumentNullException(nameof(command), "Command must be provided.");
+			}
+
 			if (_keyValidator.IsRestricted(command.Key))
 			{
-				throw new ArgumentException($"'{command.Key}' is already configured as a top level key.");
+				throw new CommandValidationException(
+					$"'{command.Key}' is already configured as a top level key.",
+					CommandValidationError.RestrictedKey, 0);
 			}
 			
-			command.Validate();
+			command.Validate(commandLevel: 0);
 		}
 
 		public void Validate<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)

@@ -12,6 +12,16 @@ namespace R5.RunInfoBuilder
 		{
 			return list == null || list.Count == 0;
 		}
+
+		public static int IndexOfFirstNull<T>(this List<T> list)
+		{
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (list[i] == null) return i;
+			}
+
+			return -1;
+		}
     }
 
 	public static class ObjectExtensions

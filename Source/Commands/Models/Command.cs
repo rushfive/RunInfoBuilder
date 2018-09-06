@@ -14,11 +14,12 @@ namespace R5.RunInfoBuilder
 		public string Key { get; set; }
 		public List<Command<TRunInfo>> SubCommands { get; set; } = new List<Command<TRunInfo>>();
 
-		internal void Validate()
+		internal void Validate(int commandLevel)
 		{
 			if (string.IsNullOrWhiteSpace(Key))
 			{
-				throw new InvalidOperationException("Command key must be provided.");
+				throw new CommandValidationException("Command key must be provided.",
+					CommandValidationError.KeyNotProvided, commandLevel);
 			}
 
 			// validating key clashes against other same level commands should
@@ -28,11 +29,14 @@ namespace R5.RunInfoBuilder
 
 			if (Arguments != null)
 			{
-				if (Arguments.Any(a => a == null))
+				int nullIndex = Arguments.IndexOfFirstNull();
+				if (nullIndex != -1)
 				{
-					throw new InvalidOperationException($"Command '{Key}' contains a null argument.");
+					throw new CommandValidationException(
+						$"Command '{Key}' contains a null argument (index {nullIndex}).",
+						CommandValidationError.NullObject, commandLevel, nullIndex);
 				}
-
+				
 				Arguments.ForEach(a => a.Validate());
 			}
 
@@ -40,7 +44,13 @@ namespace R5.RunInfoBuilder
 			{
 				if (Options.Any(o => o == null))
 				{
-					throw new InvalidOperationException($"Command '{Key}' contains a null option.");
+					int nullIndex = Options.IndexOfFirstNull();
+					if (nullIndex != -1)
+					{
+						throw new CommandValidationException(
+							$"Command '{Key}' contains a null option (index {nullIndex}).",
+							CommandValidationError.NullObject, commandLevel, nullIndex);
+					}
 				}
 
 				bool matchesRegex = Options
@@ -84,9 +94,12 @@ namespace R5.RunInfoBuilder
 
 			if (SubCommands != null)
 			{
-				if (SubCommands.Any(o => o == null))
+				int nullIndex = SubCommands.IndexOfFirstNull();
+				if (nullIndex != -1)
 				{
-					throw new InvalidOperationException($"Command '{Key}' contains a null sub command.");
+					throw new CommandValidationException(
+						$"Command '{Key}' contains a null subcommand (index {nullIndex}).",
+						CommandValidationError.NullObject, commandLevel, nullIndex);
 				}
 
 				bool hasDuplicate = SubCommands.Count != SubCommands.Select(c => c.Key).Distinct().Count();
@@ -96,7 +109,7 @@ namespace R5.RunInfoBuilder
 						+ "it clashes with an already configured key.");
 				}
 
-				SubCommands.ForEach(o => o.Validate());
+				SubCommands.ForEach(o => o.Validate(++commandLevel));
 			}
 		}
 	}
