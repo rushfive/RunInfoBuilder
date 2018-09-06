@@ -43,11 +43,11 @@ namespace R5.RunInfoBuilder
 					throw new InvalidOperationException($"Command '{Key}' contains a null option.");
 				}
 
-				bool invalidFormat = Options
+				bool matchesRegex = Options
 					.Select(o => o.Key)
-					.Any(OptionTokenizer.IsValidConfiguration);
+					.All(OptionTokenizer.IsValidConfiguration);
 
-				if (invalidFormat)
+				if (!matchesRegex)
 				{
 					throw new InvalidOperationException($"Command '{Key}' contains an option with an invalid key.");
 				}
@@ -70,13 +70,13 @@ namespace R5.RunInfoBuilder
 				bool duplicateFull = fullKeys.Count != fullKeys.Distinct().Count();
 				if (duplicateFull)
 				{
-					throw new InvalidCastException();
+					throw new InvalidOperationException();
 				}
 
 				bool duplicateShort = shortKeys.Count != shortKeys.Distinct().Count();
-				if (duplicateFull)
+				if (duplicateShort)
 				{
-					throw new InvalidCastException();
+					throw new InvalidOperationException();
 				}
 				
 				Options.ForEach(o => o.Validate());
@@ -89,7 +89,7 @@ namespace R5.RunInfoBuilder
 					throw new InvalidOperationException($"Command '{Key}' contains a null sub command.");
 				}
 
-				bool hasDuplicate = SubCommands.Count != SubCommands.Distinct().Count();
+				bool hasDuplicate = SubCommands.Count != SubCommands.Select(c => c.Key).Distinct().Count();
 				if (hasDuplicate)
 				{
 					throw new InvalidOperationException($"Command key '{Key}' is invalid because "

@@ -3,13 +3,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace R5.RunInfoBuilder.Processor
 {
 	internal static class OptionTokenizer
 	{
+		internal const string OptionConfigurationRegex = @"^(\s+)?[A-Za-z0-9]+(\s+)?([|](\s+)?[A-Za-z0-9](\s+)?)?$";
+
 		internal static bool IsValidConfiguration(string input)
 		{
+			return !string.IsNullOrWhiteSpace(input) && Regex.IsMatch(input, OptionTokenizer.OptionConfigurationRegex);
+
+
+			// use regex: ^(\s+)?[A-Za-z0-9]+(\s+)?([|](\s+)?[A-Za-z0-9](\s+)?)?$
 			// todo: regex match
 			return true;
 		}

@@ -5,6 +5,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Models
 	public class TestRunInfo
 	{
 		public List<string> StringList1 { get; set; }
+		public List<string> UnwritableStringList { get; }
 		public string String1 { get; set; }
 		public bool Bool1 { get; set; }
 		public bool Bool2 { get; set; }
