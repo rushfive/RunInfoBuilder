@@ -105,28 +105,6 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 
 				Assert.True(correctIndex);
 			}
-
-			[Fact]
-			public void Option_WithNullKey_Throws()
-			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
-				{
-					builder.Commands.Add(new Command<TestRunInfo>
-					{
-						Key = "key",
-						Options =
-						{
-							new Option<TestRunInfo, bool>
-							{
-								Key = null,
-								Property = ri => ri.Bool1
-							}
-						}
-					});
-				});
-			}
 			
 			[Theory]
 			[InlineData("")]
@@ -140,27 +118,35 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[InlineData("xxx|x|", "valid")]
 			public void Any_InvalidKey_Throws(params string[] keys)
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				var options = new List<OptionBase<TestRunInfo>>();
-				
-				foreach(string key in keys)
+				Action testCode = () =>
 				{
-					options.Add(new Option<TestRunInfo, bool>
+					RunInfoBuilder builder = GetBuilder();
+
+					var options = new List<OptionBase<TestRunInfo>>();
+
+					foreach (string key in keys)
 					{
-						Key = key,
-						Property = ri => ri.Bool1
-					});
-				}
+						options.Add(new Option<TestRunInfo, bool>
+						{
+							Key = key,
+							Property = ri => ri.Bool1
+						});
+					}
 
-				Assert.Throws<InvalidOperationException>(() =>
-				{
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
-						Key = "key",
+						Key = "command",
 						Options = options
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.InvalidKey, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 
 			[Theory]
@@ -171,27 +157,35 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[InlineData("unique1", "duplicate", "duplicate", "unique2")]
 			public void Duplicate_FullKeys_Throws(params string[] keys)
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				var options = new List<OptionBase<TestRunInfo>>();
-
-				foreach (string key in keys)
+				Action testCode = () =>
 				{
-					options.Add(new Option<TestRunInfo, bool>
+					RunInfoBuilder builder = GetBuilder();
+
+					var options = new List<OptionBase<TestRunInfo>>();
+
+					foreach (string key in keys)
 					{
-						Key = key,
-						Property = ri => ri.Bool1
-					});
-				}
+						options.Add(new Option<TestRunInfo, bool>
+						{
+							Key = key,
+							Property = ri => ri.Bool1
+						});
+					}
 
-				Assert.Throws<InvalidOperationException>(() =>
-				{
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
 						Options = options
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 
 			[Theory]
@@ -200,27 +194,35 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[InlineData("unique1 | 1", "unique2 | 1", "unique3 | 2")]
 			public void Duplicate_ShortKeys_Throws(params string[] keys)
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				var options = new List<OptionBase<TestRunInfo>>();
-
-				foreach (string key in keys)
+				Action testCode = () =>
 				{
-					options.Add(new Option<TestRunInfo, bool>
+					RunInfoBuilder builder = GetBuilder();
+
+					var options = new List<OptionBase<TestRunInfo>>();
+
+					foreach (string key in keys)
 					{
-						Key = key,
-						Property = ri => ri.Bool1
-					});
-				}
+						options.Add(new Option<TestRunInfo, bool>
+						{
+							Key = key,
+							Property = ri => ri.Bool1
+						});
+					}
 
-				Assert.Throws<InvalidOperationException>(() =>
-				{
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
 						Options = options
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 		}
 
@@ -260,10 +262,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[Fact]
 			public void DuplicateKeys_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -279,7 +281,47 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							}
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+		}
+
+		public class NestedSubCommandTests
+		{
+			[Fact]
+			public void LowerLevel_NestedCommands_AreValidated()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						SubCommands =
+						{
+							new Command<TestRunInfo>
+							{
+								Key = null
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.KeyNotProvided, validationException.ErrorType);
+				Assert.Equal(1, validationException.CommandLevel);
 			}
 		}
 	}

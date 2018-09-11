@@ -28,6 +28,10 @@ namespace R5.RunInfoBuilder
 	{
 		RestrictedKey,
 		KeyNotProvided,
-		NullObject
+		NullObject,
+		DuplicateKey,
+		InvalidKey,
+		NullPropertyExpression,
+		PropertyNotWritable
 	}
 }

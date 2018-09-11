@@ -27,7 +27,7 @@ namespace R5.RunInfoBuilder.Commands
 			Type = type;
 		}
 
-		internal abstract void Validate();
+		internal abstract void Validate(int commandLevel);
 	}
 
 	public class Option<TRunInfo, TProperty> : OptionBase<TRunInfo>
@@ -42,16 +42,19 @@ namespace R5.RunInfoBuilder.Commands
 
 		public Option() : base(typeof(TProperty)) { }
 
-		internal override void Validate()
+		internal override void Validate(int commandLevel)
 		{
 			if (Property == null)
 			{
-				throw new InvalidOperationException("Property mapping expression must be provided.");
+				throw new CommandValidationException($"Option '{Key}' is missing its property mapping expression.",
+					CommandValidationError.NullPropertyExpression, commandLevel);
 			}
 
 			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(Property, out string propertyName))
 			{
-				throw new InvalidOperationException($"Property '{propertyName}' is not writable. Try adding a setter.");
+				throw new CommandValidationException($"Option '{Key}'s property '{propertyName}' "
+					+ "is not writable. Try adding a setter.",
+					CommandValidationError.PropertyNotWritable, commandLevel);
 			}
 		}
 	}

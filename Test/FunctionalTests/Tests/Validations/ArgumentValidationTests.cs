@@ -19,10 +19,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[Fact]
 			public void NullPropertyExpression_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -34,16 +34,24 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							}
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullPropertyExpression, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 
 			[Fact]
 			public void Property_NotWritable_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -55,7 +63,15 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							}
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.PropertyNotWritable, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 		}
 
@@ -64,10 +80,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			[Fact]
 			public void NullPropertyExpression_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -79,16 +95,24 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							}
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullPropertyExpression, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 
 			[Fact]
 			public void Property_NotWritable_Throws()
 			{
-				RunInfoBuilder builder = GetBuilder();
-
-				Assert.Throws<InvalidOperationException>(() =>
+				Action testCode = () =>
 				{
+					RunInfoBuilder builder = GetBuilder();
+
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "key",
@@ -100,7 +124,15 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 							}
 						}
 					});
-				});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.PropertyNotWritable, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
 			}
 		}
 	}

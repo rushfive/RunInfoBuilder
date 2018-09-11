@@ -14,7 +14,7 @@ namespace R5.RunInfoBuilder.Commands
 		public Func<CallbackContext<TRunInfo>, ProcessStageResult> Callback { get; set; }
 		public string HelpText { get; set; }
 
-		internal abstract void Validate();
+		internal abstract void Validate(int commandLevel);
 
 		internal abstract Stage<TRunInfo> ToStage(IArgumentParser parser);
 	}

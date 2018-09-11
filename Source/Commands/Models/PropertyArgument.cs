@@ -15,16 +15,19 @@ namespace R5.RunInfoBuilder.Commands
 	{
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
 
-		internal override void Validate()
+		internal override void Validate(int commandLevel)
 		{
 			if (Property == null)
 			{
-				throw new InvalidOperationException("Property mapping expression must be provided.");
+				throw new CommandValidationException("PropertyArgument is missing its property mapping expression.",
+					CommandValidationError.NullPropertyExpression, commandLevel);
 			}
 
 			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(Property, out string propertyName))
 			{
-				throw new InvalidOperationException($"Property '{propertyName}' is not writable. Try adding a setter.");
+				throw new CommandValidationException($"PropertyArgument's property '{propertyName}' "
+					+ "is not writable. Try adding a setter.",
+					CommandValidationError.PropertyNotWritable, commandLevel);
 			}
 		}
 

@@ -37,7 +37,7 @@ namespace R5.RunInfoBuilder
 						CommandValidationError.NullObject, commandLevel, nullIndex);
 				}
 				
-				Arguments.ForEach(a => a.Validate());
+				Arguments.ForEach(a => a.Validate(commandLevel));
 			}
 
 			if (Options != null)
@@ -59,7 +59,8 @@ namespace R5.RunInfoBuilder
 
 				if (!matchesRegex)
 				{
-					throw new InvalidOperationException($"Command '{Key}' contains an option with an invalid key.");
+					throw new CommandValidationException($"Command '{Key}' contains an option with an invalid key.",
+						CommandValidationError.InvalidKey, commandLevel);
 				}
 
 				var fullKeys = new List<string>();
@@ -80,16 +81,18 @@ namespace R5.RunInfoBuilder
 				bool duplicateFull = fullKeys.Count != fullKeys.Distinct().Count();
 				if (duplicateFull)
 				{
-					throw new InvalidOperationException();
+					throw new CommandValidationException($"Command '{Key}' contains options with duplicate full keys.",
+						CommandValidationError.DuplicateKey, commandLevel);
 				}
 
 				bool duplicateShort = shortKeys.Count != shortKeys.Distinct().Count();
 				if (duplicateShort)
 				{
-					throw new InvalidOperationException();
+					throw new CommandValidationException($"Command '{Key}' contains options with duplicate short keys.",
+						CommandValidationError.DuplicateKey, commandLevel);
 				}
 				
-				Options.ForEach(o => o.Validate());
+				Options.ForEach(o => o.Validate(commandLevel));
 			}
 
 			if (SubCommands != null)
@@ -105,8 +108,9 @@ namespace R5.RunInfoBuilder
 				bool hasDuplicate = SubCommands.Count != SubCommands.Select(c => c.Key).Distinct().Count();
 				if (hasDuplicate)
 				{
-					throw new InvalidOperationException($"Command key '{Key}' is invalid because "
-						+ "it clashes with an already configured key.");
+					throw new CommandValidationException($"Command key '{Key}' is invalid because "
+						+ "it clashes with an already configured key.",
+						CommandValidationError.DuplicateKey, commandLevel);
 				}
 
 				SubCommands.ForEach(o => o.Validate(++commandLevel));
