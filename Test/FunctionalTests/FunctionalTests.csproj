@@ -30,7 +30,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Models\" />
-	  <Folder Include="Tests\MultiLevel\" />
 	</ItemGroup>
 
 	<ItemGroup>

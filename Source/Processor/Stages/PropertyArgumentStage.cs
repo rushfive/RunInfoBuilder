@@ -27,27 +27,30 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			if (!context.ProgramArguments.HasMore())
 			{
-				throw new InvalidOperationException("Expected an argument but reached the end of program args.");
+				throw new ProcessException("Expected an argument but reached the end of program args.",
+					ProcessError.ExpectedProgramArgument, context.CommandLevel);
 			}
 
 			string valueToken = context.ProgramArguments.Dequeue();
 
 			if (!_parser.HandlesType<TProperty>())
 			{
-				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
-					+ $"parser cannot handle the property type of '{typeof(TProperty).Name}'.");
+				throw new ProcessException($"Failed to process program argument '{valueToken}' because the "
+					+ $"parser cannot handle the property type of '{typeof(TProperty).Name}'.",
+					ProcessError.ParserUnhandledType, context.CommandLevel);
 			}
 
-			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(_property, out string propertyName))
-			{
-				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
-					+ $"property '{propertyName}' is not writable.");
-			}
+			//if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(_property, out string propertyName))
+			//{
+			//	throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
+			//		+ $"property '{propertyName}' is not writable.");
+			//}
 
 			if (!_parser.TryParseAs<TProperty>(valueToken, out TProperty parsed))
 			{
-				throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because it "
-					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.");
+				throw new ProcessException($"Failed to process program argument '{valueToken}' because it "
+					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.",
+					ProcessError.ParserInvalidValue, context.CommandLevel);
 			}
 
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_property);

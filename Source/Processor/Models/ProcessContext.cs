@@ -27,7 +27,8 @@ namespace R5.RunInfoBuilder.Processor.Models
 		// "Refreshed" per command/subCommand
 		private HashSet<string> _subCommands { get; set; }
 		internal ProcessOptions<TRunInfo> Options { get; private set; }
-		
+		internal int CommandLevel { get; private set; }
+
 		internal ProcessContext(
 			TRunInfo runInfo,
 			Func<CallbackContext<TRunInfo>> callbackContextFactory,
@@ -40,6 +41,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 			Stages = stageCallbacks;
 			ProgramArguments = programArgumentCallbacks;
 			ExtendPipeline = extendPipelineCallback;
+			CommandLevel = -1;
 		}
 
 		internal ProcessContext<TRunInfo> RefreshForCommand(CommandBase<TRunInfo> command)
@@ -51,6 +53,8 @@ namespace R5.RunInfoBuilder.Processor.Models
 			{
 				_subCommands = new HashSet<string>(cmd.SubCommands.Select(c => c.Key));
 			}
+
+			CommandLevel++;
 
 			return this;
 		}

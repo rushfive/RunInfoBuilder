@@ -29,7 +29,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (!context.NextIsOption())
 				{
-					throw new InvalidOperationException($"Processing failed because '{context.ProgramArguments.Peek()}' is not a valid option.");
+					throw new ProcessException($"Processing failed because '{context.ProgramArguments.Peek()}' is not a valid option.",
+						ProcessError.OptionExpected, context.CommandLevel);
 				}
 
 				string option = context.ProgramArguments.Dequeue();
@@ -42,8 +43,9 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (type == OptionType.Stacked && !isBoolType)
 				{
-					throw new InvalidOperationException($"Stacked options can only be mapped to "
-						+ $"boolean properties but found one or more invalid options in: {string.Join("", shortKeys)}");
+					throw new ProcessException($"Stacked options can only be mapped to "
+						+ $"boolean properties but found one or more invalid options in: {string.Join("", shortKeys)}",
+						ProcessError.InvalidStackedOption, context.CommandLevel);
 				}
 
 				// if stacked option, must ensure that all is bool type
@@ -88,7 +90,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			{
 				if (!isBoolTypeOption)
 				{
-					throw new InvalidOperationException("Expected a value but reached the end of program args.");
+					throw new ProcessException("Expected a value but reached the end of program args.",
+						ProcessError.ExpectedProgramArgument, context.CommandLevel);
 				}
 
 				// TODO: need the parser to always handle some strnig constant for true
@@ -102,14 +105,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			if (context.NextIsOption())
 			{
-				throw new InvalidOperationException("Expected a value for the next program argument "
-					+ $"but found an option instead: '{next}'");
+				throw new ProcessException("Expected a value for the next program argument "
+					+ $"but found an option instead: '{next}'",
+					ProcessError.ExpectedValueFoundOption, context.CommandLevel);
 			}
 
 			if (context.NextIsSubCommand())
 			{
-				throw new InvalidOperationException("Expected a value for the next program argument "
-					+ $"but found an sub command instead: '{next}'");
+				throw new ProcessException("Expected a value for the next program argument "
+					+ $"but found an sub command instead: '{next}'",
+					ProcessError.ExpectedValueFoundSubCommand, context.CommandLevel);
 			}
 
 			return context.ProgramArguments.Dequeue();
@@ -119,7 +124,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
 
-			object value = GetParsedValue(valueType, valueString);
+			object value = GetParsedValue(valueType, valueString, context.CommandLevel);
 
 			setter(context.RunInfo, value);
 		}
@@ -128,7 +133,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
 
-			object value = GetParsedValue(valueType, valueString);
+			object value = GetParsedValue(valueType, valueString, context.CommandLevel);
 
 			setter(context.RunInfo, value);
 		}
@@ -137,7 +142,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			List<(Action<TRunInfo, object> setter, Type valueType)> setters = context.Options.GetOptionValueSetters(keys);
 
-			object value = GetParsedValue(setters.First().valueType, valueString);
+			object value = GetParsedValue(setters.First().valueType, valueString, context.CommandLevel);
 
 			foreach((Action<TRunInfo, object> setter, _) in setters)
 			{
@@ -145,7 +150,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			}
 		}
 
-		private object GetParsedValue(Type valueType, string valueString)
+		private object GetParsedValue(Type valueType, string valueString, int commandLevel)
 		{
 			if (valueType == typeof(string))
 			{
@@ -169,7 +174,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (!_parser.TryParseAs(valueString, out bool parsed))
 				{
-					throw new ArgumentException($"'{valueString}' could not be parsed as a 'bool' type.", nameof(valueString));
+					throw new ProcessException($"'{valueString}' could not be parsed as a 'bool' type.",
+						ProcessError.ParserInvalidValue, commandLevel);
 				}
 				return parsed;
 			}
@@ -178,12 +184,14 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			{
 				if (valueString == null)
 				{
-					throw new ArgumentException("Options mapped to a non-boolean property must have a value.", nameof(valueString));
+					throw new ProcessException("Options mapped to a non-boolean property must have a value.",
+						ProcessError.OptionValueRequired, commandLevel);
 				}
 
 				if (!_parser.TryParseAs(valueType, valueString, out object parsed))
 				{
-					throw new ArgumentException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.", nameof(valueString));
+					throw new ProcessException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.",
+						ProcessError.ParserInvalidValue, commandLevel);
 				}
 
 				return parsed;

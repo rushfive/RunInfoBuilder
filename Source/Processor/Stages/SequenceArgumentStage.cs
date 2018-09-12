@@ -25,8 +25,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			if (!context.ProgramArguments.HasMore())
 			{
-				throw new InvalidOperationException("Expected a sequence of arguments but reached "
-					+ "the end of program args.");
+				throw new ProcessException("Expected a sequence of arguments but reached the end of program args.",
+					ProcessError.ExpectedProgramArgument, context.CommandLevel);
 			}
 
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_listProperty);
@@ -58,7 +58,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (!_parser.TryParseAs(next, out TListProperty parsed))
 				{
-					throw new ArgumentException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.");
+					throw new ProcessException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.",
+						ProcessError.ParserInvalidValue, context.CommandLevel);
 				}
 
 				list.Add(parsed);

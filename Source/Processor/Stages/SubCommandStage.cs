@@ -29,7 +29,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			if (!_subCommandInfoMap.TryGetValue(subCommand, out (Queue<Stage<TRunInfo>>, Command<TRunInfo>) subCommandInfo))
 			{
-				throw new InvalidOperationException($"'{subCommand}' is not a valid sub command.");
+				throw new ProcessException($"'{subCommand}' is not a valid sub command.",
+					ProcessError.InvalidSubCommand, context.CommandLevel);
 			}
 
 			(Queue<Stage<TRunInfo>> pipeline, Command<TRunInfo> command) = subCommandInfo;

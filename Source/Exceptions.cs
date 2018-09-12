@@ -4,6 +4,39 @@ using System.Text;
 
 namespace R5.RunInfoBuilder
 {
+	public class ProcessException : Exception
+	{
+		public ProcessError ErrorType { get; }
+		public int CommandLevel { get; }
+		public object[] Metadata { get; }
+
+		public ProcessException(
+			string message,
+			ProcessError errorType,
+			int commandLevel,
+			params object[] metadata)
+			: base(message)
+		{
+			ErrorType = errorType;
+			CommandLevel = commandLevel;
+			Metadata = metadata;
+		}
+	}
+
+	public enum ProcessError
+	{
+		ExpectedProgramArgument,
+		ParserUnhandledType,
+		ParserInvalidValue,
+		OptionExpected,
+		InvalidStackedOption,
+		ExpectedValueFoundOption,
+		ExpectedValueFoundSubCommand,
+		OptionValueRequired,
+		InvalidSubCommand
+	}
+
+
 	// todo standard overloads
 	public class CommandValidationException : Exception
 	{
