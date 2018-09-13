@@ -25,7 +25,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				return ProcessResult.End;
 			}
 
-			string subCommand = context.ProgramArguments.Dequeue();
+			string subCommand = context.ProgramArguments.Dequeue(context.CommandLevel);
 
 			if (!_subCommandInfoMap.TryGetValue(subCommand, out (Queue<Stage<TRunInfo>>, Command<TRunInfo>) subCommandInfo))
 			{

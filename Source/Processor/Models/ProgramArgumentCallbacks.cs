@@ -9,12 +9,12 @@ namespace R5.RunInfoBuilder.Processor.Models
     {
 		private Func<bool> _hasMoreCallback { get; }
 		private Func<string> _peekCallback { get; }
-		private Func<string> _dequeueCallback { get; }
+		private Func<int, string> _dequeueCallback { get; }
 
 		internal ProgramArgumentCallbacks(
 			Func<bool> hasMoreCallback,
 			Func<string> peekCallback,
-			Func<string> dequeueCallback)
+			Func<int, string> dequeueCallback)
 		{
 			_hasMoreCallback = hasMoreCallback;
 			_peekCallback = peekCallback;
@@ -25,6 +25,6 @@ namespace R5.RunInfoBuilder.Processor.Models
 
 		internal string Peek() => _peekCallback();
 
-		internal string Dequeue() => _dequeueCallback();
+		internal string Dequeue(int commandLevel) => _dequeueCallback(commandLevel);
 	}
 }

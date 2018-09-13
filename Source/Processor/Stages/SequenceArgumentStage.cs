@@ -54,7 +54,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					return ProcessResult.Continue;
 				}
 
-				string next = context.ProgramArguments.Dequeue();
+				string next = context.ProgramArguments.Dequeue(context.CommandLevel);
 
 				if (!_parser.TryParseAs(next, out TListProperty parsed))
 				{

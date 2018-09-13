@@ -31,7 +31,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					ProcessError.ExpectedProgramArgument, context.CommandLevel);
 			}
 
-			string valueToken = context.ProgramArguments.Dequeue();
+			string valueToken = context.ProgramArguments.Dequeue(context.CommandLevel);
 
 			if (!_parser.HandlesType<TProperty>())
 			{
