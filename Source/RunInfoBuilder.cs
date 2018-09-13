@@ -10,6 +10,7 @@ namespace R5.RunInfoBuilder
 	{
 		public ICommandStore Commands { get; }
 		//private IPipelineFactory _pipelineFactory { get; }
+		public IArgumentParser Parser { get; }
 
 		private CommandStore _commandStore { get; }
 
@@ -18,9 +19,9 @@ namespace R5.RunInfoBuilder
 			// temp
 			var keyValidator = new RestrictedKeyValidator();
 
-			var argPArser = new ArgumentParser();
+			Parser = new ArgumentParser();
 
-			IStagesFactory stagesQueueFactory = new StagesFactory(argPArser);
+			IStagesFactory stagesQueueFactory = new StagesFactory(Parser);
 
 			Commands = _commandStore = new CommandStore(
 				new CommandValidator(keyValidator),

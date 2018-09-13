@@ -43,13 +43,13 @@ namespace R5.RunInfoBuilder.Processor
 					subCommandInfoMap.Add(subCommand.Key, (subCommandPipeline, subCommand));
 				}
 
-				Action<Queue<Stage<TRunInfo>>> extendPipelineCallback = subCommandPipeline =>
-				{
-					while (subCommandPipeline.Any())
-					{
-						pipeline.Enqueue(subCommandPipeline.Dequeue());
-					}
-				};
+				//Action<Queue<Stage<TRunInfo>>> extendPipelineCallback = subCommandPipeline =>
+				//{
+				//	while (subCommandPipeline.Any())
+				//	{
+				//		pipeline.Enqueue(subCommandPipeline.Dequeue());
+				//	}
+				//};
 
 				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandInfoMap));
 			}
