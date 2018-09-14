@@ -14,6 +14,7 @@ namespace R5.RunInfoBuilder
 			string message,
 			ProcessError errorType,
 			int commandLevel,
+			Exception innerException = null,
 			params object[] metadata)
 			: base(message)
 		{
@@ -25,15 +26,17 @@ namespace R5.RunInfoBuilder
 
 	public enum ProcessError
 	{
+		GeneralFailure,
 		ExpectedProgramArgument,
 		ParserUnhandledType,
 		ParserInvalidValue,
-		OptionExpected,
+		//OptionExpected,
 		InvalidStackedOption,
 		ExpectedValueFoundOption,
 		ExpectedValueFoundSubCommand,
 		OptionValueRequired,
-		InvalidSubCommand
+		InvalidSubCommand,
+		InvalidProgramArgument
 	}
 
 

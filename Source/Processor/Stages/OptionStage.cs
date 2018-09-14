@@ -29,8 +29,10 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (!context.NextIsOption())
 				{
-					throw new ProcessException($"Processing failed because '{context.ProgramArguments.Peek()}' is not a valid option.",
-						ProcessError.OptionExpected, context.CommandLevel);
+					return ProcessResult.Continue; // results are optional so just continue
+
+					//throw new ProcessException($"Processing failed because '{context.ProgramArguments.Peek()}' is not a valid option.",
+					//	ProcessError.OptionExpected, context.CommandLevel);
 				}
 
 				string option = context.ProgramArguments.Dequeue(context.CommandLevel);

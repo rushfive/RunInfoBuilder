@@ -40,20 +40,19 @@ namespace R5.RunInfoBuilder.Processor
 				foreach (Command<TRunInfo> subCommand in command.SubCommands)
 				{
 					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand);
+					
 					subCommandInfoMap.Add(subCommand.Key, (subCommandPipeline, subCommand));
 				}
-
-				//Action<Queue<Stage<TRunInfo>>> extendPipelineCallback = subCommandPipeline =>
-				//{
-				//	while (subCommandPipeline.Any())
-				//	{
-				//		pipeline.Enqueue(subCommandPipeline.Dequeue());
-				//	}
-				//};
-
+				
 				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandInfoMap));
 			}
 
+			// InvalidProgramArgumentStage should ONLY be on a leaf stage node
+			if (!command.SubCommands.Any())
+			{
+				pipeline.Enqueue(new InvalidProgramArgumentStage<TRunInfo>());
+			}
+			
 			return pipeline;
 		}
 

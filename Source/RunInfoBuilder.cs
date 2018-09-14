@@ -2,6 +2,7 @@
 using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Validators;
+using System;
 
 namespace R5.RunInfoBuilder
 {
@@ -40,11 +41,22 @@ namespace R5.RunInfoBuilder
 
 		public object Build(string[] args)
 		{
-			dynamic pipeline = _commandStore.ResolvePipelineFromArgs(args);
-			var runInfo = pipeline.Process();
-			return runInfo;
-			
+			try
+			{
+				dynamic pipeline = _commandStore.ResolvePipelineFromArgs(args);
+				var runInfo = pipeline.Process();
+				return runInfo;
+			}
+			catch (Exception ex)
+			{
+				if (ex is ProcessException processException)
+				{
+					throw;
+				}
 
+				throw new ProcessException("Failed to process args.", 
+					ProcessError.GeneralFailure, -1, ex);
+			}
 		}
 	}
 	
