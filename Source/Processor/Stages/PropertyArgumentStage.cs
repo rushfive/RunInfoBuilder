@@ -31,7 +31,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					ProcessError.ExpectedProgramArgument, context.CommandLevel);
 			}
 
-			string valueToken = context.ProgramArguments.Dequeue(context.CommandLevel);
+			string valueToken = context.ProgramArguments.Dequeue();
 
 			if (!_parser.HandlesType<TProperty>())
 			{
@@ -46,7 +46,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			//		+ $"property '{propertyName}' is not writable.");
 			//}
 
-			if (!_parser.TryParseAs<TProperty>(valueToken, out TProperty parsed))
+			if (!_parser.TryParseAs(valueToken, out TProperty parsed))
 			{
 				throw new ProcessException($"Failed to process program argument '{valueToken}' because it "
 					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.",

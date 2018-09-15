@@ -35,7 +35,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					//	ProcessError.OptionExpected, context.CommandLevel);
 				}
 
-				string option = context.ProgramArguments.Dequeue(context.CommandLevel);
+				string option = context.ProgramArguments.Dequeue();
 				
 				var (type, fullKey, shortKeys, valueFromToken) = OptionTokenizer.TokenizeProgramArgument(option);
 				
@@ -119,7 +119,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					ProcessError.ExpectedValueFoundSubCommand, context.CommandLevel);
 			}
 
-			return context.ProgramArguments.Dequeue(context.CommandLevel);
+			return context.ProgramArguments.Dequeue();
 		}
 
 		private void ProcessFull(string key, string valueString, ProcessContext<TRunInfo> context)

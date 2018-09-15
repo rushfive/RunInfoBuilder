@@ -53,12 +53,11 @@ namespace R5.RunInfoBuilder.Processor
 
 		private ProcessContext<TRunInfo> GetProcessContext(TRunInfo runInfo)
 		{
-			Func<int, string> dequeueProgramArgument = (int commandLevel) =>
+			Func<string> dequeueProgramArgument = () =>
 			{
 				if (!_programArguments.Any())
 				{
-					throw new ProcessException("Cannot dequeue because there's no more items.",
-						ProcessError.ExpectedProgramArgument, commandLevel);
+					throw new InvalidOperationException("Cannot dequeue because there's no more items.");
 				}
 
 				_position++;
