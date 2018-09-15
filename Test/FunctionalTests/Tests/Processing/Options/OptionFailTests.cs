@@ -181,6 +181,83 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Options
 				Assert.Equal(expectedErrorType, processException.ErrorType);
 				Assert.Equal(0, processException.CommandLevel);
 			}
+
+			[Theory]
+			[InlineData("--bool1", "invalid")]
+			[InlineData("-bc", "invalid")]
+			public void InvalidValue_ForBoolOption_NotParseable_Throws(
+				string option, string invalidBoolValue)
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Options =
+						{
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool1 | b",
+								Property = ri=> ri.Bool1
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool2 | c",
+								Property = ri=> ri.Bool2
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", option, invalidBoolValue });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(0, processException.CommandLevel);
+			}
+
+			[Fact]
+			public void InvalidValueProgramArgument_ForNonBoolOption_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Options =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int1 | i",
+								Property = ri=> ri.Int1
+							},
+							new Option<TestRunInfo, int>
+							{
+								Key = "int2 | j",
+								Property = ri=> ri.Int2
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", "--int1", "invalid" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(0, processException.CommandLevel);
+			}
 		}
 
 		public class InNestedSubCommand

@@ -80,7 +80,7 @@ namespace R5.RunInfoBuilder.Parser
 
 			if (!_predicatesMap.ContainsKey(type))
 			{
-				throw new ArgumentException($"Predicate for type '{type.Name}' is not set.", nameof(type));
+				throw new InvalidOperationException($"Predicate for type '{type.Name}' is not set.");
 			}
 
 			dynamic predicate = _predicatesMap[type];

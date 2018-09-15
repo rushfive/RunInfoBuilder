@@ -184,12 +184,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			object getByParsing()
 			{
-				if (valueString == null)
-				{
-					throw new ProcessException("Options mapped to a non-boolean property must have a value.",
-						ProcessError.OptionValueRequired, commandLevel);
-				}
-
 				if (!_parser.TryParseAs(valueType, valueString, out object parsed))
 				{
 					throw new ProcessException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.",

@@ -34,7 +34,7 @@ namespace R5.RunInfoBuilder
 		InvalidStackedOption,
 		ExpectedValueFoundOption,
 		ExpectedValueFoundSubCommand,
-		OptionValueRequired,
+		//OptionValueRequired,
 		InvalidSubCommand,
 		InvalidProgramArgument
 	}
