@@ -5,10 +5,10 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor.Stages
 {
-	internal class InvalidProgramArgumentStage<TRunInfo> : Stage<TRunInfo>
+	internal class EndProcessStage<TRunInfo> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
-		internal InvalidProgramArgumentStage()
+		internal EndProcessStage()
 		{
 		}
 

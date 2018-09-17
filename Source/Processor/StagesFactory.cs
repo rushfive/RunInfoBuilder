@@ -47,10 +47,10 @@ namespace R5.RunInfoBuilder.Processor
 				pipeline.Enqueue(new SubCommandStage<TRunInfo>(subCommandInfoMap));
 			}
 
-			// InvalidProgramArgumentStage should ONLY be on a leaf stage node
+			// EndProcessStage should ONLY be on a leaf stage node
 			if (!command.SubCommands.Any())
 			{
-				pipeline.Enqueue(new InvalidProgramArgumentStage<TRunInfo>());
+				pipeline.Enqueue(new EndProcessStage<TRunInfo>());
 			}
 			
 			return pipeline;

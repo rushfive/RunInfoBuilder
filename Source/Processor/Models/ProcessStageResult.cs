@@ -34,6 +34,11 @@ namespace R5.RunInfoBuilder
 	internal class SkipNext : ProcessStageResult
 	{
 		internal SkipNext(int count) { }
+
+		internal void ProcessResult(Action skipProgramArgumentCallback)
+		{
+
+		}
 	}
 
 	internal class SkipToPosition : ProcessStageResult
