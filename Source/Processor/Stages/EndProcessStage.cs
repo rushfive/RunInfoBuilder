@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Processor.Models;
+﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 		}
 
-		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
+			Action<CommandBase<TRunInfo>> resetContextFunc)
 		{
 			if (context.ProgramArguments.HasMore())
 			{

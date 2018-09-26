@@ -23,7 +23,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_property = property;
 		}
 
-		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
+			Action<CommandBase<TRunInfo>> resetContextFunc)
 		{
 			if (!context.ProgramArguments.HasMore())
 			{

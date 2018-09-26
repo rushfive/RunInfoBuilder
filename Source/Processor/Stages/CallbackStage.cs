@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Processor.Models;
+﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_callback = callback;
 		}
 
-		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
+			Action<CommandBase<TRunInfo>> resetContextFunc)
 		{
 			return ProcessResult.Continue;
 			//return _callback(context.GetCallbackContext());

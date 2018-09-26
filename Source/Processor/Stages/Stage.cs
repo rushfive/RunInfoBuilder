@@ -1,4 +1,6 @@
-﻿using R5.RunInfoBuilder.Processor.Models;
+﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
+using System;
 
 namespace R5.RunInfoBuilder.Processor.Stages
 {
@@ -7,6 +9,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
     {
 		protected Stage() { }
 		
-		internal abstract ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context);
+		internal abstract ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context, Action<CommandBase<TRunInfo>> resetContextFunc);
 	}
 }

@@ -1,21 +1,19 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
-namespace R5.RunInfoBuilder.Processor.Models
+namespace R5.RunInfoBuilder.Processor.Functions
 {
 	internal class OptionFunctions<TRunInfo>
 			where TRunInfo : class
 	{
 		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; set; }
 		private Dictionary<char, (Action<TRunInfo, object> setter, Type valueType)> _shortOptionSetters { get; set; }
-		
 		private HashSet<string> _fullBoolTypeKeys { get; }
 		private HashSet<char> _shortBoolTypeKeys { get; }
-
 
 		internal OptionFunctions(List<OptionBase<TRunInfo>> options)
 		{
@@ -153,37 +151,10 @@ namespace R5.RunInfoBuilder.Processor.Models
 				return false;
 			}
 
-
-			//if (!programArgument.StartsWith("--") && !programArgument.StartsWith("-"))
-			//{
-			//	return false;
-			//}
-
-
-			//if (programArgument.StartsWith("--"))
-			//{
-			//	return IsFullOption(programArgument);
-			//}
-
-			//if (programArgument.Length == 2)
-			//{
-			//	return IsShortOption(programArgument.Skip(1).Single());
-			//}
-
-			//return IsStackedOption(new string(programArgument.Skip(1).ToArray()));
-
 			// local functions
 			bool IsFullOption(string s) => _fullOptionSetters.ContainsKey(s);
 
 			bool IsShortOption(char c) => _shortOptionSetters.ContainsKey(c);
-
-			//bool IsStackedOption(string s)
-			//{
-			//	var chars = s.ToCharArray();
-
-			//	return chars.Length == chars.Distinct().Count()
-			//		&& chars.All(_shortOptionSetters.ContainsKey);
-			//}
 		}
 
 		internal bool IsBoolType(string fullKey) => _fullBoolTypeKeys.Contains(fullKey);

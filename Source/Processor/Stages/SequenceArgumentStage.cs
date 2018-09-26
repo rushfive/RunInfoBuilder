@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Parser;
+﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_listProperty = listProperty;
 		}
 
-		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
+			Action<CommandBase<TRunInfo>> resetContextFunc)
 		{
 			if (!context.ProgramArguments.HasMore())
 			{

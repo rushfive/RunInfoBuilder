@@ -1,8 +1,6 @@
 ﻿using R5.RunInfoBuilder.Processor.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using R5.RunInfoBuilder.Commands;
 
 namespace R5.RunInfoBuilder.Processor.Stages
@@ -18,7 +16,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_subCommandInfoMap = subCommandInfoMap;
 		}
 
-		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context, 
+			Action<CommandBase<TRunInfo>> resetContextFunc)
 		{
 			if (!context.ProgramArguments.HasMore())
 			{
@@ -36,8 +35,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			(Queue<Stage<TRunInfo>> subCommandStages, Command<TRunInfo> command) = subCommandInfo;
 
 			context.Stages.ExtendPipelineWith(subCommandStages);
-
-			context = context.RefreshForCommand(command);
+			
+			resetContextFunc(command);
 
 			return ProcessResult.Continue;
 		}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace R5.RunInfoBuilder.Processor.Models
+namespace R5.RunInfoBuilder.Processor.Functions
 {
     internal class ProgramArgumentFunctions
     {
@@ -24,9 +24,5 @@ namespace R5.RunInfoBuilder.Processor.Models
 			NextIsSubCommand = () => subCommands.Contains(Peek());
 			NextIsOption = () => isOptionFunc(Peek());
 		}
-
-		//internal bool NextIsSubCommand() => _subCommands.Contains(Peek());
-
-		
 	}
 }

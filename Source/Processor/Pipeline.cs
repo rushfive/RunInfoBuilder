@@ -31,13 +31,12 @@ namespace R5.RunInfoBuilder.Processor
 		{
 			TRunInfo runInfo = (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
 
-			//ProcessContext<TRunInfo> processContext = GetProcessContext(runInfo).RefreshForCommand(_initialCommand);
 			ProcessContext<TRunInfo> context = new ProcessContext<TRunInfo>(
 				runInfo, 0, _stages, _programArguments, _initialCommand);
 
 			Action<CommandBase<TRunInfo>> resetContextFunc = cmd =>
 			{
-				context = context.RefreshForCommand(cmd);
+				context = context.RecreateForCommand(cmd);
 			};
 
 			bool ended = false;
@@ -45,7 +44,7 @@ namespace R5.RunInfoBuilder.Processor
 			{
 				Stage<TRunInfo> current = _stages.Dequeue();
 
-				ProcessStageResult result = current.ProcessStage(context);
+				ProcessStageResult result = current.ProcessStage(context, resetContextFunc);
 
 				switch (result)
 				{
@@ -69,34 +68,5 @@ namespace R5.RunInfoBuilder.Processor
 
 			return runInfo;
 		}
-
-		//private ProcessContext<TRunInfo> GetProcessContext(TRunInfo runInfo)
-		//{
-		//	//Func<CallbackContext<TRunInfo>> callbackContextFactory =
-		//	//	() => new CallbackContext<TRunInfo>(_args[_position], _position, runInfo, (string[])_args.Clone());
-
-		//	//var stageCallbacks = new StageFunctions<TRunInfo>(_stages.Any, _stages.Dequeue);
-
-		//	//var programArgumentCallbacks = new ProgramArgumentFunctions<TRunInfo>(
-		//	//	_programArguments.Any, 
-		//	//	_programArguments.Peek, 
-		//	//	_programArguments.Dequeue);
-
-		//	//Action<Queue<Stage<TRunInfo>>> extendPipeline = stagesQueue =>
-		//	//{
-		//	//	while (stagesQueue.Any())
-		//	//	{
-		//	//		_stages.Enqueue(stagesQueue.Dequeue());
-		//	//	}
-		//	//};
-
-		//	return new ProcessContext<TRunInfo>(
-		//		runInfo, 0, _stages, _programArguments, )
-		//		//callbackContextFactory,
-		//		stageCallbacks,
-		//		programArgumentCallbacks,
-		//		extendPipeline);
-		//}
-		
 	}
 }

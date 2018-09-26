@@ -18,7 +18,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			_parser = parser;
 		}
 		
-		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
+		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
+			Action<CommandBase<TRunInfo>> resetContextFunc)
 		{
 			while (context.ProgramArguments.HasMore())
 			{
