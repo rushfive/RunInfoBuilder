@@ -18,7 +18,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context)
 		{
-			return _callback(context.GetCallbackContext());
+			return ProcessResult.Continue;
+			//return _callback(context.GetCallbackContext());
 		}
 	}
 }

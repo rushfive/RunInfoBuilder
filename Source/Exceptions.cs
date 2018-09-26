@@ -36,7 +36,8 @@ namespace R5.RunInfoBuilder
 		ExpectedValueFoundSubCommand,
 		//OptionValueRequired,
 		InvalidSubCommand,
-		InvalidProgramArgument
+		InvalidProgramArgument,
+		InvalidStageResult
 	}
 
 

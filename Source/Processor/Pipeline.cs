@@ -13,7 +13,6 @@ namespace R5.RunInfoBuilder.Processor
 	{
 		private Queue<Stage<TRunInfo>> _stages { get; }
 		private string[] _args { get; }
-		private int _position { get; set; }
 		private Queue<string> _programArguments { get; }
 		private CommandBase<TRunInfo> _initialCommand { get; }
 
@@ -24,7 +23,6 @@ namespace R5.RunInfoBuilder.Processor
 		{
 			_stages = stages;
 			_args = args;
-			_position = 0;
 			_programArguments = new Queue<string>(args);
 			_initialCommand = initialCommand;
 		}
@@ -35,17 +33,31 @@ namespace R5.RunInfoBuilder.Processor
 
 			ProcessContext<TRunInfo> processContext = GetProcessContext(runInfo).RefreshForCommand(_initialCommand);
 
+			bool ended = false;
 			while (_stages.Any())
 			{
 				Stage<TRunInfo> current = _stages.Dequeue();
 
 				ProcessStageResult result = current.ProcessStage(processContext);
 
-				if (result == ProcessResult.End)
+				switch (result)
+				{
+					case Continue _:
+						break;
+					case End _:
+						ended = true;
+						break;
+					case null:
+					default:
+						throw new ProcessException(
+							"Current stage processing returned an invalid result.",
+							ProcessError.InvalidStageResult, processContext.CommandLevel);
+				}
+
+				if (ended)
 				{
 					break;
 				}
-
 			}
 
 			return runInfo;
@@ -53,26 +65,15 @@ namespace R5.RunInfoBuilder.Processor
 
 		private ProcessContext<TRunInfo> GetProcessContext(TRunInfo runInfo)
 		{
-			Func<string> dequeueProgramArgument = () =>
-			{
-				if (!_programArguments.Any())
-				{
-					throw new InvalidOperationException("Cannot dequeue because there's no more items.");
-				}
+			//Func<CallbackContext<TRunInfo>> callbackContextFactory =
+			//	() => new CallbackContext<TRunInfo>(_args[_position], _position, runInfo, (string[])_args.Clone());
 
-				_position++;
-				return _programArguments.Dequeue();
-			};
-
-			Func<CallbackContext<TRunInfo>> callbackContextFactory =
-				() => new CallbackContext<TRunInfo>(_args[_position], _position, runInfo, (string[])_args.Clone());
-
-			var stageCallbacks = new StageCallbacks<TRunInfo>(_stages.Any, _stages.Dequeue);
+			var stageCallbacks = new StageFunctions<TRunInfo>(_stages.Any, _stages.Dequeue);
 
 			var programArgumentCallbacks = new ProgramArgumentCallbacks<TRunInfo>(
 				_programArguments.Any, 
 				_programArguments.Peek, 
-				dequeueProgramArgument);
+				_programArguments.Dequeue);
 
 			Action<Queue<Stage<TRunInfo>>> extendPipeline = stagesQueue =>
 			{
@@ -84,7 +85,7 @@ namespace R5.RunInfoBuilder.Processor
 
 			return new ProcessContext<TRunInfo>(
 				runInfo,
-				callbackContextFactory,
+				//callbackContextFactory,
 				stageCallbacks,
 				programArgumentCallbacks,
 				extendPipeline);
