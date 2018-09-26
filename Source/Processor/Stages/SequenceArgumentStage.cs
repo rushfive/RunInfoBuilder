@@ -44,12 +44,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			// has been identified.
 			while (context.ProgramArguments.HasMore())
 			{
-				if (context.NextIsOption())
+				if (context.ProgramArguments.NextIsOption())
 				{
 					return ProcessResult.Continue;
 				}
 
-				if (context.NextIsSubCommand())
+				if (context.ProgramArguments.NextIsSubCommand())
 				{
 					return ProcessResult.Continue;
 				}

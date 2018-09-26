@@ -7,7 +7,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor.Models
 {
-	internal class ProcessOptions<TRunInfo>
+	internal class OptionFunctions<TRunInfo>
 			where TRunInfo : class
 	{
 		private Dictionary<string, (Action<TRunInfo, object> setter, Type valueType)> _fullOptionSetters { get; set; }
@@ -17,13 +17,13 @@ namespace R5.RunInfoBuilder.Processor.Models
 		private HashSet<char> _shortBoolTypeKeys { get; }
 
 
-		internal ProcessOptions(List<OptionBase<TRunInfo>> options)
+		internal OptionFunctions(List<OptionBase<TRunInfo>> options)
 		{
 			_fullOptionSetters = new Dictionary<string, (Action<TRunInfo, object>, Type)>();
 			_shortOptionSetters = new Dictionary<char, (Action<TRunInfo, object>, Type)>();
 			_fullBoolTypeKeys = new HashSet<string>();
 			_shortBoolTypeKeys = new HashSet<char>();
-
+			
 			InitializeMaps(options);
 		}
 

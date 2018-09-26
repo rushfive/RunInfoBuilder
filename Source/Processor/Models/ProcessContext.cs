@@ -21,32 +21,33 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal TRunInfo RunInfo { get; }
 		//private Func<CallbackContext<TRunInfo>> _callbackContextFactory { get; }
 		internal StageFunctions<TRunInfo> Stages { get; private set; }
-		internal ProgramArgumentCallbacks<TRunInfo> ProgramArguments { get; }
-		internal Action<Queue<Stage<TRunInfo>>> ExtendPipeline { get; }
+		internal ProgramArgumentFunctions ProgramArguments { get; private set; }
+		//internal Action<Queue<Stage<TRunInfo>>> ExtendPipeline { get; }
+		internal OptionFunctions<TRunInfo> Options { get; private set; }
+		internal int CommandLevel { get; private set; }
 
 		private Queue<Stage<TRunInfo>> _stages { get; }
 		private Queue<string> _programArguments { get; }
 
 
 		// "Refreshed" per command/subCommand
-		private HashSet<string> _subCommands { get; set; }
-		internal ProcessOptions<TRunInfo> Options { get; private set; }
-		internal int CommandLevel { get; private set; }
+		//private HashSet<string> _subCommands { get; set; }
+		
 
-		internal ProcessContext(
-			TRunInfo runInfo,
-			//Func<CallbackContext<TRunInfo>> callbackContextFactory,
-			StageFunctions<TRunInfo> stageCallbacks,
-			ProgramArgumentCallbacks<TRunInfo> programArgumentCallbacks,
-			Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
-		{
-			RunInfo = runInfo;
-			//_callbackContextFactory = callbackContextFactory;
-			Stages = stageCallbacks;
-			ProgramArguments = programArgumentCallbacks;
-			ExtendPipeline = extendPipelineCallback;
-			CommandLevel = -1;
-		}
+		//internal ProcessContext(
+		//	TRunInfo runInfo,
+		//	//Func<CallbackContext<TRunInfo>> callbackContextFactory,
+		//	StageFunctions<TRunInfo> stageCallbacks,
+		//	ProgramArgumentFunctions<TRunInfo> programArgumentCallbacks,
+		//	Action<Queue<Stage<TRunInfo>>> extendPipelineCallback)
+		//{
+		//	RunInfo = runInfo;
+		//	//_callbackContextFactory = callbackContextFactory;
+		//	Stages = stageCallbacks;
+		//	ProgramArguments = programArgumentCallbacks;
+		//	ExtendPipeline = extendPipelineCallback;
+		//	CommandLevel = -1;
+		//}
 
 		internal ProcessContext(
 			TRunInfo runInfo,
@@ -60,22 +61,11 @@ namespace R5.RunInfoBuilder.Processor.Models
 			_stages = stages;
 			_programArguments = programArguments;
 
-			Initialize(command);
-		}
-
-		private void Initialize(CommandBase<TRunInfo> command)
-		{
-			var subCommands = command is Command<TRunInfo> cmd
-				? new HashSet<string>(cmd.SubCommands.Select(c => c.Key))
-				: new HashSet<string>();
-
-			Options = new ProcessOptions<TRunInfo>(command.Options);
-
 			InitializeStageFunctions();
-
-			//CommandLevel++;
+			InitializeOptionsFunctions(command.Options);
+			InitializeProgramArgumentFunctions(command);
 		}
-
+		
 		private void InitializeStageFunctions()
 		{
 			Action<Queue<Stage<TRunInfo>>> extendPipelineFunc = newStages =>
@@ -91,10 +81,24 @@ namespace R5.RunInfoBuilder.Processor.Models
 				_stages.Dequeue,
 				extendPipelineFunc);
 		}
-
-		private void InitializeProgramArgumentFunctions()
+		
+		private void InitializeOptionsFunctions(List<OptionBase<TRunInfo>> options)
 		{
+			Options = new OptionFunctions<TRunInfo>(options);
+		}
 
+		private void InitializeProgramArgumentFunctions(CommandBase<TRunInfo> command)
+		{
+			var subCommands = command is Command<TRunInfo> cmd
+				? new HashSet<string>(cmd.SubCommands.Select(c => c.Key))
+				: new HashSet<string>();
+
+			ProgramArguments = new ProgramArgumentFunctions(
+				_programArguments.Any,
+				_programArguments.Peek,
+				_programArguments.Dequeue,
+				subCommands,
+				Options.IsOption);
 		}
 
 		// todo: consider making each command level have its own context object.
@@ -102,23 +106,26 @@ namespace R5.RunInfoBuilder.Processor.Models
 		// this method will return a new process context
 		internal ProcessContext<TRunInfo> RefreshForCommand(CommandBase<TRunInfo> command)
 		{
-			_subCommands = new HashSet<string>();
-			Options = new ProcessOptions<TRunInfo>(command.Options);
+			return new ProcessContext<TRunInfo>(
+				RunInfo, CommandLevel + 1, _stages, _programArguments, command);
 
-			if (command is Command<TRunInfo> cmd)
-			{
-				_subCommands = new HashSet<string>(cmd.SubCommands.Select(c => c.Key));
-			}
+			//_subCommands = new HashSet<string>();
+			//Options = new ProcessOptions<TRunInfo>(command.Options);
 
-			CommandLevel++;
+			//if (command is Command<TRunInfo> cmd)
+			//{
+			//	_subCommands = new HashSet<string>(cmd.SubCommands.Select(c => c.Key));
+			//}
 
-			return this;
+			//CommandLevel++;
+
+			//return this;
 		}
 
 		//internal CallbackContext<TRunInfo> GetCallbackContext() => _callbackContextFactory();
 
-		internal bool NextIsSubCommand() => _subCommands.Contains(ProgramArguments.Peek());
+		//internal bool NextIsSubCommand() => _subCommands.Contains(ProgramArguments.Peek());
 
-		internal bool NextIsOption() => Options.IsOption(ProgramArguments.Peek());
+		//internal bool NextIsOption() => Options.IsOption(ProgramArguments.Peek());
 	}
 }

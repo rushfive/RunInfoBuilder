@@ -33,11 +33,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					ProcessError.InvalidSubCommand, context.CommandLevel);
 			}
 
-			(Queue<Stage<TRunInfo>> pipeline, Command<TRunInfo> command) = subCommandInfo;
+			(Queue<Stage<TRunInfo>> subCommandStages, Command<TRunInfo> command) = subCommandInfo;
 
-			context.ExtendPipeline(pipeline);
+			context.Stages.ExtendPipelineWith(subCommandStages);
 
-			context.RefreshForCommand(command);
+			context = context.RefreshForCommand(command);
 
 			return ProcessResult.Continue;
 		}

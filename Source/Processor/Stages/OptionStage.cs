@@ -22,12 +22,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			while (context.ProgramArguments.HasMore())
 			{
-				if (context.NextIsSubCommand())
+				if (context.ProgramArguments.NextIsSubCommand())
 				{
 					return ProcessResult.Continue;
 				}
 
-				if (!context.NextIsOption())
+				if (!context.ProgramArguments.NextIsOption())
 				{
 					return ProcessResult.Continue; // results are optional so just continue
 
@@ -105,14 +105,14 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			// more program args exist
 			string next = context.ProgramArguments.Peek();
 
-			if (context.NextIsOption())
+			if (context.ProgramArguments.NextIsOption())
 			{
 				throw new ProcessException("Expected a value for the next program argument "
 					+ $"but found an option instead: '{next}'",
 					ProcessError.ExpectedValueFoundOption, context.CommandLevel);
 			}
 
-			if (context.NextIsSubCommand())
+			if (context.ProgramArguments.NextIsSubCommand())
 			{
 				throw new ProcessException("Expected a value for the next program argument "
 					+ $"but found an sub command instead: '{next}'",
