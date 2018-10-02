@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Functions;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
@@ -11,6 +12,7 @@ namespace R5.RunInfoBuilder.Processor.Models
     {
 		internal TRunInfo RunInfo { get; }
 		internal int CommandLevel { get; }
+		internal IArgumentParser Parser { get; }
 		internal StageFunctions<TRunInfo> Stages { get; private set; }
 		internal ProgramArgumentFunctions ProgramArguments { get; private set; }
 		internal OptionFunctions<TRunInfo> Options { get; private set; }
@@ -21,12 +23,14 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal ProcessContext(
 			TRunInfo runInfo,
 			int commandLevel,
+			IArgumentParser parser,
 			Queue<Stage<TRunInfo>> stages,
 			Queue<string> programArguments,
 			CommandBase<TRunInfo> command)
 		{
 			RunInfo = runInfo;
 			CommandLevel = commandLevel;
+			Parser = parser;
 			_stages = stages;
 			_programArguments = programArguments;
 
@@ -38,7 +42,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal ProcessContext<TRunInfo> RecreateForCommand(CommandBase<TRunInfo> command)
 		{
 			return new ProcessContext<TRunInfo>(
-				RunInfo, CommandLevel + 1, _stages, _programArguments, command);
+				RunInfo, CommandLevel + 1, Parser, _stages, _programArguments, command);
 		}
 
 		private void InitializeStageFunctions()

@@ -31,9 +31,9 @@ namespace R5.RunInfoBuilder.Commands
 			}
 		}
 
-		internal override Stage<TRunInfo> ToStage(IArgumentParser parser)
+		internal override Stage<TRunInfo> ToStage()
 		{
-			return new SequenceArgumentStage<TRunInfo, TListProperty>(parser, ListProperty);
+			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty);
 		}
 	}
 }

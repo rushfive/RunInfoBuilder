@@ -69,6 +69,8 @@ namespace R5.RunInfoBuilder
 		DuplicateKey,
 		InvalidKey,
 		NullPropertyExpression,
+		NullCustomHandler,
+		InvalidCount,
 		PropertyNotWritable
 	}
 }

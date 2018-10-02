@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
@@ -15,16 +16,19 @@ namespace R5.RunInfoBuilder.Processor
 		private string[] _args { get; }
 		private Queue<string> _programArguments { get; }
 		private CommandBase<TRunInfo> _initialCommand { get; }
+		private IArgumentParser _parser { get; }
 
 		internal Pipeline(
 			Queue<Stage<TRunInfo>> stages,
 			string[] args,
-			CommandBase<TRunInfo> initialCommand)
+			CommandBase<TRunInfo> initialCommand,
+			IArgumentParser parser)
 		{
 			_stages = stages;
 			_args = args;
 			_programArguments = new Queue<string>(args);
 			_initialCommand = initialCommand;
+			_parser = parser;
 		}
 
 		internal TRunInfo Process()
@@ -32,7 +36,7 @@ namespace R5.RunInfoBuilder.Processor
 			TRunInfo runInfo = (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
 
 			ProcessContext<TRunInfo> context = new ProcessContext<TRunInfo>(
-				runInfo, 0, _stages, _programArguments, _initialCommand);
+				runInfo, 0, _parser, _stages, _programArguments, _initialCommand);
 
 			Action<CommandBase<TRunInfo>> resetContextFunc = cmd =>
 			{

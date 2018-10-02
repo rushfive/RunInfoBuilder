@@ -135,5 +135,69 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 				Assert.Equal(0, validationException.CommandLevel);
 			}
 		}
+
+		public class CustomArgumentTests
+		{
+			[Theory]
+			[InlineData(-1)]
+			[InlineData(0)]
+			public void InvalidCount_Throws(int count)
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Arguments =
+						{
+							new CustomArgument<TestRunInfo>
+							{
+								Count = count
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.InvalidCount, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+
+			[Fact]
+			public void Null_CustomHandler_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Arguments =
+						{
+							new CustomArgument<TestRunInfo>
+							{
+								Count = 1,
+								Handler = null
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullCustomHandler, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+		}
 	}
 }

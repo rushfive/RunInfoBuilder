@@ -10,7 +10,6 @@ namespace R5.RunInfoBuilder
 	public class RunInfoBuilder
 	{
 		public ICommandStore Commands { get; }
-		//private IPipelineFactory _pipelineFactory { get; }
 		public IArgumentParser Parser { get; }
 
 		private CommandStore _commandStore { get; }
@@ -22,22 +21,14 @@ namespace R5.RunInfoBuilder
 
 			Parser = new ArgumentParser();
 
-			IStagesFactory stagesQueueFactory = new StagesFactory(Parser);
+			IStagesFactory stagesQueueFactory = new StagesFactory();
 
 			Commands = _commandStore = new CommandStore(
 				new CommandValidator(keyValidator),
 				keyValidator,
-				stagesQueueFactory);
-
-			
-
-			//_pipelineFactory = new PipelineFactory((ICommandStoreInternal)Commands, stagesQueueFactory);
+				stagesQueueFactory,
+				Parser);
 		}
-
-
-
-
-
 
 		public object Build(string[] args)
 		{

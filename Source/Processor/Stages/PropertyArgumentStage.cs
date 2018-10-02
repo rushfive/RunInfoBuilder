@@ -12,14 +12,10 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class PropertyArgumentStage<TRunInfo, TProperty> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
-		private IArgumentParser _parser { get; }
 		private Expression<Func<TRunInfo, TProperty>> _property { get; }
 
-		internal PropertyArgumentStage(
-			IArgumentParser parser,
-			Expression<Func<TRunInfo, TProperty>> property)
+		internal PropertyArgumentStage(Expression<Func<TRunInfo, TProperty>> property)
 		{
-			_parser = parser;
 			_property = property;
 		}
 
@@ -34,20 +30,14 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			string valueToken = context.ProgramArguments.Dequeue();
 
-			if (!_parser.HandlesType<TProperty>())
+			if (!context.Parser.HandlesType<TProperty>())
 			{
 				throw new ProcessException($"Failed to process program argument '{valueToken}' because the "
 					+ $"parser cannot handle the property type of '{typeof(TProperty).Name}'.",
 					ProcessError.ParserUnhandledType, context.CommandLevel);
 			}
-
-			//if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(_property, out string propertyName))
-			//{
-			//	throw new InvalidOperationException($"Failed to process program argument '{valueToken}' because the "
-			//		+ $"property '{propertyName}' is not writable.");
-			//}
-
-			if (!_parser.TryParseAs(valueToken, out TProperty parsed))
+			
+			if (!context.Parser.TryParseAs(valueToken, out TProperty parsed))
 			{
 				throw new ProcessException($"Failed to process program argument '{valueToken}' because it "
 					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.",

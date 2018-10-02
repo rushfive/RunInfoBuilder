@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Processor;
+﻿using R5.RunInfoBuilder.Parser;
+using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Stages;
 using R5.RunInfoBuilder.Validators;
 using System;
@@ -38,7 +39,8 @@ namespace R5.RunInfoBuilder.Commands
 		private ICommandValidator _validator { get; }
 		private IRestrictedKeyValidator _keyValidator { get; }
 		private IStagesFactory _stagesFactory { get; }
-		
+		private IArgumentParser _parser { get; }
+
 		// Key: Command key (or DefaultKey)
 		// Value: Func<string[], Pipeline<TRunInfo>> (pass args[] to get the corresponding pipeline)
 		private Dictionary<string, object> _pipelineFactoryMap { get; }
@@ -50,11 +52,13 @@ namespace R5.RunInfoBuilder.Commands
 		public CommandStore(
 			ICommandValidator validator,
 			IRestrictedKeyValidator keyValidator,
-			IStagesFactory stagesFactory)
+			IStagesFactory stagesFactory,
+			IArgumentParser parser)
 		{
 			_validator = validator;
 			_keyValidator = keyValidator;
 			_stagesFactory = stagesFactory;
+			_parser = parser;
 
 			_pipelineFactoryMap = new Dictionary<string, object>();
 			_commandMap = new Dictionary<string, object>();
@@ -88,7 +92,7 @@ namespace R5.RunInfoBuilder.Commands
 				// skip the first arg (command key)
 				args = args.Skip(1).ToArray();
 
-				return new Pipeline<TRunInfo>(stages, args, command);
+				return new Pipeline<TRunInfo>(stages, args, command, _parser);
 			};
 
 			_pipelineFactoryMap.Add(command.Key, pipelineFactory);
@@ -111,12 +115,11 @@ namespace R5.RunInfoBuilder.Commands
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
 				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand);
-				return new Pipeline<TRunInfo>(stages, args, defaultCommand);
+				return new Pipeline<TRunInfo>(stages, args, defaultCommand, _parser);
 			};
 
 			_pipelineFactoryMap.Add(CommandStore.DefaultKey, pipelineFactory);
 			
-
 			return this;
 		}
 

@@ -11,11 +11,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class OptionStage<TRunInfo> : Stage<TRunInfo>
 			where TRunInfo : class
 	{
-		private IArgumentParser _parser { get; }
-
-		internal OptionStage(IArgumentParser parser)
+		internal OptionStage()
 		{
-			_parser = parser;
 		}
 		
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
@@ -31,9 +28,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				if (!context.ProgramArguments.NextIsOption())
 				{
 					return ProcessResult.Continue; // results are optional so just continue
-
-					//throw new ProcessException($"Processing failed because '{context.ProgramArguments.Peek()}' is not a valid option.",
-					//	ProcessError.OptionExpected, context.CommandLevel);
 				}
 
 				string option = context.ProgramArguments.Dequeue();
@@ -108,16 +102,26 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			if (context.ProgramArguments.NextIsOption())
 			{
-				throw new ProcessException("Expected a value for the next program argument "
+				if (!isBoolTypeOption)
+				{
+					throw new ProcessException("Expected a value for the next program argument "
 					+ $"but found an option instead: '{next}'",
 					ProcessError.ExpectedValueFoundOption, context.CommandLevel);
+				}
+
+				return "true";
 			}
 
 			if (context.ProgramArguments.NextIsSubCommand())
 			{
-				throw new ProcessException("Expected a value for the next program argument "
+				if (!isBoolTypeOption)
+				{
+					throw new ProcessException("Expected a value for the next program argument "
 					+ $"but found an sub command instead: '{next}'",
 					ProcessError.ExpectedValueFoundSubCommand, context.CommandLevel);
+				}
+
+				return "true";
 			}
 
 			return context.ProgramArguments.Dequeue();
@@ -127,7 +131,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
 
-			object value = GetParsedValue(valueType, valueString, context.CommandLevel);
+			object value = GetParsedValue(valueType, valueString, context);
 
 			setter(context.RunInfo, value);
 		}
@@ -136,7 +140,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
 
-			object value = GetParsedValue(valueType, valueString, context.CommandLevel);
+			object value = GetParsedValue(valueType, valueString, context);
 
 			setter(context.RunInfo, value);
 		}
@@ -145,7 +149,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			List<(Action<TRunInfo, object> setter, Type valueType)> setters = context.Options.GetOptionValueSetters(keys);
 
-			object value = GetParsedValue(setters.First().valueType, valueString, context.CommandLevel);
+			object value = GetParsedValue(setters.First().valueType, valueString, context);
 
 			foreach((Action<TRunInfo, object> setter, _) in setters)
 			{
@@ -153,8 +157,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			}
 		}
 
-		private object GetParsedValue(Type valueType, string valueString, int commandLevel)
+		private object GetParsedValue(Type valueType, string valueString, ProcessContext<TRunInfo> context)
 		{
+			int commandLevel = context.CommandLevel;
+			IArgumentParser parser = context.Parser;
+
 			if (valueType == typeof(string))
 			{
 				return valueString;
@@ -175,7 +182,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					return true;
 				}
 
-				if (!_parser.TryParseAs(valueString, out bool parsed))
+				if (!parser.TryParseAs(valueString, out bool parsed))
 				{
 					throw new ProcessException($"'{valueString}' could not be parsed as a 'bool' type.",
 						ProcessError.ParserInvalidValue, commandLevel);
@@ -185,7 +192,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			object getByParsing()
 			{
-				if (!_parser.TryParseAs(valueType, valueString, out object parsed))
+				if (!parser.TryParseAs(valueType, valueString, out object parsed))
 				{
 					throw new ProcessException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.",
 						ProcessError.ParserInvalidValue, commandLevel);

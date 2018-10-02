@@ -20,11 +20,9 @@ namespace R5.RunInfoBuilder.Processor
 
 	internal class StagesFactory : IStagesFactory
 	{
-		private IArgumentParser _parser { get; }
-
-		public StagesFactory(IArgumentParser parser)
+		public StagesFactory()
 		{
-			_parser = parser;
+			
 		}
 		
 		public Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
@@ -67,29 +65,17 @@ namespace R5.RunInfoBuilder.Processor
 		{
 			var pipeline = new Queue<Stage<TRunInfo>>();
 
-			AddCallbackStageIfExistsFor(command);
-
 			foreach (ArgumentBase<TRunInfo> argument in command.Arguments)
 			{
-				AddCallbackStageIfExistsFor(argument);
-				pipeline.Enqueue(argument.ToStage(_parser));
+				pipeline.Enqueue(argument.ToStage());
 			}
 
 			if (command.Options.Any())
 			{
-				pipeline.Enqueue(new OptionStage<TRunInfo>(_parser));
+				pipeline.Enqueue(new OptionStage<TRunInfo>());
 			}
 
 			return pipeline;
-
-			// local functions
-			void AddCallbackStageIfExistsFor(ICallbackElement<TRunInfo> element)
-			{
-				if (element.Callback != null)
-				{
-					pipeline.Enqueue(new CallbackStage<TRunInfo>(element.Callback));
-				}
-			}
 		}
 	}
 }
