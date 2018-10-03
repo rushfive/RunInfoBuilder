@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Options
+namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 {
 	public class OptionFailTests
 	{
@@ -388,7 +388,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Options
 								}
 							}
 						}
-						
+
 					});
 
 					builder.Build(new string[] { "command", "subcommand", "--int" });

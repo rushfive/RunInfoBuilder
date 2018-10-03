@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Arguments
+namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 {
 	public class SequenceArgumentSuccessTests
 	{
@@ -75,7 +75,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Arguments
 					}
 				});
 
-				var runInfo = (TestRunInfo)builder.Build(new string[] 
+				var runInfo = (TestRunInfo)builder.Build(new string[]
 				{
 					"command", "1", "2", "3", "subcommand", "4", "5", "6"
 				});

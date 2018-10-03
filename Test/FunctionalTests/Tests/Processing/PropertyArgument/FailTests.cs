@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Arguments
+namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 {
 	public class PropertyArgumentFailTests
 	{
