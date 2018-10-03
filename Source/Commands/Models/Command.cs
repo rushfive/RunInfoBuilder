@@ -1,6 +1,5 @@
 ﻿using R5.RunInfoBuilder.Commands;
 using R5.RunInfoBuilder.Processor;
-using R5.RunInfoBuilder.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +20,7 @@ namespace R5.RunInfoBuilder
 				throw new CommandValidationException("Command key must be provided.",
 					CommandValidationError.KeyNotProvided, commandLevel);
 			}
-
-			// validating key clashes against other same level commands should
-			// be done by the caller
 			
-			// for now, dont care about specific error messaging.
-
 			if (Arguments != null)
 			{
 				int nullIndex = Arguments.IndexOfFirstNull();

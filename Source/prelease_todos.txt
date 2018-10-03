@@ -1,0 +1,7 @@
+- default command
+- validations for default command
+- validations for command store
+- callback argument for adding commands, that immediately fires upon processing of a command
+- annotations for intellisense - comments on public members
+- fix namespaces, probably just consolidate into a simple namespace for ease of use
+- parser: dump the "delete/remove type", dont allow changing of default enabled type predicates

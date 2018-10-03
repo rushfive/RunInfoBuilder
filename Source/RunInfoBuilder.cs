@@ -1,12 +1,10 @@
 ﻿using R5.RunInfoBuilder.Commands;
 using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
-using R5.RunInfoBuilder.Validators;
 using System;
 
 namespace R5.RunInfoBuilder
 {
-	// todo: allow advanced config AND hook into DI
 	public class RunInfoBuilder
 	{
 		public ICommandStore Commands { get; }
@@ -16,18 +14,11 @@ namespace R5.RunInfoBuilder
 
 		public RunInfoBuilder()
 		{
-			// temp
-			var keyValidator = new RestrictedKeyValidator();
-
 			Parser = new ArgumentParser();
 
 			IStagesFactory stagesQueueFactory = new StagesFactory();
 
-			Commands = _commandStore = new CommandStore(
-				new CommandValidator(keyValidator),
-				keyValidator,
-				stagesQueueFactory,
-				Parser);
+			Commands = _commandStore = new CommandStore(stagesQueueFactory, Parser);
 		}
 
 		public object Build(string[] args)
@@ -50,6 +41,4 @@ namespace R5.RunInfoBuilder
 			}
 		}
 	}
-	
-	
 }

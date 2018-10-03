@@ -22,7 +22,7 @@ namespace R5.RunInfoBuilder.Commands
 		//public List<ArgumentBase<TRunInfo>> Arguments { get; set; } = new List<ArgumentBase<TRunInfo>>();
 		//public List<IOption> Options { get; set; } = new List<IOption>();
 
-		internal void Validate(Type parentType, string parentKey)
+		internal void Validate(int commandLevel)
 		{
 			//if (!Options.NullOrEmpty())
 			//{
