@@ -13,6 +13,10 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Commands\Models\" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>

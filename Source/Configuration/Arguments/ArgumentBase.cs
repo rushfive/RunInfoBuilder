@@ -1,6 +1,6 @@
 ﻿using R5.RunInfoBuilder.Processor.Stages;
 
-namespace R5.RunInfoBuilder.Commands
+namespace R5.RunInfoBuilder
 {
 	public abstract class ArgumentBase<TRunInfo>
 		where TRunInfo : class

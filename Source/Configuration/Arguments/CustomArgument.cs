@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Commands
+namespace R5.RunInfoBuilder
 {
 	public class CustomArgument<TRunInfo> : ArgumentBase<TRunInfo>
 		where TRunInfo : class

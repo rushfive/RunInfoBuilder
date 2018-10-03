@@ -1,5 +1,4 @@
-﻿using R5.RunInfoBuilder.Commands;
-using R5.RunInfoBuilder.FunctionalTests.Models;
+﻿using R5.RunInfoBuilder.FunctionalTests.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

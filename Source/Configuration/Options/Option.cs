@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Commands
+namespace R5.RunInfoBuilder
 {
 	// ioption because we dont know tproperty until runtime
 	//public interface IOption

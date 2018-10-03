@@ -1,5 +1,4 @@
-﻿using R5.RunInfoBuilder.Commands;
-using R5.RunInfoBuilder.Processor;
+﻿using R5.RunInfoBuilder.Processor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +19,7 @@ namespace R5.RunInfoBuilder
 				throw new CommandValidationException("Command key must be provided.",
 					CommandValidationError.KeyNotProvided, commandLevel);
 			}
-			
+
 			if (Arguments != null)
 			{
 				int nullIndex = Arguments.IndexOfFirstNull();
@@ -30,7 +29,7 @@ namespace R5.RunInfoBuilder
 						$"Command '{Key}' contains a null argument (index {nullIndex}).",
 						CommandValidationError.NullObject, commandLevel, nullIndex);
 				}
-				
+
 				Arguments.ForEach(a => a.Validate(commandLevel));
 			}
 
@@ -85,7 +84,7 @@ namespace R5.RunInfoBuilder
 					throw new CommandValidationException($"Command '{Key}' contains options with duplicate short keys.",
 						CommandValidationError.DuplicateKey, commandLevel);
 				}
-				
+
 				Options.ForEach(o => o.Validate(commandLevel));
 			}
 

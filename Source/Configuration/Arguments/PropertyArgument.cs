@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace R5.RunInfoBuilder.Commands
+namespace R5.RunInfoBuilder
 {
 	public class PropertyArgument<TRunInfo, TProperty> : ArgumentBase<TRunInfo>
 		where TRunInfo : class

@@ -7,7 +7,7 @@ using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
 
-namespace R5.RunInfoBuilder.Commands
+namespace R5.RunInfoBuilder
 {
 	public class SequenceArgument<TRunInfo, TListProperty> : ArgumentBase<TRunInfo>
 			where TRunInfo : class
