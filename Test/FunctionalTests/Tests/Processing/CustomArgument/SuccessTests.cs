@@ -32,10 +32,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 						Count = 3,
 						Handler = context =>
 						{
-							Assert.Equal(3, context.HandledProgramArguments.Count);
-							Assert.Equal("1", context.HandledProgramArguments[0]);
-							Assert.Equal("2", context.HandledProgramArguments[1]);
-							Assert.Equal("3", context.HandledProgramArguments[2]);
+							Assert.Equal(3, context.ProgramArguments.Count);
+							Assert.Equal("1", context.ProgramArguments[0]);
+							Assert.Equal("2", context.ProgramArguments[1]);
+							Assert.Equal("3", context.ProgramArguments[2]);
 							context.RunInfo.Int1 = 10;
 							return ProcessResult.Continue;
 						}
@@ -107,9 +107,9 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 						Count = 2,
 						Handler = context =>
 						{
-							Assert.Equal(2, context.HandledProgramArguments.Count);
-							Assert.Equal("1", context.HandledProgramArguments[0]);
-							Assert.Equal("2", context.HandledProgramArguments[1]);
+							Assert.Equal(2, context.ProgramArguments.Count);
+							Assert.Equal("1", context.ProgramArguments[0]);
+							Assert.Equal("2", context.ProgramArguments[1]);
 							context.RunInfo.Int1 = 10;
 							return ProcessResult.Continue;
 						}
@@ -119,10 +119,10 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 						Count = 3,
 						Handler = context =>
 						{
-							Assert.Equal(3, context.HandledProgramArguments.Count);
-							Assert.Equal("3", context.HandledProgramArguments[0]);
-							Assert.Equal("4", context.HandledProgramArguments[1]);
-							Assert.Equal("5", context.HandledProgramArguments[2]);
+							Assert.Equal(3, context.ProgramArguments.Count);
+							Assert.Equal("3", context.ProgramArguments[0]);
+							Assert.Equal("4", context.ProgramArguments[1]);
+							Assert.Equal("5", context.ProgramArguments[2]);
 							context.RunInfo.Int2 = 20;
 							return ProcessResult.Continue;
 						}

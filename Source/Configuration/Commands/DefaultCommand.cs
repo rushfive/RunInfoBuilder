@@ -7,11 +7,9 @@ namespace R5.RunInfoBuilder
 	public class DefaultCommand<TRunInfo> : CommandBase<TRunInfo>
 		where TRunInfo : class
 	{
-
-
-		internal void Validate(int commandLevel)
+		internal void Validate()
 		{
-			throw new NotImplementedException();
+			base.Validate(commandLevel: 0, "Default Command");
 		}
 	}
 }

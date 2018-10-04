@@ -93,7 +93,7 @@ namespace R5.RunInfoBuilder
 				throw new InvalidOperationException("Default command has already been configured.");
 			}
 
-			defaultCommand.Validate(commandLevel: 0);
+			defaultCommand.Validate();
 
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
@@ -115,16 +115,8 @@ namespace R5.RunInfoBuilder
 					throw new Exception();
 				}
 
-				dynamic defaultFactory = _pipelineFactoryMap[CommandStore.DefaultKey];//.Invoke(args);
+				dynamic defaultFactory = _pipelineFactoryMap[CommandStore.DefaultKey];
 				return defaultFactory.Invoke(args);
-
-				// default
-				//if (!TryGetDefaultPipeline(out dynamic defaultPipelineFactory))
-				//{
-				//	throw new Exception();
-				//}
-
-				//return defaultPipelineFactory.Invoke(args);
 			}
 
 			if (!_pipelineFactoryMap.ContainsKey(args[0]))
@@ -132,48 +124,10 @@ namespace R5.RunInfoBuilder
 				throw new Exception();
 			}
 
-			dynamic factory = _pipelineFactoryMap[args[0]];//.Invoke(args);
-			//dynamic pipeline = factory.Invoke(args);
+			dynamic factory = _pipelineFactoryMap[args[0]];
+
 			return factory.Invoke(args);
-
-			//
-			//if (!TryGetCommandPipelineFactory(args[0], out dynamic pipelineFactory))
-			//{
-			//	throw new Exception();
-			//}
-
-			//return pipelineFactory.Invoke(args);
 		}
-
-		//private bool TryGetCommandPipelineFactory(string key, out object factory)
-		//{
-		//	factory = null;
-
-		//	if (!_pipelineFactoryMap.ContainsKey(key))
-		//	{
-		//		return false;
-		//	}
-
-		//	object factory = _pipelineFactoryMap[key];
-		//	//pipeline = factory.Invoke();
-		//	return true;
-		//}
-
-		//private bool TryGetDefaultPipeline(out object pipeline)
-		//{
-		//	pipeline = null;
-
-		//	if (!_pipelineFactoryMap.ContainsKey(CommandStore.DefaultKey))
-		//	{
-		//		return false;
-		//	}
-
-		//	dynamic factory = _pipelineFactoryMap[CommandStore.DefaultKey];
-		//	pipeline = factory.Invoke();
-		//	return true;
-		//}
-
-		//internal object GetCommand(string key) => _commandMap[key];
 
 		public bool IsCommand(string key) => _pipelineFactoryMap.ContainsKey(key);
 	}

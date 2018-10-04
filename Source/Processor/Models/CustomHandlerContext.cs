@@ -6,7 +6,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 	public class CustomHandlerContext<TRunInfo> where TRunInfo : class
 	{
 		public TRunInfo RunInfo { get; }
-		public List<string> HandledProgramArguments { get; }
+		public List<string> ProgramArguments { get; }
 		public IArgumentParser Parser { get; }
 
 		internal CustomHandlerContext(
@@ -15,7 +15,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 			IArgumentParser parser)
 		{
 			RunInfo = runInfo;
-			HandledProgramArguments = handledProgramArguments;
+			ProgramArguments = handledProgramArguments;
 			Parser = parser;
 		}
 	}

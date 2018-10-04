@@ -20,73 +20,7 @@ namespace R5.RunInfoBuilder
 					CommandValidationError.KeyNotProvided, commandLevel);
 			}
 
-			if (Arguments != null)
-			{
-				int nullIndex = Arguments.IndexOfFirstNull();
-				if (nullIndex != -1)
-				{
-					throw new CommandValidationException(
-						$"Command '{Key}' contains a null argument (index {nullIndex}).",
-						CommandValidationError.NullObject, commandLevel, nullIndex);
-				}
-
-				Arguments.ForEach(a => a.Validate(commandLevel));
-			}
-
-			if (Options != null)
-			{
-				if (Options.Any(o => o == null))
-				{
-					int nullIndex = Options.IndexOfFirstNull();
-					if (nullIndex != -1)
-					{
-						throw new CommandValidationException(
-							$"Command '{Key}' contains a null option (index {nullIndex}).",
-							CommandValidationError.NullObject, commandLevel, nullIndex);
-					}
-				}
-
-				bool matchesRegex = Options
-					.Select(o => o.Key)
-					.All(OptionTokenizer.IsValidConfiguration);
-
-				if (!matchesRegex)
-				{
-					throw new CommandValidationException($"Command '{Key}' contains an option with an invalid key.",
-						CommandValidationError.InvalidKey, commandLevel);
-				}
-
-				var fullKeys = new List<string>();
-				var shortKeys = new List<char>();
-
-				Options.ForEach(o =>
-				{
-					var (fullKey, shortKey) = OptionTokenizer.TokenizeKeyConfiguration(o.Key);
-
-					fullKeys.Add(fullKey);
-
-					if (shortKey.HasValue)
-					{
-						shortKeys.Add(shortKey.Value);
-					}
-				});
-
-				bool duplicateFull = fullKeys.Count != fullKeys.Distinct().Count();
-				if (duplicateFull)
-				{
-					throw new CommandValidationException($"Command '{Key}' contains options with duplicate full keys.",
-						CommandValidationError.DuplicateKey, commandLevel);
-				}
-
-				bool duplicateShort = shortKeys.Count != shortKeys.Distinct().Count();
-				if (duplicateShort)
-				{
-					throw new CommandValidationException($"Command '{Key}' contains options with duplicate short keys.",
-						CommandValidationError.DuplicateKey, commandLevel);
-				}
-
-				Options.ForEach(o => o.Validate(commandLevel));
-			}
+			base.Validate(commandLevel, Key);
 
 			if (SubCommands != null)
 			{
