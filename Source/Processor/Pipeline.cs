@@ -15,13 +15,13 @@ namespace R5.RunInfoBuilder.Processor
 		private string[] _args { get; }
 		private Queue<string> _programArguments { get; }
 		private CommandBase<TRunInfo> _initialCommand { get; }
-		private IArgumentParser _parser { get; }
+		private ArgumentParser _parser { get; }
 
 		internal Pipeline(
 			Queue<Stage<TRunInfo>> stages,
 			string[] args,
 			CommandBase<TRunInfo> initialCommand,
-			IArgumentParser parser)
+			ArgumentParser parser)
 		{
 			_stages = stages;
 			_args = args;

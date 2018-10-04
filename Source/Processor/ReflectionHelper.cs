@@ -9,7 +9,7 @@ namespace R5.RunInfoBuilder.Processor
     internal static class ReflectionHelper<TRunInfo>
 		where TRunInfo : class
 	{
-		public static bool PropertyIsWritable<TPropertyType>(Expression<Func<TRunInfo, TPropertyType>> propertyExpression, out string propertyName)
+		internal static bool PropertyIsWritable<TPropertyType>(Expression<Func<TRunInfo, TPropertyType>> propertyExpression, out string propertyName)
 		{
 			PropertyInfo propertyInfo = GetPropertyInfoFromExpression(propertyExpression);
 			propertyName = propertyInfo.Name;
@@ -17,7 +17,7 @@ namespace R5.RunInfoBuilder.Processor
 			return propertyInfo.CanWrite;
 		}
 
-		public static PropertyInfo GetPropertyInfoFromExpression<TPropertyType>(Expression<Func<TRunInfo, TPropertyType>> propertyExpression)
+		internal static PropertyInfo GetPropertyInfoFromExpression<TPropertyType>(Expression<Func<TRunInfo, TPropertyType>> propertyExpression)
 		{
 			var memberExpression = propertyExpression.Body as MemberExpression;
 			if (memberExpression == null)

@@ -11,7 +11,7 @@ namespace R5.RunInfoBuilder.Processor.Models
     {
 		internal TRunInfo RunInfo { get; }
 		internal int CommandLevel { get; }
-		internal IArgumentParser Parser { get; }
+		internal ArgumentParser Parser { get; }
 		internal StageFunctions<TRunInfo> Stages { get; private set; }
 		internal ProgramArgumentFunctions ProgramArguments { get; private set; }
 		internal OptionFunctions<TRunInfo> Options { get; private set; }
@@ -22,7 +22,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 		internal ProcessContext(
 			TRunInfo runInfo,
 			int commandLevel,
-			IArgumentParser parser,
+			ArgumentParser parser,
 			Queue<Stage<TRunInfo>> stages,
 			Queue<string> programArguments,
 			CommandBase<TRunInfo> command)

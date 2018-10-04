@@ -6,25 +6,20 @@ namespace R5.RunInfoBuilder
 {
 	public class RunInfoBuilder
 	{
-		public ICommandStore Commands { get; }
-		public IArgumentParser Parser { get; }
-
-		private CommandStore _commandStore { get; }
-
+		public ArgumentParser Parser { get; }
+		public CommandStore Commands { get; }
+		
 		public RunInfoBuilder()
 		{
 			Parser = new ArgumentParser();
-
-			IStagesFactory stagesQueueFactory = new StagesFactory();
-
-			Commands = _commandStore = new CommandStore(stagesQueueFactory, Parser);
+			Commands = new CommandStore(Parser);
 		}
 
 		public object Build(string[] args)
 		{
 			try
 			{
-				dynamic pipeline = _commandStore.ResolvePipelineFromArgs(args);
+				dynamic pipeline = Commands.ResolvePipelineFromArgs(args);
 				var runInfo = pipeline.Process();
 				return runInfo;
 			}

@@ -6,23 +6,9 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Processor
 {
-	internal interface IStagesFactory
+	internal class StagesFactory
 	{
-		Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
-			 where TRunInfo : class;
-
-		Queue<Stage<TRunInfo>> Create<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
-			 where TRunInfo : class;
-	}
-
-	internal class StagesFactory : IStagesFactory
-	{
-		public StagesFactory()
-		{
-			
-		}
-		
-		public Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
+		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
 			 where TRunInfo : class
 		{
 			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command);
@@ -51,7 +37,7 @@ namespace R5.RunInfoBuilder.Processor
 			return pipeline;
 		}
 
-		public Queue<Stage<TRunInfo>> Create<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
 			 where TRunInfo : class
 		{
 			return BuildCommonPipelineStages(defaultCommand);

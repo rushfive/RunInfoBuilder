@@ -14,11 +14,6 @@ namespace R5.RunInfoBuilder.Processor
 		internal static bool IsValidConfiguration(string input)
 		{
 			return !string.IsNullOrWhiteSpace(input) && Regex.IsMatch(input, OptionTokenizer.OptionConfigurationRegex);
-
-
-			// use regex: ^(\s+)?[A-Za-z0-9]+(\s+)?([|](\s+)?[A-Za-z0-9](\s+)?)?$
-			// todo: regex match
-			return true;
 		}
 
 		// assumes input is valid, shoudl be validated before here!

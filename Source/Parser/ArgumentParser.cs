@@ -5,20 +5,7 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Parser
 {
-	public interface IArgumentParser
-	{
-		IArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc);
-
-		bool TryParseAs(Type type, string value, out object parsed);
-
-		bool TryParseAs<T>(string value, out T parsed);
-
-		bool HandlesType(Type type);
-
-		bool HandlesType<T>();
-	}
-
-	internal class ArgumentParser : IArgumentParser
+	public class ArgumentParser
 	{
 		private bool _autoParseEnumTypes { get; set; } = true; // todo or default true?
 		private bool _enumParseIgnoreCase { get; set; } // todo or default true?
@@ -35,7 +22,7 @@ namespace R5.RunInfoBuilder.Parser
 			this.AddSystemTypePredicates();
 		}
 
-		public IArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)
+		public ArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)
 		{
 			Type type = typeof(T);
 

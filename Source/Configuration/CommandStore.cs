@@ -8,21 +8,12 @@ using System.Text;
 
 namespace R5.RunInfoBuilder
 {
-	public interface ICommandStore
-	{
-		ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
-			where TRunInfo : class;
-
-		ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
-			where TRunInfo : class;
-	}
-
-	internal class CommandStore : ICommandStore
+	public class CommandStore
 	{
 		internal const string DefaultKey = "__DEFAULT__";
 		
-		private IStagesFactory _stagesFactory { get; }
-		private IArgumentParser _parser { get; }
+		private StagesFactory _stagesFactory { get; }
+		private ArgumentParser _parser { get; }
 
 		// Key: Command key (or DefaultKey)
 		// Value: Func<string[], Pipeline<TRunInfo>> (pass args[] to get the corresponding pipeline)
@@ -32,18 +23,16 @@ namespace R5.RunInfoBuilder
 		// Value: CommandBase<TRunInfo>
 		private Dictionary<string, object> _commandMap { get; }
 
-		public CommandStore(
-			IStagesFactory stagesFactory,
-			IArgumentParser parser)
+		internal CommandStore(ArgumentParser parser)
 		{
-			_stagesFactory = stagesFactory;
+			_stagesFactory = new StagesFactory();
 			_parser = parser;
 
 			_pipelineFactoryMap = new Dictionary<string, object>();
 			_commandMap = new Dictionary<string, object>();
 		}
 		
-		public ICommandStore Add<TRunInfo>(Command<TRunInfo> command)
+		public CommandStore Add<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
 			if (command == null)
@@ -84,7 +73,7 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
-		public ICommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+		public CommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
 			where TRunInfo : class
 		{
 			if (defaultCommand == null)

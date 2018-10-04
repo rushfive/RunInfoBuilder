@@ -159,7 +159,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		private object GetParsedValue(Type valueType, string valueString, ProcessContext<TRunInfo> context)
 		{
 			int commandLevel = context.CommandLevel;
-			IArgumentParser parser = context.Parser;
+			ArgumentParser parser = context.Parser;
 
 			if (valueType == typeof(string))
 			{
