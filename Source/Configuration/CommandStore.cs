@@ -48,7 +48,9 @@ namespace R5.RunInfoBuilder
 		{
 			if (command == null)
 			{
-				throw new ArgumentNullException(nameof(command), "Command must be provided.");
+				throw new CommandValidationException(
+					"Command must be provided.",
+					CommandValidationError.NullObject, commandLevel: 0);
 			}
 
 			if (string.IsNullOrWhiteSpace(command.Key))
@@ -60,7 +62,9 @@ namespace R5.RunInfoBuilder
 
 			if (IsCommand(command.Key))
 			{
-				throw new InvalidOperationException($"Command with key '{command.Key}' has already been configured.");
+				throw new CommandValidationException(
+					$"Command with key '{command.Key} has already been configured.",
+					CommandValidationError.DuplicateKey, commandLevel: 0);
 			}
 
 			command.Validate(commandLevel: 0);
@@ -85,12 +89,16 @@ namespace R5.RunInfoBuilder
 		{
 			if (defaultCommand == null)
 			{
-				throw new ArgumentNullException(nameof(defaultCommand), "Command must be provided.");
+				throw new CommandValidationException(
+					"Command must be provided.",
+					CommandValidationError.NullObject, commandLevel: -1);
 			}
 
 			if (IsCommand(CommandStore.DefaultKey))
 			{
-				throw new InvalidOperationException("Default command has already been configured.");
+				throw new CommandValidationException(
+					"Default command has already been configured.",
+					CommandValidationError.DuplicateKey, commandLevel: -1);
 			}
 
 			defaultCommand.Validate();
