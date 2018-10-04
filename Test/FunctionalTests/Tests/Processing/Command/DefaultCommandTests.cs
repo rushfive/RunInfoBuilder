@@ -164,5 +164,33 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Command
 				builder.Build(new string[] { "1", "abc", "!!!" });
 			}
 		}
+
+		public class PostBuildCallback
+		{
+			[Fact]
+			public void OnSuccessfulBuild_Invokes()
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.AddDefault(
+					new DefaultCommand<TestRunInfo>
+					{
+						Options =
+						{
+								new Option<TestRunInfo, bool>
+								{
+									Key = "bool",
+									Property = ri => ri.Bool1
+								}
+						}
+					},
+					runInfo =>
+					{
+						Assert.True(runInfo.Bool1);
+					});
+
+				builder.Build(new string[] { "--bool" });
+			}
+		}
 	}
 }

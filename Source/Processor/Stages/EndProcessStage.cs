@@ -8,8 +8,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	internal class EndProcessStage<TRunInfo> : Stage<TRunInfo>
 		where TRunInfo : class
 	{
-		internal EndProcessStage()
+		private Action<TRunInfo> _postBuildCallback { get; }
+
+		internal EndProcessStage(Action<TRunInfo> postBuildCallback)
 		{
+			_postBuildCallback = postBuildCallback;
 		}
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
@@ -20,6 +23,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 				var invalidArgument = context.ProgramArguments.Peek();
 				throw new ProcessException($"Invalid program argument found: {invalidArgument}",
 					ProcessError.InvalidProgramArgument, context.CommandLevel);
+			}
+
+			if (_postBuildCallback != null)
+			{
+				_postBuildCallback(context.RunInfo);
 			}
 
 			return ProcessResult.End;

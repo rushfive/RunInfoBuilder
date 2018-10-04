@@ -6,11 +6,13 @@ namespace R5.RunInfoBuilder
 {
 	public class RunInfoBuilder
 	{
+		public HelpManager Help { get; }
 		public ArgumentParser Parser { get; }
 		public CommandStore Commands { get; }
 		
 		public RunInfoBuilder()
 		{
+			Help = new HelpManager();
 			Parser = new ArgumentParser();
 			Commands = new CommandStore(Parser);
 		}

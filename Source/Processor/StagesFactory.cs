@@ -8,7 +8,8 @@ namespace R5.RunInfoBuilder.Processor
 {
 	internal class StagesFactory
 	{
-		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(Command<TRunInfo> command)
+		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(
+			Command<TRunInfo> command, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
 			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command);
@@ -20,7 +21,7 @@ namespace R5.RunInfoBuilder.Processor
 
 				foreach (Command<TRunInfo> subCommand in command.SubCommands)
 				{
-					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand);
+					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand, postBuildCallback);
 					
 					subCommandInfoMap.Add(subCommand.Key, (subCommandPipeline, subCommand));
 				}
@@ -31,16 +32,21 @@ namespace R5.RunInfoBuilder.Processor
 			// EndProcessStage should ONLY be on a leaf stage node
 			if (!command.SubCommands.Any())
 			{
-				pipeline.Enqueue(new EndProcessStage<TRunInfo>());
+				pipeline.Enqueue(new EndProcessStage<TRunInfo>(postBuildCallback));
 			}
 			
 			return pipeline;
 		}
 
-		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(
+			DefaultCommand<TRunInfo> defaultCommand, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			return BuildCommonPipelineStages(defaultCommand);
+			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(defaultCommand);
+
+			pipeline.Enqueue(new EndProcessStage<TRunInfo>(postBuildCallback));
+
+			return pipeline;
 		}
 
 		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages<TRunInfo>(CommandBase<TRunInfo> command)

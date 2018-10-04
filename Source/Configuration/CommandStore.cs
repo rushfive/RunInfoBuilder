@@ -14,6 +14,7 @@ namespace R5.RunInfoBuilder
 		
 		private StagesFactory _stagesFactory { get; }
 		private ArgumentParser _parser { get; }
+		private HelpManager _helpManager { get; }
 
 		// Key: Command key (or DefaultKey)
 		// Value: Func<string[], Pipeline<TRunInfo>> (pass args[] to get the corresponding pipeline)
@@ -23,16 +24,20 @@ namespace R5.RunInfoBuilder
 		// Value: CommandBase<TRunInfo>
 		private Dictionary<string, object> _commandMap { get; }
 
-		internal CommandStore(ArgumentParser parser)
+		internal CommandStore(
+			ArgumentParser parser,
+			HelpManager helpManager)
 		{
 			_stagesFactory = new StagesFactory();
 			_parser = parser;
+			_helpManager = helpManager;
 
 			_pipelineFactoryMap = new Dictionary<string, object>();
 			_commandMap = new Dictionary<string, object>();
 		}
 		
-		public CommandStore Add<TRunInfo>(Command<TRunInfo> command)
+		public CommandStore Add<TRunInfo>(Command<TRunInfo> command, 
+			Action<TRunInfo> postBuildCallback = null)
 			where TRunInfo : class
 		{
 			if (command == null)
@@ -60,7 +65,7 @@ namespace R5.RunInfoBuilder
 			
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
-				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(command);
+				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(command, postBuildCallback);
 
 				// skip the first arg (command key)
 				args = args.Skip(1).ToArray();
@@ -69,11 +74,14 @@ namespace R5.RunInfoBuilder
 			};
 
 			_pipelineFactoryMap.Add(command.Key, pipelineFactory);
+
+			_helpManager.ConfigureForCommand(command);
 			
 			return this;
 		}
 
-		public CommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
+		public CommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand,
+			Action<TRunInfo> postBuildCallback = null)
 			where TRunInfo : class
 		{
 			if (defaultCommand == null)
@@ -94,11 +102,13 @@ namespace R5.RunInfoBuilder
 
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
-				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand);
+				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand, postBuildCallback);
 				return new Pipeline<TRunInfo>(stages, args, defaultCommand, _parser);
 			};
 
 			_pipelineFactoryMap.Add(CommandStore.DefaultKey, pipelineFactory);
+
+			_helpManager.ConfigureForDefaultCommand(defaultCommand);
 			
 			return this;
 		}
