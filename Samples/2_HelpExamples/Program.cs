@@ -11,6 +11,7 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 			var builder = new RunInfoBuilder();
 
 			builder.Commands
+				
 				.Add(new Command<TestRunInfo>
 				{
 					Key = "command",
@@ -59,6 +60,27 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 						}
 					}
 				})
+				.Add(new Command<TestRunInfo>
+				{
+					Key = "update",
+					Description = "update the database yayuh",
+					Arguments =
+					{
+						new PropertyArgument<TestRunInfo, string>
+						{
+							Property = ri => ri.String1,
+							HelpToken = "<connectionString>"
+						}
+					},
+					Options =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "force",
+							Property = ri => ri.Bool1
+						}
+					}
+				})
 				.AddDefault(new DefaultCommand<TestRunInfo>
 				 {
 					 Description = "Pass in date specifications to request time specific data.",
@@ -94,6 +116,7 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 					}
 				 });
 
+			builder.Build(new string[] { });
 			Console.ReadKey();
 		}
 	}

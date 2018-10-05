@@ -9,16 +9,23 @@ namespace R5.RunInfoBuilder
 		public ArgumentParser Parser { get; }
 		public HelpManager Help { get; }
 		public CommandStore Commands { get; }
+		public VersionManager Version { get; }
 		
 		public RunInfoBuilder()
 		{
 			Parser = new ArgumentParser();
 			Help = new HelpManager();
 			Commands = new CommandStore(Parser, Help);
+			Version = new VersionManager();
 		}
 
 		public object Build(string[] args)
 		{
+			Help.Invoke();
+
+
+
+			return null;// TEMP SHORT CIRCUIT
 			try
 			{
 				dynamic pipeline = Commands.ResolvePipelineFromArgs(args);

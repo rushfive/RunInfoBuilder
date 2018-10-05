@@ -10,14 +10,15 @@ namespace R5.RunInfoBuilder
 	{
 		private static readonly string[] _defaultTriggers = new string[] 
 		{
-			"--help", "-h", "-?", "/help", "/h", "/?"
+			"--help", "-h", "/help"
 		};
 
 		public bool InvokeOnFail { get; private set; }
 
+		private string _programName { get; set; }
 		private List<string> _triggers { get; }
 		private Action _customCallback { get; set; }
-		private List<string> _commandInfo { get; }
+		private List<string> _commandInfos { get; }
 		private string _defaultCommandInfo { get; set; }
 
 		internal HelpManager()
@@ -25,8 +26,19 @@ namespace R5.RunInfoBuilder
 			InvokeOnFail = false;
 			_triggers = new List<string>(_defaultTriggers);
 			_customCallback = null;
-			_commandInfo = new List<string>();
+			_commandInfos = new List<string>();
 			_defaultCommandInfo = null;
+		}
+
+		public HelpManager SetProgramName(string name)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentNullException(nameof(name), "Program name must be provided.");
+			}
+
+			_programName = name;
+			return this;
 		}
 
 		public HelpManager SetTriggers(params string[] triggers)
@@ -59,7 +71,7 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
-		internal void InvokeHelp()
+		internal void Invoke()
 		{
 			if (_customCallback != null)
 			{
@@ -67,16 +79,20 @@ namespace R5.RunInfoBuilder
 				return;
 			}
 
-			// default help logic..
+			if (!string.IsNullOrWhiteSpace(_defaultCommandInfo))
+			{
+				Console.WriteLine(_defaultCommandInfo);
+				Console.WriteLine();
+			}
+
+			_commandInfos.ForEach(Console.WriteLine);
 		}
 
 		internal void ConfigureForCommand<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
 			string helpText = HelpBuilder.BuildFor(command);
-
-			// TEST
-			Console.WriteLine(helpText);
+			_commandInfos.Add(helpText);
 		}
 
 
@@ -84,11 +100,7 @@ namespace R5.RunInfoBuilder
 			where TRunInfo : class
 		{
 			string helpText = HelpBuilder.BuildFor(defaultCommand);
-
 			_defaultCommandInfo = helpText;
-
-			// TEMP
-			Console.WriteLine(helpText);
 		}
 	}
 }
