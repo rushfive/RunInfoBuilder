@@ -16,20 +16,31 @@ namespace R5.RunInfoBuilder
 		{
 			if (Count <= 0)
 			{
-				throw new CommandValidationException("CustomArgument has an invalid count. Must be greater than 0.",
+				throw new CommandValidationException("Custom argument has an invalid count. Must be greater than 0.",
 					CommandValidationError.InvalidCount, commandLevel);
 			}
 
 			if (Handler == null)
 			{
-				throw new CommandValidationException("CustomArgument is missing its handler callback.",
+				throw new CommandValidationException("Custom argument is missing its handler callback.",
 					CommandValidationError.NullCustomHandler, commandLevel);
+			}
+
+			if (string.IsNullOrWhiteSpace(HelpToken))
+			{
+				throw new CommandValidationException("Custom arguments must explicitly set their own help token string.",
+					CommandValidationError.NullHelpToken, commandLevel);
 			}
 		}
 
 		internal override Stage<TRunInfo> ToStage()
 		{
 			return new CustomArgumentStage<TRunInfo>(Count, Handler);
+		}
+
+		internal override string GetHelpToken()
+		{
+			return HelpToken;
 		}
 	}
 }

@@ -71,6 +71,8 @@ namespace R5.RunInfoBuilder
 		NullPropertyExpression,
 		NullCustomHandler,
 		InvalidCount,
-		PropertyNotWritable
+		PropertyNotWritable,
+		InvalidType,
+		NullHelpToken
 	}
 }

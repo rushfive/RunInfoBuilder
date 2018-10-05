@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
+using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
@@ -33,6 +34,16 @@ namespace R5.RunInfoBuilder
 		internal override Stage<TRunInfo> ToStage()
 		{
 			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty);
+		}
+
+		internal override string GetHelpToken()
+		{
+			if (!string.IsNullOrWhiteSpace(HelpToken))
+			{
+				return HelpToken;
+			}
+
+			return HelpTokenResolver.ForSequenceArgument<TListProperty>();
 		}
 	}
 }

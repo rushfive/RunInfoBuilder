@@ -156,7 +156,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Command
 								 Assert.Equal("abc", context.ProgramArguments[1]);
 								 Assert.Equal("!!!", context.ProgramArguments[2]);
 								 return ProcessResult.Continue;
-							 }
+							 },
+							 HelpToken = "helptoken"
 						 }
 					 }
 				});
@@ -177,11 +178,11 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Command
 					{
 						Options =
 						{
-								new Option<TestRunInfo, bool>
-								{
-									Key = "bool",
-									Property = ri => ri.Bool1
-								}
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool",
+								Property = ri => ri.Bool1
+							}
 						}
 					},
 					runInfo =>

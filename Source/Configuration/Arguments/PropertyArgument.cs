@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Parser;
+﻿using R5.RunInfoBuilder.Help;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
 using R5.RunInfoBuilder.Processor.Stages;
@@ -33,6 +34,16 @@ namespace R5.RunInfoBuilder
 		internal override Stage<TRunInfo> ToStage()
 		{
 			return new PropertyArgumentStage<TRunInfo, TProperty>(Property);
+		}
+
+		internal override string GetHelpToken()
+		{
+			if (!string.IsNullOrWhiteSpace(HelpToken))
+			{
+				return HelpToken;
+			}
+
+			return HelpTokenResolver.ForPropertyArgument<TProperty>();
 		}
 	}
 }

@@ -28,7 +28,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 						new CustomArgument<TestRunInfo>
 						{
 							Count = 2,
-							Handler = context => ProcessResult.Continue
+							Handler = context => ProcessResult.Continue,
+							 HelpToken = "helptoken"
 						}
 					}
 				});

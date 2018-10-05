@@ -6,15 +6,15 @@ namespace R5.RunInfoBuilder
 {
 	public class RunInfoBuilder
 	{
-		public HelpManager Help { get; }
 		public ArgumentParser Parser { get; }
+		public HelpManager Help { get; }
 		public CommandStore Commands { get; }
 		
 		public RunInfoBuilder()
 		{
-			Help = new HelpManager();
 			Parser = new ArgumentParser();
-			Commands = new CommandStore(Parser);
+			Help = new HelpManager();
+			Commands = new CommandStore(Parser, Help);
 		}
 
 		public object Build(string[] args)

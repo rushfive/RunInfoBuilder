@@ -10,6 +10,10 @@
 - complex scenario functional tests
 - version feature
 
+-- check validations for subcommands, make sure at the same level, cant have same key
+-- new "mutually exclusive set" argument? "SetArgument", value must be one of configured: <value1|value2|value3>
+-- sequence arguments must be last??
+
 
 future roadmap
 - callbacks on other configurable types, can specify timing relative to the stage processing

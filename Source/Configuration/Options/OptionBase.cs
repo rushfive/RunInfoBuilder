@@ -13,5 +13,7 @@ namespace R5.RunInfoBuilder
 		}
 
 		internal abstract void Validate(int commandLevel);
+
+		internal abstract string GetHelpToken();
 	}
 }

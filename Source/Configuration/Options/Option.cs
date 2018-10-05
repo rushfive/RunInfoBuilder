@@ -8,7 +8,7 @@ namespace R5.RunInfoBuilder
 		where TRunInfo : class
 	{
 		public string Description { get; set; }
-		public string HelpText { get; set; }
+		public string HelpToken { get; set; }
 
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
 
@@ -28,6 +28,25 @@ namespace R5.RunInfoBuilder
 					+ "is not writable. Try adding a setter.",
 					CommandValidationError.PropertyNotWritable, commandLevel);
 			}
+		}
+
+		internal override string GetHelpToken()
+		{
+			if (!string.IsNullOrWhiteSpace(HelpToken))
+			{
+				return HelpToken;
+			}
+
+			(string fullKey, char? shortKey) = OptionTokenizer.TokenizeKeyConfiguration(Key);
+
+			string result = $"[--{fullKey}";
+
+			if (shortKey.HasValue)
+			{
+				result += $"|-{shortKey.Value}";
+			}
+
+			return result + "]";
 		}
 	}
 }

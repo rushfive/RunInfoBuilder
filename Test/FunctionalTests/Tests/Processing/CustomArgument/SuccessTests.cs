@@ -38,7 +38,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 							Assert.Equal("3", context.ProgramArguments[2]);
 							context.RunInfo.Int1 = 10;
 							return ProcessResult.Continue;
-						}
+						},
+							 HelpToken = "helptoken"
 					},
 					new PropertyArgument<TestRunInfo, bool>
 					{
@@ -70,7 +71,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 					new CustomArgument<TestRunInfo>
 					{
 						Count = 2,
-						Handler = context => ProcessResult.End
+						Handler = context => ProcessResult.End,
+						HelpToken = "helptoken"
 					},
 					new PropertyArgument<TestRunInfo, bool>
 					{
@@ -79,7 +81,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 					new CustomArgument<TestRunInfo>
 					{
 						Count = 1,
-						Handler = context => throw new Exception()
+						Handler = context => throw new Exception(),
+						HelpToken = "helptoken"
 					}
 				}
 			});
@@ -112,7 +115,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 							Assert.Equal("2", context.ProgramArguments[1]);
 							context.RunInfo.Int1 = 10;
 							return ProcessResult.Continue;
-						}
+						},
+						HelpToken = "helptoken"
 					},
 					new CustomArgument<TestRunInfo>
 					{
@@ -125,7 +129,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.CustomArgument
 							Assert.Equal("5", context.ProgramArguments[2]);
 							context.RunInfo.Int2 = 20;
 							return ProcessResult.Continue;
-						}
+						},
+						HelpToken = "helptoken"
 					}
 				}
 			});

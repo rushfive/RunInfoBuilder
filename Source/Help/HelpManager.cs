@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Help;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,19 @@ namespace R5.RunInfoBuilder
 		};
 
 		public bool InvokeOnFail { get; private set; }
+
 		private List<string> _triggers { get; }
 		private Action _customCallback { get; set; }
+		private List<string> _commandInfo { get; }
+		private string _defaultCommandInfo { get; set; }
 
 		internal HelpManager()
 		{
 			InvokeOnFail = false;
 			_triggers = new List<string>(_defaultTriggers);
+			_customCallback = null;
+			_commandInfo = new List<string>();
+			_defaultCommandInfo = null;
 		}
 
 		public HelpManager SetTriggers(params string[] triggers)
@@ -66,13 +73,22 @@ namespace R5.RunInfoBuilder
 		internal void ConfigureForCommand<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
+			string helpText = HelpBuilder.BuildFor(command);
 
+			// TEST
+			Console.WriteLine(helpText);
 		}
 
-		internal void ConfigureForDefaultCommand<TRunInfo>(DefaultCommand<TRunInfo> command)
+
+		internal void ConfigureForDefaultCommand<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
 			where TRunInfo : class
 		{
+			string helpText = HelpBuilder.BuildFor(defaultCommand);
 
+			_defaultCommandInfo = helpText;
+
+			// TEMP
+			Console.WriteLine(helpText);
 		}
 	}
 }
