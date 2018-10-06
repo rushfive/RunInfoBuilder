@@ -13,7 +13,7 @@ namespace R5.RunInfoBuilder
 			"--help", "-h", "/help"
 		};
 
-		public bool InvokeOnFail { get; private set; }
+		internal bool InvokeOnFail { get; private set; }
 
 		private string _programName { get; set; }
 		private List<string> _triggers { get; }

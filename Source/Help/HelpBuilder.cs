@@ -22,7 +22,15 @@ namespace R5.RunInfoBuilder.Help
 				sb.AppendLine(command.Description);
 			}
 
-			sb.AppendLine(Padding + "Usage: ");
+			if (command.SubCommands.Any())
+			{
+				sb.AppendLine(Padding + "Usage: ");
+			}
+			else
+			{
+				sb.Append(Padding + "Usage: ");
+			}
+			
 
 			AppendCommandInfo(sb, command.Key, isRoot: true, command, commandDepth: 0);
 
@@ -55,7 +63,23 @@ namespace R5.RunInfoBuilder.Help
 			}
 
 			string result = string.Join(" ", helpTokens.Select(t => t.Trim()));
-			sb.AppendLine(PaddingRepeated(2) + result);
+			//sb.AppendLine(PaddingRepeated(2) + result);
+
+			if (command.SubCommands.Any())
+			{
+				sb.AppendLine(PaddingRepeated(2) + result);
+			}
+			else if (!command.SubCommands.Any() && isRoot)
+			{
+				sb.AppendLine(result);
+			}
+			else
+			{
+				//sb.AppendLine(result);
+				sb.AppendLine(PaddingRepeated(2) + result);
+			}
+
+			
 
 			// recursively add subcommands with more padding
 			foreach(var subCommand in command.SubCommands)

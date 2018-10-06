@@ -17,11 +17,11 @@ namespace R5.RunInfoBuilder
 
 		internal VersionManager()
 		{
-			_version = null;
+			_version = "1.0.0";
 			_triggers = new List<string>(_defaultTriggers);
 		}
 
-		public VersionManager SetVersion(string version)
+		public VersionManager Set(string version)
 		{
 			if (string.IsNullOrWhiteSpace(version))
 			{
