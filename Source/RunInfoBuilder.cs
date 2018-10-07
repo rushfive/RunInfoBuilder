@@ -21,7 +21,7 @@ namespace R5.RunInfoBuilder
 
 		public object Build(string[] args)
 		{
-			Version.Invoke();
+			//Version.Invoke();
 			Help.Invoke();
 
 

@@ -91,7 +91,7 @@ namespace R5.RunInfoBuilder
 		internal void ConfigureForCommand<TRunInfo>(Command<TRunInfo> command)
 			where TRunInfo : class
 		{
-			string helpText = HelpBuilder.BuildFor(command);
+			string helpText = HelpBuilder.BuildFor(command, _programName);
 			_commandInfos.Add(helpText);
 		}
 
@@ -99,7 +99,7 @@ namespace R5.RunInfoBuilder
 		internal void ConfigureForDefaultCommand<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
 			where TRunInfo : class
 		{
-			string helpText = HelpBuilder.BuildFor(defaultCommand);
+			string helpText = HelpBuilder.BuildFor(defaultCommand, _programName);
 			_defaultCommandInfo = helpText;
 		}
 	}

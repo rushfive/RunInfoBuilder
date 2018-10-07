@@ -10,7 +10,7 @@ namespace R5.RunInfoBuilder.Help
 		private const string Padding = "  ";
 		private static string PaddingRepeated(int repeatCount) => new StringBuilder().Insert(0, Padding, repeatCount).ToString();
 
-		internal static string BuildFor<TRunInfo>(Command<TRunInfo> command)
+		internal static string BuildFor<TRunInfo>(Command<TRunInfo> command, string programName)
 			where TRunInfo : class
 		{
 			var sb = new StringBuilder();
@@ -32,16 +32,25 @@ namespace R5.RunInfoBuilder.Help
 			}
 			
 
-			AppendCommandInfo(sb, command.Key, isRoot: true, command, commandDepth: 0);
+			AppendCommandInfo(sb, command.Key, isRoot: true, command, commandDepth: 0, programName);
 
 			return sb.ToString();
 		}
 
 		private static void AppendCommandInfo<TRunInfo>(StringBuilder sb,
-			string rootCommandKey, bool isRoot, Command<TRunInfo> command, int commandDepth)
+			string rootCommandKey, bool isRoot, Command<TRunInfo> command, int commandDepth,
+			string programName)
 			where TRunInfo : class
 		{
-			var helpTokens = new List<string> { rootCommandKey };
+			//var helpTokens = new List<string> { rootCommandKey };
+			var helpTokens = new List<string>();
+			
+			if (!string.IsNullOrWhiteSpace(programName))
+			{
+				helpTokens.Add(programName);
+			}
+			helpTokens.Add(rootCommandKey);
+
 			helpTokens.AddRange(GetRepeatedList("...", commandDepth));
 
 			if (!isRoot)
@@ -79,12 +88,10 @@ namespace R5.RunInfoBuilder.Help
 				sb.AppendLine(PaddingRepeated(2) + result);
 			}
 
-			
-
 			// recursively add subcommands with more padding
 			foreach(var subCommand in command.SubCommands)
 			{
-				AppendCommandInfo(sb, rootCommandKey, isRoot: false, subCommand, commandDepth + 1);
+				AppendCommandInfo(sb, rootCommandKey, isRoot: false, subCommand, commandDepth + 1, programName);
 			}
 		}
 
@@ -98,73 +105,7 @@ namespace R5.RunInfoBuilder.Help
 			return result;
 		}
 
-		//private static string BuildForCommandInternal<TRunInfo>(StringBuilder sb, Command<TRunInfo> command, int paddingDepth)
-		//	where TRunInfo : class
-		//{
-			
-		//	var tokens = string.Join(" ", argumentHelpTokens.Concat(optionHelpTokens));
-		//	sb.Append(tokens);
-
-		//	if (command.SubCommands.Any())
-		//	{
-		//		string subcommands = " (";
-		//		subcommands += string.Join("|", command.SubCommands.Select(c => c.Key));
-		//		sb.AppendLine(subcommands + ")");
-		//	}
-		//	else
-		//	{
-		//		sb.AppendLine();
-		//	}
-
-		//	foreach (var sc in command.SubCommands)
-		//	{
-		//		BuildForCommandInternal<TRunInfo>(sb, sc, paddingDepth + 2);
-		//	}
-
-		//	return sb.ToString();
-		//}
-
-		//private static string BuildForCommandInternal<TRunInfo>(StringBuilder sb, Command<TRunInfo> command, int paddingDepth)
-		//	where TRunInfo : class
-		//{
-		//	string padding_1 = PaddingRepeated(paddingDepth);
-		//	string padding_2 = PaddingRepeated(paddingDepth + 1);
-
-		//	sb.Append(padding_1 + command.Key + " - ");
-
-		//	if (!string.IsNullOrWhiteSpace(command.Description))
-		//	{
-		//		sb.AppendLine(command.Description);
-		//	}
-
-		//	sb.Append(padding_2 + $"Usage: {command.Key} ");
-
-		//	IEnumerable<string> argumentHelpTokens = command.Arguments.Select(a => a.GetHelpToken());
-		//	IEnumerable<string> optionHelpTokens = command.Options.Select(o => o.GetHelpToken());
-
-		//	var tokens = string.Join(" ", argumentHelpTokens.Concat(optionHelpTokens));
-		//	sb.Append(tokens);
-
-		//	if (command.SubCommands.Any())
-		//	{
-		//		string subcommands = " (";
-		//		subcommands += string.Join("|", command.SubCommands.Select(c => c.Key));
-		//		sb.AppendLine(subcommands + ")");
-		//	}
-		//	else
-		//	{
-		//		sb.AppendLine();
-		//	}
-
-		//	foreach (var sc in command.SubCommands)
-		//	{
-		//		BuildForCommandInternal<TRunInfo>(sb, sc, paddingDepth + 2);
-		//	}
-
-		//	return sb.ToString();
-		//}
-
-		internal static string BuildFor<TRunInfo>(DefaultCommand<TRunInfo> command)
+		internal static string BuildFor<TRunInfo>(DefaultCommand<TRunInfo> command, string programName)
 			where TRunInfo : class
 		{
 			var sb = new StringBuilder();
@@ -178,10 +119,17 @@ namespace R5.RunInfoBuilder.Help
 
 			sb.Append(Padding + "Usage: ");
 
-			IEnumerable<string> argumentHelpTokens = command.Arguments.Select(a => a.GetHelpToken());
-			IEnumerable<string> optionHelpTokens = command.Options.Select(o => o.GetHelpToken());
+			var helpTokens = new List<string>();
 
-			var tokens = string.Join(" ", argumentHelpTokens.Concat(optionHelpTokens));
+			if (!string.IsNullOrWhiteSpace(programName))
+			{
+				helpTokens.Add(programName);
+			}
+
+			helpTokens.AddRange(command.Arguments.Select(a => a.GetHelpToken()));
+			helpTokens.AddRange(command.Options.Select(o => o.GetHelpToken()));
+
+			var tokens = string.Join(" ", helpTokens);
 			sb.Append(tokens);
 
 			return sb.ToString();

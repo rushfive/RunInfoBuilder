@@ -26,8 +26,12 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 		private static void ConfigureCommands(RunInfoBuilder builder)
 		{
 			builder.Commands
-				.Add(Commit.GetCommandConfiguration())
-				.Add(Commit.GetCommandConfiguration2());
+				.Add(Add.Configuration)
+				.Add(Branch.Configuration)
+				.Add(Checkout.Configuration)
+				.Add(Commit.Configuration)
+				.Add(Diff.Configuration)
+				.Add(Init.Configuration);
 		}
 	}
 

@@ -9,7 +9,7 @@ namespace R5.RunInfoBuilder.Processor
 {
 	internal static class OptionTokenizer
 	{
-		internal const string OptionConfigurationRegex = @"^(\s+)?[A-Za-z0-9]+(\s+)?([|](\s+)?[A-Za-z0-9](\s+)?)?$";
+		internal const string OptionConfigurationRegex = @"^(\s+)?[A-Za-z0-9_]([A-Za-z0-9-_]+)?(\s+)?([|](\s+)?[A-Za-z0-9](\s+)?)?$";
 
 		internal static bool IsValidConfiguration(string input)
 		{
