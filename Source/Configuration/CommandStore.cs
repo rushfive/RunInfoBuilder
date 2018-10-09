@@ -23,6 +23,7 @@ namespace R5.RunInfoBuilder
 		// Key: Command key (or DefaultKey)
 		// Value: CommandBase<TRunInfo>
 		private Dictionary<string, object> _commandMap { get; }
+		internal bool AreConfigured => _commandMap.Any();
 
 		internal CommandStore(
 			ArgumentParser parser,
@@ -136,7 +137,7 @@ namespace R5.RunInfoBuilder
 			return factory.Invoke(args);
 		}
 
-		public bool IsCommand(string key) => _pipelineFactoryMap.ContainsKey(key);
+		internal bool IsCommand(string key) => _pipelineFactoryMap.ContainsKey(key);
 	}
 
 }

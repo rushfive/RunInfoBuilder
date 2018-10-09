@@ -11,6 +11,7 @@ namespace R5.RunInfoBuilder
 		public HelpManager Help { get; }
 		public CommandStore Commands { get; }
 		public VersionManager Version { get; }
+		public BuildHooks Hooks { get; }
 		
 		public RunInfoBuilder()
 		{
@@ -18,15 +19,28 @@ namespace R5.RunInfoBuilder
 			Help = new HelpManager();
 			Commands = new CommandStore(Parser, Help);
 			Version = new VersionManager();
+			Hooks = new BuildHooks();
 		}
 
 		public object Build(string[] args)
 		{
-			// potential future hook
-			if (args == null || !args.Any())
+#if DEBUG
+			if (!Commands.AreConfigured)
+			{
+				throw new InvalidOperationException("There are no commands configured. "
+					+ "Running this library may cause strange exceptions.");
+			}
+#endif
+
+			if (Hooks.OnStartIsSet)
+			{
+				Hooks.InvokeOnStart(args);
+			}
+			else if (args == null || !args.Any())
 			{
 				throw new ArgumentNullException(nameof(args), "Program arguments must be provided.");
 			}
+			
 
 			if (Help.IsTrigger(args.First()))
 			{
