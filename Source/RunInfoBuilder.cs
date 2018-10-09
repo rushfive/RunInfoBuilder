@@ -1,6 +1,7 @@
 ﻿using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
 using System;
+using System.Linq;
 
 namespace R5.RunInfoBuilder
 {
@@ -21,12 +22,24 @@ namespace R5.RunInfoBuilder
 
 		public object Build(string[] args)
 		{
-			//Version.Invoke();
-			Help.Invoke();
+			// potential future hook
+			if (args == null || !args.Any())
+			{
+				throw new ArgumentNullException(nameof(args), "Program arguments must be provided.");
+			}
 
+			if (Help.IsTrigger(args.First()))
+			{
+				Help.Invoke();
+				return null;
+			}
 
+			if (Version.IsTrigger(args.First()))
+			{
+				Version.Invoke();
+				return null;
+			}
 
-			return null;// TEMP SHORT CIRCUIT
 			try
 			{
 				dynamic pipeline = Commands.ResolvePipelineFromArgs(args);
@@ -35,6 +48,13 @@ namespace R5.RunInfoBuilder
 			}
 			catch (Exception ex)
 			{
+				// this also suppresses exception bubbling
+				if (Help.InvokeOnFail)
+				{
+					Help.Invoke();
+					return null;
+				}
+
 				if (ex is ProcessException processException)
 				{
 					throw;

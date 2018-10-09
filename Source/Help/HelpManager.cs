@@ -54,7 +54,7 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
-		public HelpManager DisplayHelpOnBuildFail()
+		public HelpManager DisplayOnBuildFail()
 		{
 			InvokeOnFail = true;
 			return this;
@@ -86,6 +86,11 @@ namespace R5.RunInfoBuilder
 			}
 
 			_commandInfos.ForEach(Console.WriteLine);
+		}
+
+		internal bool IsTrigger(string token)
+		{
+			return _triggers.Contains(token);
 		}
 
 		internal void ConfigureForCommand<TRunInfo>(Command<TRunInfo> command)

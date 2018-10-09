@@ -15,11 +15,15 @@ namespace R5.RunInfoBuilder.Help
 		{
 			var sb = new StringBuilder();
 
-			sb.Append(command.Key + " - ");
+			sb.Append(command.Key);
 
 			if (!string.IsNullOrWhiteSpace(command.Description))
 			{
-				sb.AppendLine(command.Description);
+				sb.AppendLine(" - " + command.Description);
+			}
+			else
+			{
+				sb.AppendLine();
 			}
 
 			if (command.SubCommands.Any())

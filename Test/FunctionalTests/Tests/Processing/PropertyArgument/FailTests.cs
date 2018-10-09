@@ -60,7 +60,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 						{
 							new PropertyArgument<TestRunInfo, TestCustomType>
 							{
-								Property = ri => ri.CustomType
+								Property = ri => ri.CustomType,
+								HelpToken = "<CustomType>"
 							}
 						}
 					});
@@ -91,7 +92,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 						{
 							new PropertyArgument<TestRunInfo, TestCustomType>
 							{
-								Property = ri => ri.CustomType
+								Property = ri => ri.CustomType,
+								HelpToken = "<CustomType>"
 							}
 						}
 					});
@@ -177,7 +179,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 								{
 									new PropertyArgument<TestRunInfo, TestCustomType>
 									{
-										Property = ri => ri.CustomType
+										Property = ri => ri.CustomType,
+										HelpToken = "<CustomType>"
 									}
 								}
 							}
@@ -215,7 +218,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 								{
 									new PropertyArgument<TestRunInfo, TestCustomType>
 									{
-										Property = ri => ri.CustomType
+										Property = ri => ri.CustomType,
+										HelpToken = "<CustomType>"
 									}
 								}
 							}

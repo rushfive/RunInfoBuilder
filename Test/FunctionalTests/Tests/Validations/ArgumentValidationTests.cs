@@ -233,5 +233,197 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 				Assert.Equal(0, validationException.CommandLevel);
 			}
 		}
+
+		public class SetArgumentTests
+		{
+			[Fact]
+			public void NullPropertyExpression_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						Arguments =
+						{
+							new SetArgument<TestRunInfo, bool>
+							{
+								Property = null
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullPropertyExpression, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+
+			[Fact]
+			public void PropertyNotWritable_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						Arguments =
+						{
+							new SetArgument<TestRunInfo, bool>
+							{
+								Property = ri => ri.UnwritableBool
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.PropertyNotWritable, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+
+			[Fact]
+			public void NullValues_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						Arguments =
+						{
+							new SetArgument<TestRunInfo, bool>
+							{
+								Property = ri => ri.Bool1,
+								Values = null
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.NullObject, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+
+			[Fact]
+			public void ValuesContains_LessThanTwoValues_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						Arguments =
+						{
+							new SetArgument<TestRunInfo, bool>
+							{
+								Property = ri => ri.Bool1,
+								Values = new List<(string, bool)>
+								{
+									("true", true)
+								}
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.InsufficientCount, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+
+			[Fact]
+			public void Values_HasDuplicateLabels_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						Arguments =
+						{
+							new SetArgument<TestRunInfo, bool>
+							{
+								Property = ri => ri.Bool1,
+								Values = new List<(string, bool)>
+								{
+									("true", true),
+									("true", false)
+								}
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+
+			[Fact]
+			public void Values_HasDuplicateValues_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "key",
+						Arguments =
+						{
+							new SetArgument<TestRunInfo, bool>
+							{
+								Property = ri => ri.Bool1,
+								Values = new List<(string, bool)>
+								{
+									("true", true),
+									("false", true)
+								}
+							}
+						}
+					});
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var validationException = exception as CommandValidationException;
+
+				Assert.NotNull(validationException);
+				Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+				Assert.Equal(0, validationException.CommandLevel);
+			}
+		}
 	}
 }

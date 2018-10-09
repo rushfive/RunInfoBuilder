@@ -37,7 +37,8 @@ namespace R5.RunInfoBuilder
 		//OptionValueRequired,
 		InvalidSubCommand,
 		InvalidProgramArgument,
-		InvalidStageResult
+		InvalidStageResult,
+		UnknownValue
 	}
 
 
@@ -73,6 +74,7 @@ namespace R5.RunInfoBuilder
 		InvalidCount,
 		PropertyNotWritable,
 		InvalidType,
-		NullHelpToken
+		NullHelpToken,
+		InsufficientCount
 	}
 }

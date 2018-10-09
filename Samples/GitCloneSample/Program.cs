@@ -1,6 +1,7 @@
 ﻿using R5.RunInfoBuilder.Samples.HelpExamples.Commands;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static System.Console;
 
 namespace R5.RunInfoBuilder.Samples.HelpExamples
@@ -11,17 +12,56 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 		{
 			var builder = new RunInfoBuilder();
 
-			builder.Version.Set("2.19.1");
+			builder.Commands.Add<TestRunInfo>(new Command<TestRunInfo>
+			{
+				Key = "command",
+				Arguments =
+				{
+					new CustomArgument<TestRunInfo>
+					{
+						Count = 1,
+						HelpToken = "<test>",
+						Handler = context =>
+						{
+							context.RunInfo.String1 = context.ProgramArguments.Single();
+							return ProcessResult.Continue;
+						}
+					}
+				}
+			},
+			ri =>
+			{
+				Console.WriteLine("Processing RUNINFO after finished building.");
+				Console.WriteLine("String1 was set to = " + ri.String1);
+			});
 
-			builder.Help
-				.SetProgramName("git")
-				.DisplayHelpOnBuildFail();
+			builder.Help.DisplayOnBuildFail();
 
-			ConfigureCommands(builder);
 
-			builder.Build(new string[] { });
+
+			//var runInfo = builder.Build(new string[] { "command", "hello there" });
+			var runInfo = builder.Build(new string[] { "--version" });
+
+
 			Console.ReadKey();
 		}
+
+		// uncomment below, real code
+		//static void Main(string[] args)
+		//{
+		//	var builder = new RunInfoBuilder();
+
+		//	builder.Version.Set("2.19.1");
+
+		//	builder.Help
+		//		.SetProgramName("git")
+		//		.DisplayHelpOnBuildFail();
+
+		//	ConfigureCommands(builder);
+
+		//	builder.Build(new string[] { });
+		//	Console.ReadKey();
+		//}
 
 		private static void ConfigureCommands(RunInfoBuilder builder)
 		{

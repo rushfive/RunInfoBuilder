@@ -49,5 +49,10 @@ namespace R5.RunInfoBuilder
 		{
 			Console.WriteLine(_version);
 		}
+
+		internal bool IsTrigger(string token)
+		{
+			return _triggers.Contains(token);
+		}
 	}
 }
