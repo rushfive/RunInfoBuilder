@@ -1,5 +1,4 @@
 ﻿using R5.RunInfoBuilder.Parser;
-using R5.RunInfoBuilder.Processor;
 using System;
 using System.Linq;
 
@@ -24,14 +23,6 @@ namespace R5.RunInfoBuilder
 
 		public object Build(string[] args)
 		{
-#if DEBUG
-			if (!Commands.AreConfigured)
-			{
-				throw new InvalidOperationException("There are no commands configured. "
-					+ "Ensure commands are set before production use to prevent unwanted exceptions.");
-			}
-#endif
-
 			if (Hooks.OnStartIsSet)
 			{
 				Hooks.InvokeOnStart(args);

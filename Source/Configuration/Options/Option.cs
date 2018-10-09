@@ -1,5 +1,7 @@
-﻿using R5.RunInfoBuilder.Processor;
+﻿using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Processor;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace R5.RunInfoBuilder
@@ -14,21 +16,7 @@ namespace R5.RunInfoBuilder
 
 		public Option() : base(typeof(TProperty)) { }
 
-		internal override void Validate(int commandLevel)
-		{
-			if (Property == null)
-			{
-				throw new CommandValidationException($"Option '{Key}' is missing its property mapping expression.",
-					CommandValidationError.NullPropertyExpression, commandLevel);
-			}
-
-			if (!ReflectionHelper<TRunInfo>.PropertyIsWritable(Property, out string propertyName))
-			{
-				throw new CommandValidationException($"Option '{Key}'s property '{propertyName}' "
-					+ "is not writable. Try adding a setter.",
-					CommandValidationError.PropertyNotWritable, commandLevel);
-			}
-		}
+		internal override List<Action<int>> Rules() => ValidationRules.Options.Rules(this);
 
 		internal override string GetHelpToken()
 		{

@@ -99,7 +99,7 @@ namespace R5.RunInfoBuilder
 					CommandValidationError.DuplicateKey, commandLevel: -1);
 			}
 
-			defaultCommand.Validate();
+			defaultCommand.Validate(commandLevel: -1);
 
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
