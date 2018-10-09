@@ -28,7 +28,7 @@ namespace R5.RunInfoBuilder
 			if (!Commands.AreConfigured)
 			{
 				throw new InvalidOperationException("There are no commands configured. "
-					+ "Running this library may cause strange exceptions.");
+					+ "Ensure commands are set before production use to prevent unwanted exceptions.");
 			}
 #endif
 
@@ -36,11 +36,11 @@ namespace R5.RunInfoBuilder
 			{
 				Hooks.InvokeOnStart(args);
 			}
-			else if (args == null || !args.Any())
+
+			if (args == null || !args.Any())
 			{
 				throw new ArgumentNullException(nameof(args), "Program arguments must be provided.");
 			}
-			
 
 			if (Help.IsTrigger(args.First()))
 			{
@@ -62,7 +62,7 @@ namespace R5.RunInfoBuilder
 			}
 			catch (Exception ex)
 			{
-				// this also suppresses exception bubbling
+				// supress exceptions from bubbling to client
 				if (Help.InvokeOnFail)
 				{
 					Help.Invoke();
