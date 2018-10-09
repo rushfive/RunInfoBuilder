@@ -1,13 +1,12 @@
-﻿using R5.RunInfoBuilder.Processor.Stages;
+﻿using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Processor.Stages;
 
 namespace R5.RunInfoBuilder
 {
-	public abstract class ArgumentBase<TRunInfo>
+	public abstract class ArgumentBase<TRunInfo> : CoreConfigurable
 		where TRunInfo : class
 	{
 		public string HelpToken { get; set; }
-
-		internal abstract void Validate(int commandLevel);
 
 		internal abstract Stage<TRunInfo> ToStage();
 
