@@ -14,7 +14,8 @@ namespace R5.RunInfoBuilder
 			where TRunInfo : class
 	{
 		public Expression<Func<TRunInfo, List<TListProperty>>> ListProperty { get; set; }
-		
+		public Func<TListProperty, ProcessStageResult> OnProcess { get; set; }
+
 		internal override void Validate(int commandLevel)
 		{
 			if (ListProperty == null)
@@ -33,7 +34,7 @@ namespace R5.RunInfoBuilder
 
 		internal override Stage<TRunInfo> ToStage()
 		{
-			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty);
+			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnProcess);
 		}
 
 		internal override string GetHelpToken()

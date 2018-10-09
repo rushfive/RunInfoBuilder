@@ -14,6 +14,7 @@ namespace R5.RunInfoBuilder
 		where TRunInfo : class
 	{
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
+		public Func<TProperty, ProcessStageResult> OnProcess { get; set; }
 
 		internal override void Validate(int commandLevel)
 		{
@@ -33,7 +34,7 @@ namespace R5.RunInfoBuilder
 
 		internal override Stage<TRunInfo> ToStage()
 		{
-			return new PropertyArgumentStage<TRunInfo, TProperty>(Property);
+			return new PropertyArgumentStage<TRunInfo, TProperty>(Property, OnProcess);
 		}
 
 		internal override string GetHelpToken()

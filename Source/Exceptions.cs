@@ -8,6 +8,7 @@ namespace R5.RunInfoBuilder
 	{
 		public ProcessError ErrorType { get; }
 		public int CommandLevel { get; }
+		public new Exception InnerException { get; }
 		public object[] Metadata { get; }
 
 		public ProcessException(
@@ -20,6 +21,7 @@ namespace R5.RunInfoBuilder
 		{
 			ErrorType = errorType;
 			CommandLevel = commandLevel;
+			InnerException = innerException;
 			Metadata = metadata;
 		}
 	}

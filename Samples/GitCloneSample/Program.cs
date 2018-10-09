@@ -26,6 +26,15 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 							context.RunInfo.String1 = context.ProgramArguments.Single();
 							return ProcessResult.Continue;
 						}
+					},
+					new SetArgument<TestRunInfo, bool>
+					{
+						Property = ri => ri.Bool1,
+						Values = new List<(string Label, bool Value)>
+						{
+							("true", true),
+							("false", false)
+						}
 					}
 				}
 			},
@@ -40,7 +49,7 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 
 
 			//var runInfo = builder.Build(new string[] { "command", "hello there" });
-			var runInfo = builder.Build(new string[] { "--version" });
+			var runInfo = builder.Build(new string[] { "--help" });
 
 
 			Console.ReadKey();

@@ -10,11 +10,14 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		where TRunInfo : class
 	{
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
-		
+		private Func<TListProperty, ProcessStageResult> _onProcess { get; }
+
 		internal SequenceArgumentStage(
-			Expression<Func<TRunInfo, List<TListProperty>>> listProperty)
+			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
+			Func<TListProperty, ProcessStageResult> onProcess)
 		{
 			_listProperty = listProperty;
+			_onProcess = onProcess;
 		}
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
@@ -58,6 +61,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					throw new ProcessException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.",
 						ProcessError.ParserInvalidValue, context.CommandLevel);
 				}
+
+				_onProcess?.Invoke(parsed);
 
 				list.Add(parsed);
 			}

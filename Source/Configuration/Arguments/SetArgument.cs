@@ -25,7 +25,7 @@ namespace R5.RunInfoBuilder
 
 		internal override Stage<TRunInfo> ToStage()
 		{
-			throw new NotImplementedException();
+			return new SetArgumentStage<TRunInfo, TProperty>(Property, Values);
 		}
 
 		internal override void Validate(int commandLevel)

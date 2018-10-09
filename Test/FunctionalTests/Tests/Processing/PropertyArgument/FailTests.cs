@@ -118,6 +118,42 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
 				Assert.Equal(0, processException.CommandLevel);
 			}
+
+			[Fact]
+			public void OnProcessCallbackThrows_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Arguments =
+						{
+							new PropertyArgument<TestRunInfo, int>
+							{
+								Property = ri => ri.Int1,
+								OnProcess = val =>
+								{
+									throw new TestException();
+								}
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", "1" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.GeneralFailure, processException.ErrorType);
+
+				Assert.IsType<TestException>(processException.InnerException);
+			}
 		}
 
 		public class InNestedSubCommand
@@ -245,6 +281,49 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 				Assert.NotNull(processException);
 				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
 				Assert.Equal(1, processException.CommandLevel);
+			}
+
+			[Fact]
+			public void OnProcessCallbackThrows_Throws()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						SubCommands =
+						{
+							new Command<TestRunInfo>
+							{
+								Key = "subcommand",
+								Arguments =
+								{
+									new PropertyArgument<TestRunInfo, int>
+									{
+										Property = ri => ri.Int1,
+										OnProcess = val =>
+										{
+											throw new TestException();
+										}
+									}
+								}
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", "subcommand", "1" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.GeneralFailure, processException.ErrorType);
+
+				Assert.IsType<TestException>(processException.InnerException);
 			}
 		}
 	}

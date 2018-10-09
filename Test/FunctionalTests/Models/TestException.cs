@@ -1,10 +1,10 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-//namespace R5.RunInfoBuilder.FunctionalTests.Models
-//{
-//    public class TestException : Exception
-//    {
-//    }
-//}
+namespace R5.RunInfoBuilder.FunctionalTests.Models
+{
+	public class TestException : Exception
+	{
+	}
+}
