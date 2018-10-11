@@ -44,15 +44,6 @@ namespace R5.RunInfoBuilder.Processor.Stages
 						ProcessError.InvalidStackedOption, context.CommandLevel);
 				}
 
-				// if stacked option, must ensure that all is bool type
-				//bool allStackedAreBoolType = shortKeys != null
-				//	&& shortKeys.Count > 1 && isBoolType;
-				//if (!allStackedAreBoolType)
-				//{
-				//	throw new InvalidOperationException($"Stacked options can only be mapped to "
-				//		+ $"boolean properties but found one or more invalid options in: {string.Join("", shortKeys)}");
-				//}
-
 				string value = ResolveValue(valueFromToken, isBoolType, context);
 
 				switch (type)
@@ -128,29 +119,41 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 		private void ProcessFull(string key, string valueString, ProcessContext<TRunInfo> context)
 		{
-			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
+			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
-			object value = GetParsedValue(valueType, valueString, context);
+			object value = GetParsedValue(processInfo.Type, valueString, context);
 
-			setter(context.RunInfo, value);
+			if (processInfo.OnProcess != null)
+			{
+				dynamic onProcess = processInfo.OnProcess;
+				onProcess.Invoke(valueString);
+			}
+
+			processInfo.Setter(context.RunInfo, value);
 		}
 
 		private void ProcessShort(char key, string valueString, ProcessContext<TRunInfo> context)
 		{
-			var (setter, valueType) = context.Options.GetOptionValueSetter(key);
+			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
-			object value = GetParsedValue(valueType, valueString, context);
+			object value = GetParsedValue(processInfo.Type, valueString, context);
 
-			setter(context.RunInfo, value);
+			if (processInfo.OnProcess != null)
+			{
+				dynamic onProcess = processInfo.OnProcess;
+				onProcess.Invoke(valueString);
+			}
+
+			processInfo.Setter(context.RunInfo, value);
 		}
 
 		private void ProcessStacked(List<char> keys, string valueString, ProcessContext<TRunInfo> context)
 		{
-			List<(Action<TRunInfo, object> setter, Type valueType)> setters = context.Options.GetOptionValueSetters(keys);
+			List<OptionProcessInfo<TRunInfo>> processInfos = context.Options.GetOptionProcessInfos(keys);
 
-			object value = GetParsedValue(setters.First().valueType, valueString, context);
+			object value = GetParsedValue(processInfos.First().Type, valueString, context);
 
-			foreach((Action<TRunInfo, object> setter, _) in setters)
+			foreach(Action<TRunInfo, object> setter in processInfos.Select(i => i.Setter))
 			{
 				setter(context.RunInfo, value);
 			}
