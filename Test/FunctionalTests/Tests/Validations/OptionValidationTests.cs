@@ -72,5 +72,36 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			Assert.Equal(CommandValidationError.PropertyNotWritable, validationException.ErrorType);
 			Assert.Equal(0, validationException.CommandLevel);
 		}
+
+		[Fact]
+		public void OnProcess_NotAllowed_ForBoolOptions()
+		{
+			Action testCode = () =>
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.Add(new Command<TestRunInfo>
+				{
+					Key = "command",
+					Options =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "option",
+							Property = ri => ri.Bool1,
+							OnProcess = arg => ProcessResult.Continue
+						}
+					}
+				});
+			};
+
+			Exception exception = Record.Exception(testCode);
+
+			var validationException = exception as CommandValidationException;
+
+			Assert.NotNull(validationException);
+			Assert.Equal(CommandValidationError.CallbackNotAllowed, validationException.ErrorType);
+			Assert.Equal(0, validationException.CommandLevel);
+		}
 	}
 }

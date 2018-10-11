@@ -337,6 +337,68 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 
 					Assert.Equal(99, runInfo.Int1);
 				}
+
+				[Fact]
+				public void ShortOption_OnProcessInvokes_IfSet()
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					bool invoked = false;
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Options =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int | i",
+								Property = ri => ri.Int1,
+								OnProcess = arg =>
+								{
+									invoked = true;
+									return ProcessResult.Continue;
+								}
+							}
+						}
+					});
+
+					var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "-i", "99" });
+
+					Assert.Equal(99, runInfo.Int1);
+					Assert.True(invoked);
+				}
+
+				[Fact]
+				public void FullOption_OnProcessInvokes_IfSet()
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					bool invoked = false;
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Options =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int | i",
+								Property = ri => ri.Int1,
+								OnProcess = arg =>
+								{
+									invoked = true;
+									return ProcessResult.Continue;
+								}
+							}
+						}
+					});
+
+					var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "--int", "99" });
+
+					Assert.Equal(99, runInfo.Int1);
+					Assert.True(invoked);
+				}
 			}
 		}
 
@@ -754,6 +816,82 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "subcommand", "-i", "99" });
 
 					Assert.Equal(99, runInfo.Int1);
+				}
+
+				[Fact]
+				public void ShortOption_OnProcessInvokes_IfSet()
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					bool invoked = false;
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						SubCommands =
+						{
+							new Command<TestRunInfo>
+							{
+								Key = "subcommand",
+								Options =
+								{
+									new Option<TestRunInfo, int>
+									{
+										Key = "int | i",
+										Property = ri => ri.Int1,
+										OnProcess = arg =>
+										{
+											invoked = true;
+											return ProcessResult.Continue;
+										}
+									}
+								}
+							}
+						}
+					});
+
+					var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "subcommand", "-i", "99" });
+
+					Assert.Equal(99, runInfo.Int1);
+					Assert.True(invoked);
+				}
+
+				[Fact]
+				public void FullOption_OnProcessInvokes_IfSet()
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					bool invoked = false;
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						SubCommands =
+						{
+							new Command<TestRunInfo>
+							{
+								Key = "subcommand",
+								Options =
+								{
+									new Option<TestRunInfo, int>
+									{
+										Key = "int | i",
+										Property = ri => ri.Int1,
+										OnProcess = arg =>
+										{
+											invoked = true;
+											return ProcessResult.Continue;
+										}
+									}
+								}
+							}
+						}
+					});
+
+					var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "subcommand", "--int", "99" });
+
+					Assert.Equal(99, runInfo.Int1);
+					Assert.True(invoked);
 				}
 			}
 		}

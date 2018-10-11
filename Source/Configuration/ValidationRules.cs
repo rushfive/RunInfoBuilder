@@ -463,7 +463,8 @@ namespace R5.RunInfoBuilder.Configuration
 				return new List<Action<int>>
 				{
 					PropertyMappingIsSet(option),
-					MappedPropertyIsWritable(option)
+					MappedPropertyIsWritable(option),
+					OnProcessCallbackNotAllowedForBoolOptions(option)
 				};
 			}
 
@@ -490,6 +491,20 @@ namespace R5.RunInfoBuilder.Configuration
 						throw new CommandValidationException($"Option '{option.Key}'s property '{propertyName}' "
 							+ "is not writable. Try adding a setter.",
 							CommandValidationError.PropertyNotWritable, commandLevel);
+					}
+				};
+			}
+
+			private static Action<int> OnProcessCallbackNotAllowedForBoolOptions<TRunInfo, TProperty>(Option<TRunInfo, TProperty> option)
+				where TRunInfo : class
+			{
+				return commandLevel =>
+				{
+					if (option.OnProcess != null && typeof(TProperty) == typeof(bool))
+					{
+						throw new CommandValidationException(
+							"OnProcess callbacks aren't allowed on bool options.",
+							CommandValidationError.CallbackNotAllowed, commandLevel);
 					}
 				};
 			}

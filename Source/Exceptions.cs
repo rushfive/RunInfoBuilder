@@ -77,6 +77,7 @@ namespace R5.RunInfoBuilder
 		PropertyNotWritable,
 		InvalidType,
 		NullHelpToken,
-		InsufficientCount
+		InsufficientCount,
+		CallbackNotAllowed
 	}
 }

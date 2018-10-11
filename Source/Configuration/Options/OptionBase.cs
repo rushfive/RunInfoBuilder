@@ -12,8 +12,7 @@ namespace R5.RunInfoBuilder
 		internal Type Type { get; }
 		internal object OnProcess { get; } // type = Func<TProperty, ProcessStageResult>
 
-		protected OptionBase(
-			Type type)
+		protected OptionBase(Type type)
 		{
 			Type = type;
 		}

@@ -17,6 +17,8 @@
 
 - provide helper/derived of custom, like SingleArgument, RangeArgument(n), etc.. ??
 
+-- check alll stage processing, ensure they're returning correct process results
+-- test custom argument callback handling
 
 future roadmap
 - callbacks on other configurable types, can specify timing relative to the stage processing

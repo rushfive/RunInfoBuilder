@@ -46,23 +46,37 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				string value = ResolveValue(valueFromToken, isBoolType, context);
 
+				ProcessStageResult optionResult;
 				switch (type)
 				{
 					case OptionType.Full:
-						ProcessFull(fullKey, value, context);
+						optionResult = ProcessFull(fullKey, value, context);
 						break;
 					case OptionType.Short:
-						ProcessShort(shortKeys.Single(), value, context);
+						optionResult = ProcessShort(shortKeys.Single(), value, context);
 						break;
 					case OptionType.Stacked:
-						ProcessStacked(shortKeys, value, context);
+						optionResult = ProcessStacked(shortKeys, value, context);
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(type), $"'{type}' is not a valid option type.");
 				}
+
+				switch (optionResult)
+				{
+					case Continue _:
+						break;
+					case End _:
+						return ProcessResult.End;
+					case null:
+					default:
+						throw new ProcessException(
+							"Option OnProcess callback returned an unknown result.",
+							ProcessError.InvalidStageResult, context.CommandLevel);
+				}
 			}
 
-			return ProcessResult.End;
+			return ProcessResult.Continue;
 		}
 
 		private string ResolveValue(string valueFromToken, bool isBoolTypeOption,
@@ -117,37 +131,47 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			return context.ProgramArguments.Dequeue();
 		}
 
-		private void ProcessFull(string key, string valueString, ProcessContext<TRunInfo> context)
+		private ProcessStageResult ProcessFull(string key, string valueString, ProcessContext<TRunInfo> context)
 		{
 			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
 			object value = GetParsedValue(processInfo.Type, valueString, context);
 
+			ProcessStageResult onProcessResult = null;
 			if (processInfo.OnProcess != null)
 			{
+				dynamic convertedType = Convert.ChangeType(value, processInfo.Type);
+
 				dynamic onProcess = processInfo.OnProcess;
-				onProcess.Invoke(valueString);
+				onProcessResult = onProcess.Invoke(convertedType);
 			}
 
 			processInfo.Setter(context.RunInfo, value);
+
+			return onProcessResult != null ? onProcessResult : ProcessResult.Continue;
 		}
 
-		private void ProcessShort(char key, string valueString, ProcessContext<TRunInfo> context)
+		private ProcessStageResult ProcessShort(char key, string valueString, ProcessContext<TRunInfo> context)
 		{
 			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
 			object value = GetParsedValue(processInfo.Type, valueString, context);
 
+			ProcessStageResult onProcessResult = null;
 			if (processInfo.OnProcess != null)
 			{
+				dynamic convertedType = Convert.ChangeType(value, processInfo.Type);
+
 				dynamic onProcess = processInfo.OnProcess;
-				onProcess.Invoke(valueString);
+				onProcessResult = onProcess.Invoke(convertedType);
 			}
 
 			processInfo.Setter(context.RunInfo, value);
+
+			return onProcessResult != null ? onProcessResult : ProcessResult.Continue;
 		}
 
-		private void ProcessStacked(List<char> keys, string valueString, ProcessContext<TRunInfo> context)
+		private ProcessStageResult ProcessStacked(List<char> keys, string valueString, ProcessContext<TRunInfo> context)
 		{
 			List<OptionProcessInfo<TRunInfo>> processInfos = context.Options.GetOptionProcessInfos(keys);
 
@@ -157,6 +181,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			{
 				setter(context.RunInfo, value);
 			}
+
+			return ProcessResult.Continue;
 		}
 
 		private object GetParsedValue(Type valueType, string valueString, ProcessContext<TRunInfo> context)
