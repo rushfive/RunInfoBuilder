@@ -197,7 +197,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			if (valueType == typeof(bool))
 			{
-				return getForBoolType();
+				return true;
+				//return getForBoolType();
 			}
 
 			return getByParsing();
