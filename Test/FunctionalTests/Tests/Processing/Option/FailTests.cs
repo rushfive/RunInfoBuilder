@@ -457,10 +457,9 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 			}
 
 			[Theory]
-			[InlineData("--bool1", "invalid")]
-			[InlineData("-bc", "invalid")]
-			public void InvalidValue_ForBoolOption_NotParseable_Throws(
-				string option, string invalidBoolValue)
+			[InlineData("--bool1")]
+			[InlineData("-bc")]
+			public void InvalidValue_ForBoolOption_NotParseable_Throws(string option)
 			{
 				Action testCode = () =>
 				{
@@ -491,7 +490,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						}
 					});
 
-					builder.Build(new string[] { "command", "subcommand", option, invalidBoolValue });
+					var t = builder.Build(new string[] { "command", "subcommand", option, "invalid_bool_value" });
 				};
 
 				Exception exception = Record.Exception(testCode);

@@ -22,8 +22,9 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.ComplexScenarios
 
 				var args = new string[]
 				{
-					"CustomToSequence", "-s=hello", "--int", "101", "-ab",
-					"custom1", "custom2", "1", "2", "3"
+					"CustomToSequence", "custom1", "custom2", "1", "2", "3",
+					"-s=hello", "--int", "101", "-ab",
+					
 				};
 
 				TestRunInfo result = (TestRunInfo)builder.Build(args);
