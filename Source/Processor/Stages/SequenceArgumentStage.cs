@@ -62,7 +62,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 						ProcessError.ParserInvalidValue, context.CommandLevel);
 				}
 
-				_onProcess?.Invoke(parsed);
+				ProcessStageResult result = _onProcess?.Invoke(parsed);
+				if (result == ProcessResult.End)
+				{
+					return ProcessResult.End;
+				}
 
 				list.Add(parsed);
 			}
