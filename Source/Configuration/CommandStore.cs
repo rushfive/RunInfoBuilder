@@ -8,6 +8,9 @@ using System.Text;
 
 namespace R5.RunInfoBuilder
 {
+	/// <summary>
+	/// Provides methods to store the command configurations.
+	/// </summary>
 	public class CommandStore
 	{
 		internal const string DefaultKey = "__DEFAULT__";
@@ -37,6 +40,13 @@ namespace R5.RunInfoBuilder
 			_commandMap = new Dictionary<string, object>();
 		}
 		
+		/// <summary>
+		/// Adds a normal command (specified by a unique key).
+		/// </summary>
+		/// <typeparam name="TRunInfo">The run info Type this command is mapped to.</typeparam>
+		/// <param name="command">The command configuration object.</param>
+		/// <param name="postBuildCallback">An optional callback that's invoked with the built TRunInfo run info object.</param>
+		/// <returns>The CommandStore instance.</returns>
 		public CommandStore Add<TRunInfo>(Command<TRunInfo> command, 
 			Action<TRunInfo> postBuildCallback = null)
 			where TRunInfo : class
@@ -81,6 +91,13 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
+		/// <summary>
+		/// Adds the default command (implied if program arguments don't begin with a configured command key).
+		/// </summary>
+		/// <typeparam name="TRunInfo">The run info Type this command is mapped to.</typeparam>
+		/// <param name="defaultCommand">The default command configuration object.</param>
+		/// <param name="postBuildCallback">An optional callback that's invoked with the built TRunInfo run info object.</param>
+		/// <returns>The CommandStore instance.</returns>
 		public CommandStore AddDefault<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand,
 			Action<TRunInfo> postBuildCallback = null)
 			where TRunInfo : class

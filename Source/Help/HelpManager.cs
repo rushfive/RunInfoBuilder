@@ -6,6 +6,9 @@ using System.Text;
 
 namespace R5.RunInfoBuilder
 {
+	/// <summary>
+	/// Provides methods to configure how the help menu works.
+	/// </summary>
 	public class HelpManager
 	{
 		private static readonly string[] _defaultTriggers = new string[] 
@@ -30,6 +33,11 @@ namespace R5.RunInfoBuilder
 			_defaultCommandInfo = null;
 		}
 
+		/// <summary>
+		/// Sets a value for your program's name for use in the help menu.
+		/// </summary>
+		/// <param name="name">The name value.</param>
+		/// <returns>The HelpManager instance.</returns>
 		public HelpManager SetProgramName(string name)
 		{
 			if (string.IsNullOrWhiteSpace(name))
@@ -41,6 +49,11 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the list of keywords that will trigger the help menu as a command.
+		/// </summary>
+		/// <param name="triggers">List of triggers as params.</param>
+		/// <returns>The HelpManager instance.</returns>
 		public HelpManager SetTriggers(params string[] triggers)
 		{
 			if (triggers == null || !triggers.Any())
@@ -54,12 +67,22 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
+		/// <summary>
+		/// Configures the builder to automatically display the help menu (or invoke callback) on fail.
+		/// </summary>
+		/// <returns>The HelpManager instance.</returns>
 		public HelpManager DisplayOnBuildFail()
 		{
 			InvokeOnFail = true;
 			return this;
 		}
 
+		/// <summary>
+		/// Sets a custom callback that will be invoked when the help is triggered.
+		/// Having this set prevents the default help menu from displaying.
+		/// </summary>
+		/// <param name="customCallback">The custom callback action.</param>
+		/// <returns>The HelpManager instance.</returns>
 		public HelpManager OnTrigger(Action customCallback)
 		{
 			if (customCallback == null)

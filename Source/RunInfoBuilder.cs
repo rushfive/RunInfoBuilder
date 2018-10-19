@@ -4,14 +4,40 @@ using System.Linq;
 
 namespace R5.RunInfoBuilder
 {
+	/// <summary>
+	/// Provides members for various configurations and 
+	/// a build method to start the parsing process.
+	/// </summary>	
 	public class RunInfoBuilder
 	{
+		/// <summary>
+		/// Used to parse program arguments. Can be configured to handle additional types.
+		/// </summary>
 		public ArgumentParser Parser { get; }
-		public HelpManager Help { get; }
-		public CommandStore Commands { get; }
-		public VersionManager Version { get; }
-		public BuildHooks Hooks { get; }
 		
+		/// <summary>
+		/// Configures how the program's help menu is displayed.
+		/// </summary>
+		public HelpManager Help { get; }
+
+		/// <summary>
+		/// Stores command configurations used for parsing program arguments into run info objects.
+		/// </summary>
+		public CommandStore Commands { get; }
+
+		/// <summary>
+		/// Configures how the program's version information is displayed.
+		/// </summary>
+		public VersionManager Version { get; }
+
+		/// <summary>
+		/// Configures custom callbacks to be hooked into the build process.
+		/// </summary>
+		public BuildHooks Hooks { get; }
+
+		/// <summary>
+		/// Initializes a new instance of the RunInfoBuilder class.
+		/// </summary>
 		public RunInfoBuilder()
 		{
 			Parser = new ArgumentParser();
@@ -21,6 +47,14 @@ namespace R5.RunInfoBuilder
 			Hooks = new BuildHooks();
 		}
 
+		/// <summary>
+		/// Call to build run info objects from program arguments.
+		/// </summary>
+		/// <param name="args">Program arguments to be parsed.</param>
+		/// <returns>
+		/// A run info object that's been configured in the Command Store
+		/// and built by parsing the program arguments.
+		/// </returns>
 		public object Build(string[] args)
 		{
 			if (Hooks.OnStartIsSet)
@@ -65,6 +99,7 @@ namespace R5.RunInfoBuilder
 					throw;
 				}
 
+				// if not ProcessException, wrap and throw
 				throw new ProcessException("Failed to process args.", 
 					ProcessError.GeneralFailure, -1, ex);
 			}

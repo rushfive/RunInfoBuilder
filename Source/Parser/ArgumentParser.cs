@@ -5,23 +5,47 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Parser
 {
+	/// <summary>
+	/// Provides methods to configure how program arguments are parsed 
+	/// into various Types. Can handle system types out of the box.
+	/// </summary>
 	public class ArgumentParser
 	{
-		private bool _autoParseEnumTypes { get; set; } = true; // todo or default true?
-		private bool _enumParseIgnoreCase { get; set; } // todo or default true?
+		private bool _enumParseIgnoreCase { get; set; }
 
 		// Value is of type Func<string, (bool, T)>. Storing as an object
 		// to both allow users to generically add predicates AND retrieve 
 		// and parse generically
 		private Dictionary<Type, object> _predicatesMap { get; }
 
-		public ArgumentParser()
+		internal ArgumentParser()
 		{
+			_enumParseIgnoreCase = false;
 			_predicatesMap = new Dictionary<Type, object>();
 
 			this.AddSystemTypePredicates();
 		}
 
+		/// <summary>
+		/// Call to set the auto parsing of enum Types to ignore case sensitivity.
+		/// </summary>
+		/// <returns>The Parser instance.</returns>
+		public ArgumentParser EnumParsingIgnoresCase()
+		{
+			_enumParseIgnoreCase = true;
+			return this;
+		}
+
+		/// <summary>
+		/// Configures a custom predicate function that parses a string into T.
+		/// </summary>
+		/// <typeparam name="T">The Type being configured to be parseable.</typeparam>
+		/// <param name="predicateFunc">
+		/// Custom func used to parse the program argument string.
+		/// The func should return a value tuple with the first item being a bool representing
+		/// a successful parse. The second item is the parsed T value.
+		/// </param>
+		/// <returns>The Parser instance.</returns>
 		public ArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)
 		{
 			Type type = typeof(T);
@@ -38,6 +62,13 @@ namespace R5.RunInfoBuilder.Parser
 			return this;
 		}
 
+		/// <summary>
+		/// Parses a string into an object of the specified Type.
+		/// </summary>
+		/// <param name="type">Type of the object that the value should be parsed into.</param>
+		/// <param name="value">The string token attempting to be parsed.</param>
+		/// <param name="parsed">The parsed object as an out parameter.</param>
+		/// <returns>A bool representing whether the value was successfully parsed.</returns>
 		public bool TryParseAs(Type type, string value, out object parsed)
 		{
 			if (type == null)
@@ -51,7 +82,7 @@ namespace R5.RunInfoBuilder.Parser
 
 			parsed = null;
 
-			if (_autoParseEnumTypes && type.IsEnum)
+			if (type.IsEnum)
 			{
 				try
 				{
@@ -60,7 +91,7 @@ namespace R5.RunInfoBuilder.Parser
 				}
 				catch (Exception)
 				{
-					// ignore exception info. Enum.TryParse with ignoreCase not available in netstandard2.0
+					// ignore exception. Enum.TryParse with ignoreCase not available in netstandard2.0
 					return false;
 				}
 			}
@@ -86,6 +117,13 @@ namespace R5.RunInfoBuilder.Parser
 			return false;
 		}
 
+		/// <summary>
+		/// Parses a string into an object of the specified Type.
+		/// </summary>
+		/// <typeparam name="T">Type of the object that the value should be parsed into.</typeparam>
+		/// <param name="value">The string token attempting to be parsed.</param>
+		/// <param name="parsed">The parsed object as an out parameter.</param>
+		/// <returns>A bool representing whether the value was successfully parsed.</returns>
 		public bool TryParseAs<T>(string value, out T parsed)
 		{
 			if (value == null)
@@ -97,7 +135,7 @@ namespace R5.RunInfoBuilder.Parser
 
 			Type type = typeof(T);
 
-			if (_autoParseEnumTypes && type.IsEnum)
+			if (type.IsEnum)
 			{
 				try
 				{
@@ -131,6 +169,11 @@ namespace R5.RunInfoBuilder.Parser
 			return false;
 		}
 
+		/// <summary>
+		/// Indicates whether the parser is currently configured to handle the Type.
+		/// </summary>
+		/// <param name="type">The type being determined to be parseable.</param>
+		/// <returns>A bool indicating whether the parser currently handles the Type.</returns>
 		public bool HandlesType(Type type)
 		{
 			if (type == null)
@@ -141,6 +184,11 @@ namespace R5.RunInfoBuilder.Parser
 			return _predicatesMap.ContainsKey(type);
 		}
 
+		/// <summary>
+		/// Indicates whether the parser is currently configured to handle the Type.
+		/// </summary>
+		/// <typeparam name="T">The type being determined to be parseable.</typeparam>
+		/// <returns>A bool indicating whether the parser currently handles the Type.</returns>
 		public bool HandlesType<T>()
 		{
 			return _predicatesMap.ContainsKey(typeof(T));

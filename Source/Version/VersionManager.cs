@@ -5,6 +5,9 @@ using System.Text;
 
 namespace R5.RunInfoBuilder
 {
+	/// <summary>
+	/// /// Provides methods to configure how the program's version information is displayed.
+	/// </summary>
 	public class VersionManager
 	{
 		private static readonly string[] _defaultTriggers = new string[]
@@ -21,6 +24,11 @@ namespace R5.RunInfoBuilder
 			_triggers = new List<string>(_defaultTriggers);
 		}
 
+		/// <summary>
+		/// Sets the program's version.
+		/// </summary>
+		/// <param name="version">String value representing the version.</param>
+		/// <returns>The VersionManager instance.</returns>
 		public VersionManager Set(string version)
 		{
 			if (string.IsNullOrWhiteSpace(version))
@@ -32,6 +40,11 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the list of keywords that will trigger the version to be displayed.
+		/// </summary>
+		/// <param name="triggers">List of triggers as params.</param>
+		/// <returns>The VersionManager instance.</returns>
 		public VersionManager SetTriggers(params string[] triggers)
 		{
 			if (triggers == null || !triggers.Any())

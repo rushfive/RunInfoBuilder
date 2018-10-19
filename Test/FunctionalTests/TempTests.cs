@@ -11,6 +11,7 @@ namespace R5.RunInfoBuilder.FunctionalTests
 		[Fact]
 		public void Test()
 		{
+			
 			var builder = new RunInfoBuilder();
 
 			builder.Commands.Add<TestRunInfo>(new Command<TestRunInfo>
