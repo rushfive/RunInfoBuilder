@@ -1,4 +1,0 @@
--- analyze using styleanalyzers, fxcopy, etc. checkout resolyn
--- add help formatters
--- allow configuration of store arg objects using config object
--- make command callback timing configurable (default to AFTER processing, linear by queue vs parallel?)
