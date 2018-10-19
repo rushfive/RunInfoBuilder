@@ -106,7 +106,7 @@ Before diving into `Command` configuration, we need to understand the order in w
 
 ![alt text](/Documentation/Images/command_flow_diagram.png)
 
-##### 1. Arguments
+#### 1. Arguments
 
 Arguments are processed first, and in the same order they're defined in the `Command` object added to the store.
 
