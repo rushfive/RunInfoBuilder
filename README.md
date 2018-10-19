@@ -169,11 +169,13 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 ##### Command<TRunInfo>
 
-The command is really the core item, as everything else is nested within it. Its' properties are:
+The command is really the core entity of this library, as everything else is nested within it. Its' properties are:
 
 __Key__ (`string`): A unique keyword that represents the command. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
 __Description__ (`string`): Text that's displayed in the help menu.
+
 __Arguments__ (`List<ArgumentBase<TRunInfo>>`): A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
+
 __Options__ (`List<OptionBase<TRunInfo>>`): A list of `Options` associated to the `Command`.
 
 
