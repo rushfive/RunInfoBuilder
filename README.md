@@ -106,11 +106,11 @@ Before diving into `Command` configuration, we need to understand the order in w
 
 ![alt text](/Documentation/Images/command_flow_diagram.png)
 
-asdfasdf
+##### 1. Arguments
 
-1. Arguments
+Arguments are processed first, and in the same order they're defined in the `Command` object added to the store.
 
-asdfasdf
+They are also all required, so the builder will always try to take the next program argument and handle it using the configuration of the next `Argument` in the list.
 
 2. Options
 
