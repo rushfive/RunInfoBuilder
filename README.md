@@ -32,6 +32,67 @@ dotnet add package aaa.aaa.aaa
 
 ### A Simple Example
 
+A program is desired that can read some message from the `args`, and then do one of many things with it via a command.
+
+For example, it may take the message and send it off to some HTTP endpoint. The required information for this has been collected into this `RunInfo` class:
+
+```
+public class SendRequestRunInfo
+{
+	public string RequestUrl { get; set; }
+	public string Message { get; set; }
+	public int DelayMinutes { get; set; }
+}
+```
+
+The program should take three `args` and simply bind them to the properties. 
+To do this, a `Command` called `sendhttp` is added to the _CommandStore_:
+
+```
+// initialize a builder instance
+var builder = new RunInfoBuilder();
+
+// add the 'sendhttp' command to the store
+builder.Commands.Add(new Command<SendRequestRunInfo>
+{
+	Key = "sendhttp",
+	Arguments =
+	{
+		new PropertyArgument<SendRequestRunInfo, string>
+		{
+			Property = ri => ri.RequestUrl
+		},
+		new PropertyArgument<SendRequestRunInfo, string>
+		{
+			Property = ri => ri.Message
+		},
+		new PropertyArgument<SendRequestRunInfo, int>
+		{
+			Property = ri => ri.DelayMinutes
+		}
+	}
+});
+
+// build the run info object by passing args (led by the command's key)
+var args = new string[] { "sendhttp", "http://www.somewhere.com", "hello from program!", "3" };
+var runInfo = builder.Build(args);
+```
+
+The resulting `runInfo` variable will be of type `SendRequestRunInfo` with the expected values:
+
+```
+{
+	RequestUrl: 'http://www.somewhere.com',
+	Message: 'hello from program!',
+	DelayMinutes: 3
+}
+```
+
+This is an overly simple and contrived example. It illustrates the most basic of binding requirements, simple 1-to-1 mappings of args to properties. 
+
+There's a lot more that can be done and configured, but hopefully you can at least see how simple and expressive defining commands through an object is. You can take a quick look at any command configuration and immediately know how it handles and interacts with `args`.
+
+If this has capture your interest, keep reading below for a deeper dive into all the features and areas of RunInfoBuilder.
 
 ## In-Depth Documentation
 
