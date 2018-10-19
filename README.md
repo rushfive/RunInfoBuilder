@@ -32,7 +32,7 @@ dotnet add package aaa.aaa.aaa
 
 ### A Simple Example
 
-A program is desired that can read some message from the `args`, and then do one of many things with it via a command.
+A program is desired that can read some message from the `args`, and then do one of many things as determined by a command.
 
 For example, it may take the message and send it off to some HTTP endpoint. The required information for this has been collected into this `RunInfo` class:
 
@@ -92,37 +92,16 @@ This is an overly simple and contrived example. It illustrates the most basic of
 
 There's a lot more that can be done and configured, but hopefully you can at least see how simple and expressive defining commands through an object is. You can take a quick look at any command configuration and immediately know how it handles and interacts with `args`.
 
-If this has capture your interest, keep reading below for a deeper dive into all the features and areas of RunInfoBuilder.
+If this has captured your interest, keep reading below for a deeper dive into all the features and areas of RunInfoBuilder.
 
 ## In-Depth Documentation
 
 Topics covered below:
 - [Commands](#commands)
 
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-asdfasdf
-asdfasdfasdf
-asdfasdfsfd
-
 
 ### Commands
+
+Before diving into `Command` configuration, we need to understand the order in which commands, and their child items like subcommands and options are processed.
+
+![alt text](/Documentation/Images/command_flow_diagram.png)
