@@ -112,10 +112,54 @@ Arguments are processed first, and in the same order they're defined in the `Com
 
 They are also all required, so the builder will always try to take the next program argument and handle it using the configuration of the next `Argument` in the list.
 
-2. Options
+#### 2. Options
 
-asdfasdfasf
+Any `Options` are processed immediately after the command's `Arguments` are, and are.. optional. 
 
-3. SubCommands
+`Options` are bound to a property on the `RunInfo`, and its value is determined in one of two ways:
 
-asdfasdfasdf
+- By parsing the right side of the `=` character in an option program argument: For example, if the program argument is `"--option=value"`, then the string `"value"` will be parsed into the expected type and bound to the property.
+- By parsing the next program argument: If an option was declared without the `=`, the builder will simply assume the next program argument is its intended value, and will parse and bind to the property.
+
+#### 3. SubCommands
+
+A `Command` can contain nested `SubCommands` in a list, which are processed after `Options` if any are found. 
+
+The structure of a `SubCommand` is exactly the same as the `Command`, and you use the same type in code: `Command<TRunInfo>`.
+
+This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or you'll probably end up with a confusing CLI API.
+
+__To recap: All `Arguments` and `Options` for a given `Command` are processed first. After which, the `SubCommand` will be processed in the same manner. And so on and so forth.__
+
+I know I stated that this library prefers configuration over conventions, but I decided that enforcing a specific ordering for processing had more pros and cons. Having these assumptions in place will also help when you're desining your program's API.
+
+There are some limitations still. I'll illustrate by continuing off of the example earlier. 
+
+Lets imagine the `Command` expects a single `Argument` mapped to an `int`. You also define some `Options` as so:
+
+```
+{
+	new PropertyArgument<SendRequestRunInfo, string>
+	{
+		Property = ri => ri.Message
+	}
+},
+Options =
+{
+	// .. some options defined here ..
+}
+```
+
+What happens when a user forgets to include a value for the _Message_ `Argument` and passes these args:
+
+```
+[ "sendhttp", "--some-option" ]
+```
+
+Well, the builder has no way to know whether a given program argument is valid for the expected string `Argument`. So it would take the `"--some-option"` value and bind it to the `RunInfo`s `Message` property.
+
+What if the `Argument` was instead mapped to an `int` property? In this case, the build would throw an exception because the string `"--some-option"` is not parseable into an `int` type.
+
+Just be aware of this when designing your program, and let me know if you have any suggestions or ideas on how to resolve this. It seems to be a common issue for many command line parsing libraries.
+
+
