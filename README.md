@@ -105,3 +105,17 @@ Topics covered below:
 Before diving into `Command` configuration, we need to understand the order in which commands, and their child items like subcommands and options are processed.
 
 ![alt text](/Documentation/Images/command_flow_diagram.png)
+
+asdfasdf
+
+1. Arguments
+
+asdfasdf
+
+2. Options
+
+asdfasdfasf
+
+3. SubCommands
+
+asdfasdfasdf
