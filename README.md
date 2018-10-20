@@ -104,7 +104,16 @@ If this has captured your interest, keep reading below for a deeper dive into al
 
 Topics covered below:
 - [Command Processing Overview](#command-processing-overview)
-- [Commands and the Default Command](#command)
+- [Commands and the Default Command](#commands-and-the-default-command)
+  - [Command Store](#aaaa)
+  - [Command](#aaaa)
+  - [Default Command](#aaaa)
+- [Arguments](#aaaa)
+  - [Property Argument](#aaaa)
+  - [Set Argument](#aaaa)
+  - [Sequence Argument](#aaaa)
+  - [Custom Argument](#aaaa)
+- [Options](#aaaa)
 
 ---
 
