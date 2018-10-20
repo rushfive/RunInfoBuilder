@@ -18,6 +18,8 @@ There are no attributes used to mark the resulting `RunInfo` class properties. R
 
 Using attributes to _tell_ a command line parser how to interpret things works for very simple binding schemes. But if you need to go beyond that, for example, by using custom callbacks for validations or as extensibility points, using pure code to define the commands works better.
 
+---
+
 ### Getting Started
 
 Install via __NuGet__ or __DotNet__:
@@ -29,6 +31,8 @@ Install-Package aaa.aaa.aaa
 ```
 dotnet add package aaa.aaa.aaa
 ```
+
+---
 
 ### A Simple Example
 
@@ -94,11 +98,15 @@ There's a lot more that can be done and configured, but hopefully you can at lea
 
 If this has captured your interest, keep reading below for a deeper dive into all the features and areas of RunInfoBuilder.
 
+---
+
 ## In-Depth Documentation
 
 Topics covered below:
 - [Command Processing Overview](#command-processing-overview)
 - [Commands and the Default Command](#command)
+
+---
 
 ### Command Processing Overview
 
@@ -165,6 +173,8 @@ Just be aware of this when designing your program, and let me know if you have a
 
 _Alright. Now that we understand the order in which items are processed, we'll take a look at the specifics of each core type available, starting with commands.
 
+---
+
 ### Commands and the Default Command
 
 #### [ CommandStore ]
@@ -183,7 +193,7 @@ builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
 });
 ```
 
-#### << Command<TRunInfo> >>
+#### [ Command<TRunInfo> ]
 
 The `Command` is really the core entity of this library, as everything else is nested within it. Its' properties are:
 
@@ -199,7 +209,7 @@ __SubCommands__ (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are
 
 A `Command` is really nothing more than a container for its child items, which does all the real processing and binding.
 
-#### << DefaultCommand<TRunInfo> >>
+#### [ DefaultCommand<TRunInfo> ]
 
 You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
 
