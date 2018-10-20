@@ -104,6 +104,7 @@ If this has captured your interest, keep reading below for a deeper dive into al
 
 Topics covered below:
 - [Command Processing Overview](#command-processing-overview)
+- [Custom Callbacks](#custom-callbacks)
 - [Commands and the Default Command](#commands-and-the-default-command)
   - [Command Store](#command-store)
   - [Command](#command)
@@ -184,6 +185,20 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 ---
 
+### Custom Callbacks
+
+When configuring `Commands`, there are several places where you can provide custom callbacks. Most of these are `Func`s that must return a `ProcessStageResult`. The type that is returned will determine whether the builder continues processing or stops early.
+
+A static helper class is provided that makes returning the correct type easier.
+
+To continue, use `return ProcessResult.Continue`.
+
+To end early, use `return ProcessResult.End`.
+
+More details on their usage in specific areas are noted in those sections.
+
+---
+
 ### Commands and the Default Command
 
 #### Command Store
@@ -241,4 +256,17 @@ builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
 
 All `Arguments` are required (matching program arguments must be found). The order in which they're configured is significant: program arguments must also appear in the same order to correctly match an `Argument`.
 
-#### [ Property Argument ]
+#### Property Argument
+
+Property argument's take the next single program argument, then attempts to parse and bind it to the configured `RunInfo` property. Its' properties are:
+
+- `HelpToken` (`string`) - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
+
+- `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
+
+- `OnProcess` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult` instance.
+
+
+
+
+
