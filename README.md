@@ -189,7 +189,7 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 When configuring `Commands`, there are several places where you can provide custom callbacks. Most of these are `Func`s that must return a `ProcessStageResult`. The type that is returned will determine whether the builder continues processing or stops early.
 
-A static helper class is provided that makes returning the correct type easier.
+A static helper class is provided that makes returning the correct type easier:
 
 To continue, use `return ProcessResult.Continue`.
 
@@ -266,7 +266,26 @@ Property argument's take the next single program argument, then attempts to pars
 
 - `OnProcess` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult` instance.
 
+_Example Configuration:_
 
+```
+Arguments =
+{
+	new PropertyArgument<SendRequestRunInfo, string>
+	{
+		HelpToken = "<msg>",
+		Property = ri => ri.Message,
+		OnProcess = value =>
+		{
+			if (value == "dont sent")
+			{
+				throw new Exception("Shouldn't send!");
+			}
+			return ProcessResult.Continue;
+		}
+	}
+}
+```
 
 
 
