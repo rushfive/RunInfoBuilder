@@ -105,9 +105,9 @@ If this has captured your interest, keep reading below for a deeper dive into al
 Topics covered below:
 - [Command Processing Overview](#command-processing-overview)
 - [Commands and the Default Command](#commands-and-the-default-command)
-  - [Command Store](#[-command-store-])
-  - [Command](#[-command-])
-  - [Default Command](#[-default-command-])
+  - [Command Store](#command-store)
+  - [Command](#command)
+  - [Default Command](#default-command)
 - [Arguments](#aaaa)
   - [Property Argument](#aaaa)
   - [Set Argument](#aaaa)
@@ -186,7 +186,7 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 ### Commands and the Default Command
 
-#### [ Command Store ]
+#### Command Store
 
 All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods with the following interface:
 
@@ -195,7 +195,7 @@ CommandStore Add(Command<TRunInfo> command);
 CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
 ```
 
-#### [ Command ]
+#### Command
 
 The `Command` is really the core entity of this library, as everything else is nested within it. Its' properties are:
 
@@ -220,7 +220,7 @@ builder.Commands.Add(new Command<TRunInfo>
 });
 ```
 
-#### [ Default Command ]
+#### Default Command
 
 You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
 
