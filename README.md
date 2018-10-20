@@ -167,7 +167,7 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 ### Commands and the Default Command
 
-#### CommandStore
+#### << CommandStore >>
 
 All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods, one to add an arbitrary number of normal `Commands`, and another to add a single `DefaultCommand`:
 
@@ -183,23 +183,23 @@ builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
 });
 ```
 
-#### Command<TRunInfo>
+#### << Command<TRunInfo> >>
 
 The `Command` is really the core entity of this library, as everything else is nested within it. Its' properties are:
 
-__Key__ (`string`): A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
+__Key__ (`string`) - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
 
-__Description__ (`string`): Text that's displayed in the help menu.
+__Description__ (`string`) - Text that's displayed in the help menu.
 
-__Arguments__ (`List<ArgumentBase<TRunInfo>>`): A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
+__Arguments__ (`List<ArgumentBase<TRunInfo>>`) - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
 
-__Options__ (`List<OptionBase<TRunInfo>>`): A list of `Options` associated to the `Command`.
+__Options__ (`List<OptionBase<TRunInfo>>`) - A list of `Options` associated to the `Command`.
 
-__SubCommands__ (`List<Command<TRunInfo>>`): A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
+__SubCommands__ (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
 
 A `Command` is really nothing more than a container for its child items, which does all the real processing and binding.
 
-#### DefaultCommand<TRunInfo>
+#### << DefaultCommand<TRunInfo> >>
 
 You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
 
