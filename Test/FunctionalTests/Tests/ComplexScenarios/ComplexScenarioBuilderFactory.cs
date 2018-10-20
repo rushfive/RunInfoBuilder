@@ -169,7 +169,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.ComplexScenarios
 									new SequenceArgument<TestRunInfo, double>
 									{
 										ListProperty = ri => ri.DoubleList1,
-										OnProcess = val =>
+										OnParsed = val =>
 										{
 											if (val < 9.9)
 											{

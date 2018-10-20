@@ -11,13 +11,13 @@ namespace R5.RunInfoBuilder
 			where TRunInfo : class
 	{
 		public Expression<Func<TRunInfo, List<TListProperty>>> ListProperty { get; set; }
-		public Func<TListProperty, ProcessStageResult> OnProcess { get; set; }
+		public Func<TListProperty, ProcessStageResult> OnParsed { get; set; }
 
 		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Sequence.Rules(this);
 
 		internal override Stage<TRunInfo> ToStage()
 		{
-			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnProcess);
+			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnParsed);
 		}
 
 		internal override string GetHelpToken()

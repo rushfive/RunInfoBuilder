@@ -288,12 +288,12 @@ Type: `PropertyArgument<TRunInfo, TProperty>`
 
 Property argument's take the next single program argument, then attempts to parse and bind it to the configured `RunInfo` property
 
-_An exception is thrown if the program argument cannot be parsed into a `TProperty` type_
+_An exception is thrown if the program argument cannot be parsed into a `TProperty` type._
 
 Properties:
 - `HelpToken` (`string`) - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
 - `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
-- `OnProcess` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
+- `OnParsed` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
 
 _Example Configuration:_
 
@@ -304,7 +304,7 @@ Arguments =
 	{
 		HelpToken = "<msg>",
 		Property = ri => ri.Message,
-		OnProcess = value =>
+		OnParsed = value =>
 		{
 			if (value == "dont send")
 			{
@@ -324,10 +324,73 @@ Type: `SetArgument<TRunInfo, TProperty>`
 
 Set arguments provide a list of tuples in the form `(key, boundValue)`. If the program argument matches one of the keys, its paired value will be bound to the `RunInfo` property.
 
-_An exception is thrown if the program argument doesn't match a key_
+_An exception is thrown if the program argument doesn't match a key._
 
 Properties:
-- something
+- `HelpToken` (`string`) - The text that appears in the help menu representing this `SetArgument`. It should be short and succinct. For example, a `HelpToken` could be `"(a|b|c)"`, indicating that the acceptable values are "a", "b", and "c".
+- `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the paired value will be bound to.
+- `Values` (`List<(string, TProperty)>`) - List of tuples representing the key and value pairings.
+
+_Example Configuration:_
+
+```
+Arguments =
+{
+	new SetArgument<SendRequestRunInfo, int>
+	{
+		HelpToken = "(now|one|five)",
+		Property = ri => ri.DelayMinutes,
+		Values =
+		{
+			("now", 0), ("one", 1), ("five", 5)
+		}
+	}
+}
+```
+
+In the example above, a value of 0, 1, or 5 will be bound to the `DelayMinutes` property, depending on which key the program argument matched.
+
+#### Custom Argument
 
 
+
+#### Sequence Argument
+
+Type: `SequenceArgument<TRunInfo, TListProperty>`
+- `TRunInfo` is the `RunInfo` class the property is associated to.
+- `TListProperty` represents the type of the `List<T>` the parsed values will be added to.
+
+Sequence arguments take consecutive program arguments, parsing and adding them to the configured list.
+
+_Note: the builder will continue to consider program arguments as long as they aren't an `Option` or `SubCommand`. Don't configure other `Arguments` after a `SequenceArgument` - sequences should either be the last or only `Argument` in a command._
+
+_An exception is thrown if any of the considered program arguments fail to parse into a `TListProperty`._
+
+Properties:
+- `HelpToken` (`string`) - The token that appears in the help menu representing this `SequenceArgument`. Example: `"<...int>"` 
+- `ListProperty` (`Expression<Func<TRunInfo, List<TListProperty>>>`) - An expression representing the `RunInfo` list property the values will be added to.
+- `OnParsed` (`Func<TListProperty, ProcessStageResult>`) - An optional custom callback that is invoked for every value after they are parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is added to the property. 
+
+_Example Configuration:_
+
+```
+Arguments =
+{
+	new SequenceArgument<RunInfo, int>
+	{
+		HelpToken = "<...int>",
+		ListProperty = ri => ri.ListOfNumbers,
+		OnParsed = value =>
+		{
+			if (value < 10) 
+			{
+				return ProcessResult.End;
+			}
+			return ProcessResult.Continue;
+		}
+	}
+}
+```
+
+In the example above, any values found to be below 10 will stop further processing.
 

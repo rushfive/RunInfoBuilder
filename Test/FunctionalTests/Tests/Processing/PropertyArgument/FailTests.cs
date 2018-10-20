@@ -134,7 +134,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 							new PropertyArgument<TestRunInfo, int>
 							{
 								Property = ri => ri.Int1,
-								OnProcess = val =>
+								OnParsed = val =>
 								{
 									throw new TestException();
 								}
@@ -303,7 +303,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 									new PropertyArgument<TestRunInfo, int>
 									{
 										Property = ri => ri.Int1,
-										OnProcess = val =>
+										OnParsed = val =>
 										{
 											throw new TestException();
 										}

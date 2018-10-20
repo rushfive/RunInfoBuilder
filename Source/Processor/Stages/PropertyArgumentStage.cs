@@ -11,14 +11,14 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		where TRunInfo : class
 	{
 		private Expression<Func<TRunInfo, TProperty>> _property { get; }
-		private Func<TProperty, ProcessStageResult> _onProcess { get; }
+		private Func<TProperty, ProcessStageResult> _onParsed { get; }
 
 		internal PropertyArgumentStage(
 			Expression<Func<TRunInfo, TProperty>> property,
-			Func<TProperty, ProcessStageResult> onProcess)
+			Func<TProperty, ProcessStageResult> onParsed)
 		{
 			_property = property;
-			_onProcess = onProcess;
+			_onParsed = onParsed;
 		}
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
@@ -46,7 +46,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					ProcessError.ParserInvalidValue, context.CommandLevel);
 			}
 
-			_onProcess?.Invoke(parsed);
+			ProcessStageResult result = _onParsed?.Invoke(parsed);
+			if (result == ProcessResult.End)
+			{
+				return ProcessResult.End;
+			}
 
 			PropertyInfo propertyInfo = ReflectionHelper<TRunInfo>.GetPropertyInfoFromExpression(_property);
 			propertyInfo.SetValue(context.RunInfo, parsed);
