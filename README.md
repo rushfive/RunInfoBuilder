@@ -199,17 +199,17 @@ CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
 
 The `Command` is really the core entity of this library, as everything else is nested within it. Its' properties are:
 
-`Key` (`string`) - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
+- `Key` (`string`) - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
 
-`Description` (`string`) - Text that's displayed in the help menu.
+- `Description` (`string`) - Text that's displayed in the help menu.
 
-`Arguments` (`List<ArgumentBase<TRunInfo>>`) - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
+- `Arguments` (`List<ArgumentBase<TRunInfo>>`) - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
 
-`Options` (`List<OptionBase<TRunInfo>>`) - A list of `Options` associated to the `Command`.
+- `Options` (`List<OptionBase<TRunInfo>>`) - A list of `Options` associated to the `Command`.
 
-`SubCommands` (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
+- `SubCommands` (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
 
-A `Command` is really nothing more than a container for its child items, which does all the real processing and binding.
+`Commands` are really nothing more than a container for its child items, which does all the real processing and binding.
 
 An arbitrary number of `Commands` can be added to the store:
 
