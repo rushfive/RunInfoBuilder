@@ -105,9 +105,9 @@ If this has captured your interest, keep reading below for a deeper dive into al
 Topics covered below:
 - [Command Processing Overview](#command-processing-overview)
 - [Commands and the Default Command](#commands-and-the-default-command)
-  - [Command Store](#aaaa)
-  - [Command](#aaaa)
-  - [Default Command](#aaaa)
+  - [Command Store](#command-store)
+  - [Command](#command)
+  - [Default Command](#default-command)
 - [Arguments](#aaaa)
   - [Property Argument](#aaaa)
   - [Set Argument](#aaaa)
@@ -186,23 +186,16 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 ### Commands and the Default Command
 
-#### [ CommandStore ]
+#### [ Command Store ]
 
-All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods, one to add an arbitrary number of normal `Commands`, and another to add a single `DefaultCommand`:
+All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods with the following interface:
 
 ```
-builder.Commands.Add(new Command<TRunInfo>
-{
-	// ... command configuration ...
-});
-
-builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
-{
-	// ... default command configuration ...
-});
+CommandStore Add(Command<TRunInfo> command);
+CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
 ```
 
-#### [ Command<TRunInfo> ]
+#### [ Command ]
 
 The `Command` is really the core entity of this library, as everything else is nested within it. Its' properties are:
 
@@ -218,9 +211,34 @@ __SubCommands__ (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are
 
 A `Command` is really nothing more than a container for its child items, which does all the real processing and binding.
 
-#### [ DefaultCommand<TRunInfo> ]
+An arbitrary number of `Commands` can be added to the store:
+
+```
+builder.Commands.Add(new Command<TRunInfo>
+{
+	// ... command configuration ...
+});
+```
+
+#### [ Default Command ]
 
 You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
 
 The idea is to offer default behavior that's simple and lightweight. If your program requires a scenario that doesn't necessarily fit into the group of `SubCommands`, providing this default behavior could be useful.
 
+Only a single `DefaultCommand` can be configured on the store:
+
+```
+builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
+{
+	// ... default command configuration ...
+});
+```
+
+---
+
+### Arguments
+
+All `Arguments` are required (matching program arguments must be found). The order in which they're configured is significant: program arguments must also appear in the same order to correctly match an `Argument`.
+
+#### [ Property Argument ]
