@@ -217,7 +217,7 @@ Type: `Command<TRunInfo>`
 
 The `Command` is really the core entity of this library, as everything else is nested within it.
 
-__Properties:__
+Properties:
 - `Key` (`string`) - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
 - `Description` (`string`) - Text that's displayed in the help menu.
 - `Arguments` (`List<ArgumentBase<TRunInfo>>`) - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
@@ -257,7 +257,7 @@ You can optionally include a single `DefaultCommand`. This behaves exactly like 
 
 The idea is to offer default behavior that's simple and lightweight. If your program requires a scenario that doesn't necessarily fit into the group of `SubCommands`, providing this default behavior could be useful.
 
-Only a single `DefaultCommand` can be configured on the store:
+Only a single `DefaultCommand` can be configured:
 
 ```
 builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
@@ -286,8 +286,11 @@ Type: `PropertyArgument<TRunInfo, TProperty>`
 - `TRunInfo` is the `RunInfo` class the property is associated to.
 - `TProperty` represents the type of the mapped `RunInfo` property.
 
-Property argument's take the next single program argument, then attempts to parse and bind it to the configured `RunInfo` property. Its' properties are:
+Property argument's take the next single program argument, then attempts to parse and bind it to the configured `RunInfo` property
 
+_An exception is thrown if the program argument cannot be parsed into a `TProperty` type_
+
+Properties:
 - `HelpToken` (`string`) - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
 - `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
 - `OnProcess` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
@@ -321,7 +324,10 @@ Type: `SetArgument<TRunInfo, TProperty>`
 
 Set arguments provide a list of tuples in the form `(key, boundValue)`. If the program argument matches one of the keys, its paired value will be bound to the `RunInfo` property.
 
+_An exception is thrown if the program argument doesn't match a key_
 
+Properties:
+- something
 
 
 
