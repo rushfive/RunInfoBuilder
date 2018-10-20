@@ -231,7 +231,20 @@ An arbitrary number of `Commands` can be added to the store:
 ```
 builder.Commands.Add(new Command<TRunInfo>
 {
-	// ... command configuration ...
+	Key = "command_key",
+	Description = "command description",
+	Arguments =
+	{
+		// ... arguments ...
+	},
+	Options =
+	{
+		// ... options ...
+	},
+	SubCommands =
+	{
+		// ... subcommands ...
+	}
 });
 ```
 
@@ -246,7 +259,15 @@ Only a single `DefaultCommand` can be configured on the store:
 ```
 builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
 {
-	// ... default command configuration ...
+	Description = "default command description",
+	Arguments =
+	{
+		// ... arguments ...
+	},
+	Options =
+	{
+		// ... options ...
+	}
 });
 ```
 
@@ -258,13 +279,15 @@ All `Arguments` are required (matching program arguments must be found). The ord
 
 #### Property Argument
 
+Type: `PropertyArgument<TRunInfo, TProperty>`
+- The generic `TRunInfo` parameter is the `RunInfo` class the property is associated to.
+- The generic `TProperty` parameter represents the type of the mapped `RunInfo` property.
+
 Property argument's take the next single program argument, then attempts to parse and bind it to the configured `RunInfo` property. Its' properties are:
 
 - `HelpToken` (`string`) - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
-
 - `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
-
-- `OnProcess` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult` instance.
+- `OnProcess` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
 
 _Example Configuration:_
 
@@ -277,7 +300,7 @@ Arguments =
 		Property = ri => ri.Message,
 		OnProcess = value =>
 		{
-			if (value == "dont sent")
+			if (value == "dont send")
 			{
 				throw new Exception("Shouldn't send!");
 			}
@@ -286,6 +309,12 @@ Arguments =
 	}
 }
 ```
+
+#### Set Argument
+
+Set arguments provide a list of tuples in the form `(key, boundValue)`. If the program argument matches one of the keys, its paired value will be bound to the `RunInfo` property.
+
+
 
 
 
