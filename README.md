@@ -212,16 +212,16 @@ CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
 
 #### Command
 
-The `Command` is really the core entity of this library, as everything else is nested within it. Its' properties are:
+Type: `Command<TRunInfo>`
+- `TRunInfo`parameter is the `RunInfo` class the command is associated to.
 
+The `Command` is really the core entity of this library, as everything else is nested within it.
+
+__Properties:__
 - `Key` (`string`) - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
-
 - `Description` (`string`) - Text that's displayed in the help menu.
-
 - `Arguments` (`List<ArgumentBase<TRunInfo>>`) - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
-
 - `Options` (`List<OptionBase<TRunInfo>>`) - A list of `Options` associated to the `Command`.
-
 - `SubCommands` (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
 
 `Commands` are really nothing more than a container for its child items, which does all the real processing and binding.
@@ -249,6 +249,9 @@ builder.Commands.Add(new Command<TRunInfo>
 ```
 
 #### Default Command
+
+Type: `DefaultCommand<TRunInfo>`
+- `TRunInfo` is the `RunInfo` class the default command is associated to.
 
 You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
 
@@ -280,8 +283,8 @@ All `Arguments` are required (matching program arguments must be found). The ord
 #### Property Argument
 
 Type: `PropertyArgument<TRunInfo, TProperty>`
-- The generic `TRunInfo` parameter is the `RunInfo` class the property is associated to.
-- The generic `TProperty` parameter represents the type of the mapped `RunInfo` property.
+- `TRunInfo` is the `RunInfo` class the property is associated to.
+- `TProperty` represents the type of the mapped `RunInfo` property.
 
 Property argument's take the next single program argument, then attempts to parse and bind it to the configured `RunInfo` property. Its' properties are:
 
@@ -311,6 +314,10 @@ Arguments =
 ```
 
 #### Set Argument
+
+Type: `SetArgument<TRunInfo, TProperty>`
+- `TRunInfo` is the `RunInfo` class the property is associated to.
+- `TProperty` represents the type of the mapped `RunInfo` property.
 
 Set arguments provide a list of tuples in the form `(key, boundValue)`. If the program argument matches one of the keys, its paired value will be bound to the `RunInfo` property.
 
