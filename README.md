@@ -167,7 +167,7 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 ### Commands and the Default Command
 
-#### << CommandStore >>
+#### [ CommandStore ]
 
 All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods, one to add an arbitrary number of normal `Commands`, and another to add a single `DefaultCommand`:
 
