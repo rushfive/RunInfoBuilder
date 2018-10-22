@@ -36,6 +36,14 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 							("false", false)
 						}
 					}
+				},
+				Options =
+				{
+					new Option<TestRunInfo, bool>
+					{
+						Key = "bool | b",
+						Property = ri => ri.Bool1
+					}
 				}
 			},
 			ri =>

@@ -500,7 +500,7 @@ namespace R5.RunInfoBuilder.Configuration
 			{
 				return commandLevel =>
 				{
-					if (option.OnProcess != null && typeof(TProperty) == typeof(bool))
+					if (option.OnParsed != null && typeof(TProperty) == typeof(bool))
 					{
 						throw new CommandValidationException(
 							"OnProcess callbacks aren't allowed on bool options.",

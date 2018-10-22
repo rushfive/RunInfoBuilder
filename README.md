@@ -109,12 +109,12 @@ Topics covered below:
   - [Command Store](#command-store)
   - [Command](#command)
   - [Default Command](#default-command)
-- [Arguments](#aaaa)
-  - [Property Argument](#aaaa)
-  - [Set Argument](#aaaa)
-  - [Sequence Argument](#aaaa)
-  - [Custom Argument](#aaaa)
-- [Options](#aaaa)
+- [Arguments](#arguments)
+  - [Property Argument](#property-argument)
+  - [Set Argument](#set-argument)
+  - [Custom Argument](#custom-argument)
+  - [Sequence Argument](#sequence-argument)
+- [Options](#options)
 
 ---
 
@@ -192,10 +192,7 @@ When configuring `Commands`, there are several places where you can provide cust
 A static helper class is provided that makes returning the correct type easier:
 
 To continue, use `return ProcessResult.Continue`.
-
 To end early, use `return ProcessResult.End`.
-
-More details on their usage in specific areas are noted in those sections.
 
 ---
 
@@ -352,7 +349,42 @@ In the example above, a value of 0, 1, or 5 will be bound to the `DelayMinutes` 
 
 #### Custom Argument
 
+Type: `CustomArgument<TRunInfo>`
+- `TRunInfo` is the `RunInfo` class the property is associated to.
 
+Custom arguments handle a configurable number of consecutive program arguments through a callback that you provide.
+
+Properties:
+- `HelpToken` (`string`) - The token that appears in the help menu representing this custom argument. Example: `"<first> <second> <third>"` 
+- `Count` (`int`) - The number of program arguments the callback will handle.
+- `Handler` (`Func<CustomHandlerContext<TRunInfo>, ProcessStageResult>`) - The custom callback that will handle the program arguments.
+
+The callback provides a `CustomHandlerContext` with the following properties:
+- `RunInfo` (`TRunInfo`) - The RunInfo instance so you can modify it yourself.
+- `ProgramArguments` (`List<string>`) - A list containing the program arguments to be handled (as set by the `Count` property).
+- `Parser` (`ArgumentParser`) - The same Parser that's configured on the builder.
+
+_Example Configuration:_
+
+```
+Arguments =
+{
+	new CustomArgument<SendRequestRunInfo>
+	{
+		HelpToken = "<greeting> <name>",
+		Count = 2,
+		Handler = context =>
+		{
+			string greeting = context.ProgramArguments[0];
+			string name = context.ProgramArguments[1];
+			context.RunInfo.Message = $"{greeting} {name}!";
+			
+			return ProcessResult.Continue;
+		}
+	}
+}
+
+In this example, the custom argument will handle two program arguments: the first representing a greeting (eg "hello"), and the second representing the name of the recipient (eg "bob"). The callback simply concatenates the two values to use as the message (`"hello bob!"`).
 
 #### Sequence Argument
 
@@ -367,7 +399,7 @@ _Note: the builder will continue to consider program arguments as long as they a
 _An exception is thrown if any of the considered program arguments fail to parse into a `TListProperty`._
 
 Properties:
-- `HelpToken` (`string`) - The token that appears in the help menu representing this `SequenceArgument`. Example: `"<...int>"` 
+- `HelpToken` (`string`) - The token that appears in the help menu representing this `SequenceArgument`. Example: `"<...int>"` .
 - `ListProperty` (`Expression<Func<TRunInfo, List<TListProperty>>>`) - An expression representing the `RunInfo` list property the values will be added to.
 - `OnParsed` (`Func<TListProperty, ProcessStageResult>`) - An optional custom callback that is invoked for every value after they are parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is added to the property. 
 
@@ -392,5 +424,57 @@ Arguments =
 }
 ```
 
-In the example above, any values found to be below 10 will stop further processing.
+In the example above, the builder will continue to parse and add program arguments as ints. However, if the parsed int value is less than 10, it will stop further processing.
+
+---
+
+### Options
+
+Options allow you to setup optional 1-to-1 bindings to a property on the `RunInfo`. The user specifies an option using the standard `--option` (full) or `-o` (short) syntax. 
+
+Multiple `bool` options can be _stacked_ using the short syntax by combining their single character short keys. Re-emphasis on the `bool` constraint: stacking short options are not allowed on any other types.
+
+_`Options` can appear in any order in the `Command` configuration, unlike `Arguments` where order matters (because they're all required)._
+
+To set an option's value, the user can combine the option key with the value, separated by a `=` character (eg `"--hide=true"`) or use the next program argument. `Bool` options will implicitly use `true` if a value is not provided.
+
+There is only one `Option` type, detailed below:
+
+Type: `Option<TRunInfo, TProperty>`
+- `TRunInfo` is the `RunInfo` class the option is associated to.
+- `TProperty` represents the type of the property the parsed option value will be bound to.
+
+Properties:
+- `Key` (`string`) - A string representing the option key. For example, if it's set as `"hide"`, it would be called as `"--hide"` in a program argument. You can optionally set a short key by delimiting the string with a `|` character. If the key is set to `"hide | h"`, then you could use this option with either `"--hide"` or `"-h"`.
+- `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
+- `HelpToken` (`string`) - The token that appears in the help menu representing this option. Example: `"[--hide|-h]"`.
+- `OnParsed` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after the program argument is successfully parsed. The callback received the parsed value as its only argument, and is invoked before any bindings take place.
+
+```
+Options =
+{
+	new Option<RunInfo, int>
+	{
+		Key = "minutes | m"
+		HelpToken = "[--minutes|-m]",
+		Property = ri => ri.DelayMinutes,
+		OnParsed = value =>
+		{
+			if (value < 10) 
+			{
+				return ProcessResult.End;
+			}
+			return ProcessResult.Continue;
+		}
+	}
+}
+```
+
+In the example above, the user can set an `int` value for the `DelayMinutes` property on the `RunInfo` object through these program argument(s):
+- `"--minutes=5"`
+- `"--minutes", "5"`
+- `"-m=5"`
+- `"-m", "5"`
+
+Both _full_ and _short_ keys must be unique within a given `Command`. This means that a command and its subcommand can have options that share the same option keys.
 

@@ -137,18 +137,22 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			object value = GetParsedValue(processInfo.Type, valueString, context);
 
-			ProcessStageResult onProcessResult = null;
-			if (processInfo.OnProcess != null)
+			if (processInfo.OnParsed != null)
 			{
 				dynamic convertedType = Convert.ChangeType(value, processInfo.Type);
 
-				dynamic onProcess = processInfo.OnProcess;
-				onProcessResult = onProcess.Invoke(convertedType);
+				dynamic onProcess = processInfo.OnParsed;
+
+				ProcessStageResult onProcessResult = onProcess.Invoke(convertedType);
+				if (onProcessResult == ProcessResult.End)
+				{
+					return ProcessResult.End;
+				}
 			}
 
 			processInfo.Setter(context.RunInfo, value);
 
-			return onProcessResult != null ? onProcessResult : ProcessResult.Continue;
+			return ProcessResult.Continue;
 		}
 
 		private ProcessStageResult ProcessShort(char key, string valueString, ProcessContext<TRunInfo> context)
@@ -156,19 +160,23 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
 			object value = GetParsedValue(processInfo.Type, valueString, context);
-
-			ProcessStageResult onProcessResult = null;
-			if (processInfo.OnProcess != null)
+			
+			if (processInfo.OnParsed != null)
 			{
 				dynamic convertedType = Convert.ChangeType(value, processInfo.Type);
 
-				dynamic onProcess = processInfo.OnProcess;
-				onProcessResult = onProcess.Invoke(convertedType);
+				dynamic onProcess = processInfo.OnParsed;
+
+				ProcessStageResult onProcessResult = onProcess.Invoke(convertedType);
+				if (onProcessResult == ProcessResult.End)
+				{
+					return ProcessResult.End;
+				}
 			}
 
 			processInfo.Setter(context.RunInfo, value);
 
-			return onProcessResult != null ? onProcessResult : ProcessResult.Continue;
+			return ProcessResult.Continue;
 		}
 
 		private ProcessStageResult ProcessStacked(List<char> keys, string valueString, ProcessContext<TRunInfo> context)

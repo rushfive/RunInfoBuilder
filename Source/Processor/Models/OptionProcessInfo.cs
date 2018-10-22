@@ -9,16 +9,16 @@ namespace R5.RunInfoBuilder.Processor.Models
 	{
 		internal Action<TRunInfo, object> Setter { get; }
 		internal Type Type { get; }
-		internal object OnProcess { get; } // type = Func<TProperty, ProcessStageResult>
+		internal object OnParsed { get; } // type = Func<TProperty, ProcessStageResult>
 
 		internal OptionProcessInfo(
 			Action<TRunInfo, object> setter,
 			Type type,
-			object onProcess)
+			object onParsed)
 		{
 			Setter = setter;
 			Type = type;
-			OnProcess = onProcess;
+			OnParsed = onParsed;
 		}
 	}
 }

@@ -89,7 +89,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 						{
 							Key = "option",
 							Property = ri => ri.Bool1,
-							OnProcess = arg => ProcessResult.Continue
+							OnParsed = arg => ProcessResult.Continue
 						}
 					}
 				});

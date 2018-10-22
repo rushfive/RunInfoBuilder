@@ -35,7 +35,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.ComplexScenarios
 				{
 					Key = "int | i",
 					Property = ri => ri.Int1,
-					OnProcess = (int val) =>
+					OnParsed = (int val) =>
 					{
 						if (val < 100)
 						{

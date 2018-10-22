@@ -10,10 +10,9 @@ namespace R5.RunInfoBuilder
 	public class Option<TRunInfo, TProperty> : OptionBase<TRunInfo>
 		where TRunInfo : class
 	{
-		public string Description { get; set; }
 		public string HelpToken { get; set; }
 		public Expression<Func<TRunInfo, TProperty>> Property { get; set; }
-		public Func<TProperty, ProcessStageResult> OnProcess { get; set; }
+		public Func<TProperty, ProcessStageResult> OnParsed { get; set; }
 
 		public Option() 
 			: base(typeof(TProperty)) { }
@@ -24,7 +23,7 @@ namespace R5.RunInfoBuilder
 		{
 			(Action<TRunInfo, object> Setter, Type Type) = OptionSetterFactory<TRunInfo>.CreateSetter(this);
 
-			return new OptionProcessInfo<TRunInfo>(Setter, Type, OnProcess);
+			return new OptionProcessInfo<TRunInfo>(Setter, Type, OnParsed);
 		}
 
 		internal override string GetHelpToken()

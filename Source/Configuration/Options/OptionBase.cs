@@ -10,7 +10,7 @@ namespace R5.RunInfoBuilder
 	{
 		public string Key { get; set; } // potentially move this to Option and grab from processinfo
 		internal Type Type { get; }
-		internal object OnProcess { get; } // type = Func<TProperty, ProcessStageResult>
+		//internal object OnProcess { get; } // type = Func<TProperty, ProcessStageResult>
 
 		protected OptionBase(Type type)
 		{

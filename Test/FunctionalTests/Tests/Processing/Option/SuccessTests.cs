@@ -354,7 +354,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 							{
 								Key = "int | i",
 								Property = ri => ri.Int1,
-								OnProcess = arg =>
+								OnParsed = arg =>
 								{
 									invoked = true;
 									return ProcessResult.Continue;
@@ -385,7 +385,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 							{
 								Key = "int | i",
 								Property = ri => ri.Int1,
-								OnProcess = arg =>
+								OnParsed = arg =>
 								{
 									invoked = true;
 									return ProcessResult.Continue;
@@ -839,7 +839,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 									{
 										Key = "int | i",
 										Property = ri => ri.Int1,
-										OnProcess = arg =>
+										OnParsed = arg =>
 										{
 											invoked = true;
 											return ProcessResult.Continue;
@@ -877,7 +877,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 									{
 										Key = "int | i",
 										Property = ri => ri.Int1,
-										OnProcess = arg =>
+										OnParsed = arg =>
 										{
 											invoked = true;
 											return ProcessResult.Continue;
