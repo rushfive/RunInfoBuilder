@@ -115,6 +115,10 @@ Topics covered below:
   - [Custom Argument](#custom-argument)
   - [Sequence Argument](#sequence-argument)
 - [Options](#options)
+- [Parser](#parser)
+- [Hooks](#hooks)
+- [Help Menu](#help-menu)
+
 
 ---
 
@@ -477,4 +481,65 @@ In the example above, the user can set an `int` value for the `DelayMinutes` pro
 - `"-m", "5"`
 
 Both _full_ and _short_ keys must be unique within a given `Command`. This means that a command and its subcommand can have options that share the same option keys.
+
+---
+
+### Parser
+
+The parsing of program arguments into the configured `Types` is handled by the `ArgumentParser`, available as a property on the `RunInfoBuilder` object and in some callback contexts.
+
+The following types are automatically handled out-of-the-box, using the standard `TYPE.TryParse`  methods:
+- string
+- bool
+- byte
+- char
+- DateTime
+- decimal
+- double
+- int
+
+Configuring the parser is easy, the following methods are provided to do so:
+
+__`ArgumentParser EnumParsingIgnoresCase()`__
+The parser automatically handles enum types. By default, it does a _case-sensitive_ comparison of the program argument to the enum values. Calling this method will set all future comparisons to be _case-insensitive_.
+
+__`ArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)`__
+This method allows you to extend the parser to handle additional types (or re-configure how an already-handled `Type` should be parsed).
+
+You provide a `Func` that takes in the program argument as its single argument, and it returns a `ValueTuple` where the first item represents whether the parsing was successful, and the second item being the parsed object. The custom predicates set using this method are used internally, and the second item (value) in the tuple is _always_ ignored if the parsing failed.
+
+__`bool TryParseAs(Type type, string value, out object parsed)`__
+Attempts to parse the value as the specified type. The method returns a `bool` indicating a successful parse, with the parsed object being returned as an `out` parameter.
+
+__`bool TryParseAs<T>(string value, out T parsed)`__
+The same as above, but the `Type` is specified generically.
+
+__`bool HandlesType(Type type)`__
+Returns a `bool`, indicating whether the parser handles the given `Type`.
+
+__`HandlesType<T>()`__
+The same as above, but the `Type` is specified generically.
+
+---
+
+### Hooks
+
+The builder provides hooks (currently only one) to invoke custom functionality at different phases of the build process. 
+
+Setting these hooks is done on the `BuildHooks` object, found as the property `Hooks` on the `RunInfoBuilder` class.
+
+The following methods are provided:
+
+__`BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)`__
+Set a callback that receives the program arguments as it's single argument. This is invoked as the very first thing, immediately after the builder's `Build(args)` method is called.
+
+_Hooks are kind of an experimental feature for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments, and drawing a boundary between that and allowing for too much app specific code to be injected in._
+
+---
+
+### Help Menu
+
+Providing a help menu is essential to any program with a CLI, so this library provides some nice default behavior in that area.
+
+The help menu is configured on the `HelpManager` object, found as the property `Help` on the `RunInfoBuilder` class.
 

@@ -16,10 +16,12 @@ namespace R5.RunInfoBuilder
 		/// The program arguments are provided as the single argument to the callback.
 		/// </summary>
 		/// <param name="onStartCallback">The callback to be invoked.</param>
-		public void SetOnStartBuild(Action<string[]> onStartCallback)
+		public BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)
 		{
 			_onStart = onStartCallback ?? 
 				throw new ArgumentNullException(nameof(onStartCallback), "Callback must be provided.");
+
+			return this;
 		}
 
 		internal void InvokeOnStart(string[] args)
