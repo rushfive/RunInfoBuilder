@@ -219,11 +219,11 @@ Type: `Command<TRunInfo>`
 The `Command` is really the core entity of this library, as everything else is nested within it.
 
 Properties:
-- `Key` (`string`) - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
-- `Description` (`string`) - Text that's displayed in the help menu.
-- `Arguments` (`List<ArgumentBase<TRunInfo>>`) - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
-- `Options` (`List<OptionBase<TRunInfo>>`) - A list of `Options` associated to the `Command`.
-- `SubCommands` (`List<Command<TRunInfo>>`) - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
+- Key - `string` - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
+- Description - `string` - Text that's displayed in the help menu.
+- Arguments - `List<ArgumentBase<TRunInfo>>` - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
+- Options - `List<OptionBase<TRunInfo>>` - A list of `Options` associated to the `Command`.
+- SubCommands - `List<Command<TRunInfo>>` - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
 
 `Commands` are really nothing more than a container for its child items, which does all the real processing and binding.
 
@@ -292,9 +292,9 @@ Property argument's take the next single program argument, then attempts to pars
 _An exception is thrown if the program argument cannot be parsed into a `TProperty` type._
 
 Properties:
-- HelpToken `string` - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
-- Property `Expression<Func<TRunInfo, TProperty>>` - An expression representing the `RunInfo` property the parsed value will be bound to.
-- OnParsed `Func<TProperty, ProcessStageResult>` - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
+- HelpToken - `string` - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
+- Property - `Expression<Func<TRunInfo, TProperty>>` - An expression representing the `RunInfo` property the parsed value will be bound to.
+- OnParsed - `Func<TProperty, ProcessStageResult>` - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
 
 _Example Configuration:_
 
