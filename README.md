@@ -43,9 +43,9 @@ For example, it may take the message and send it off to some HTTP endpoint. The 
 ```
 public class SendRequestRunInfo
 {
-	public string RequestUrl { get; set; }
-	public string Message { get; set; }
-	public int DelayMinutes { get; set; }
+    public string RequestUrl { get; set; }
+    public string Message { get; set; }
+    public int DelayMinutes { get; set; }
 }
 ```
 
@@ -86,9 +86,9 @@ The resulting `runInfo` variable will be of type `SendRequestRunInfo` with the e
 
 ```
 {
-	RequestUrl: 'http://www.somewhere.com',
-	Message: 'hello from program!',
-	DelayMinutes: 3
+    RequestUrl: 'http://www.somewhere.com',
+    Message: 'hello from program!',
+    DelayMinutes: 3
 }
 ```
 
@@ -151,7 +151,7 @@ The structure of a `SubCommand` is exactly the same as the `Command`, and you us
 
 This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
 
-__To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, the matching `SubCommand` will be processed in the same manner. And so on and so forth.__
+_To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, the matching `SubCommand` will be processed in the same manner. And so on and so forth._
 
 I know I stated that this library prefers configuration over convention, but I decided that enforcing a specific ordering for processing had more pros than cons. Having these assumptions in place will also help when you're designing your program's API.
 
@@ -162,14 +162,14 @@ Lets imagine the `Command` expects a single `Argument` mapped to the `string` pr
 ```
 Arguments =
 {
-	new PropertyArgument<SendRequestRunInfo, string>
-	{
-		Property = ri => ri.Message
-	}
+    new PropertyArgument<SendRequestRunInfo, string>
+    {
+        Property = ri => ri.Message
+    }
 },
 Options =
 {
-	// .. some options defined here (you'll learn about these further down) ..
+    // .. some options defined here (you'll learn about these further down) ..
 }
 ```
 
@@ -193,10 +193,11 @@ _Alright. Now that we understand the order in which items are processed, we'll t
 
 When configuring `Commands`, there are several places where you can provide custom callbacks. Most of these are `Func`s that must return a `ProcessStageResult`. The type that is returned will determine whether the builder continues processing or stops early.
 
-A static helper class is provided that makes returning the correct type easier:
+A static helper class exists with some members that makes returning the correct type easier.
 
-To continue, use `return ProcessResult.Continue`.
-To end early, use `return ProcessResult.End`.
+To continue: `return ProcessResult.Continue`.
+
+To end early: `return ProcessResult.End`.
 
 ---
 
@@ -232,20 +233,20 @@ An arbitrary number of `Commands` can be added to the store:
 ```
 builder.Commands.Add(new Command<TRunInfo>
 {
-	Key = "command_key",
-	Description = "command description",
-	Arguments =
-	{
-		// ... arguments ...
-	},
-	Options =
-	{
-		// ... options ...
-	},
-	SubCommands =
-	{
-		// ... subcommands ...
-	}
+    Key = "command_key",
+    Description = "command description",
+    Arguments =
+    {
+        // ... arguments ...
+    },
+    Options =
+    {
+        // ... options ...
+    },
+    SubCommands =
+    {
+        // ... subcommands ...
+    }
 });
 ```
 
@@ -263,15 +264,15 @@ Only a single `DefaultCommand` can be configured:
 ```
 builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
 {
-	Description = "default command description",
-	Arguments =
-	{
-		// ... arguments ...
-	},
-	Options =
-	{
-		// ... options ...
-	}
+    Description = "default command description",
+    Arguments =
+    {
+        // ... arguments ...
+    },
+    Options =
+    {
+        // ... options ...
+    }
 });
 ```
 
@@ -301,19 +302,19 @@ _Example Configuration:_
 ```
 Arguments =
 {
-	new PropertyArgument<SendRequestRunInfo, string>
-	{
-		HelpToken = "<msg>",
-		Property = ri => ri.Message,
-		OnParsed = value =>
-		{
-			if (value == "dont send")
-			{
-				throw new Exception("Shouldn't send!");
-			}
-			return ProcessResult.Continue;
-		}
-	}
+    new PropertyArgument<SendRequestRunInfo, string>
+    {
+        HelpToken = "<msg>",
+        Property = ri => ri.Message,
+        OnParsed = value =>
+        {
+            if (value == "dont send")
+            {
+                throw new Exception("Shouldn't send!");
+            }
+            return ProcessResult.Continue;
+        }
+    }
 }
 ```
 
@@ -328,24 +329,24 @@ Set arguments provide a list of tuples in the form `(key, boundValue)`. If the p
 _An exception is thrown if the program argument doesn't match a key._
 
 Properties:
-- `HelpToken` (`string`) - The text that appears in the help menu representing this `SetArgument`. It should be short and succinct. For example, a `HelpToken` could be `"(a|b|c)"`, indicating that the acceptable values are "a", "b", and "c".
-- `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the paired value will be bound to.
-- `Values` (`List<(string, TProperty)>`) - List of tuples representing the key and value pairings.
+- HelpToken - `string` - The text that appears in the help menu representing this `SetArgument`. It should be short and succinct. For example, a `HelpToken` could be `"(a|b|c)"`, indicating that the acceptable values are "a", "b", and "c".
+- Property - `Expression<Func<TRunInfo, TProperty>>` - An expression representing the `RunInfo` property the paired value will be bound to.
+- Values - `List<(string, TProperty)>` - List of tuples representing the key and value pairings.
 
 _Example Configuration:_
 
 ```
 Arguments =
 {
-	new SetArgument<SendRequestRunInfo, int>
-	{
-		HelpToken = "(now|one|five)",
-		Property = ri => ri.DelayMinutes,
-		Values =
-		{
-			("now", 0), ("one", 1), ("five", 5)
-		}
-	}
+    new SetArgument<SendRequestRunInfo, int>
+    {
+        HelpToken = "(now|one|five)",
+        Property = ri => ri.DelayMinutes,
+        Values =
+        {
+            ("now", 0), ("one", 1), ("five", 5)
+        }
+    }
 }
 ```
 
@@ -359,33 +360,33 @@ Type: `CustomArgument<TRunInfo>`
 Custom arguments handle a configurable number of consecutive program arguments through a callback that you provide.
 
 Properties:
-- `HelpToken` (`string`) - The token that appears in the help menu representing this custom argument. Example: `"<first> <second> <third>"` 
-- `Count` (`int`) - The number of program arguments the callback will handle.
-- `Handler` (`Func<CustomHandlerContext<TRunInfo>, ProcessStageResult>`) - The custom callback that will handle the program arguments.
+- HelpToken - `string` - The token that appears in the help menu representing this custom argument. Example: `"<first> <second> <third>"` 
+- Count - `int` - The number of program arguments the callback will handle.
+- Handler - `Func<CustomHandlerContext<TRunInfo>, ProcessStageResult>` - The custom callback that will handle the program arguments.
 
 The callback provides a `CustomHandlerContext` with the following properties:
-- `RunInfo` (`TRunInfo`) - The RunInfo instance so you can modify it yourself.
-- `ProgramArguments` (`List<string>`) - A list containing the program arguments to be handled (as set by the `Count` property).
-- `Parser` (`ArgumentParser`) - The same Parser that's configured on the builder.
+- RunInfo - `TRunInfo` - The RunInfo instance so you can modify it yourself.
+- ProgramArguments - `List<string>` - A list containing the program arguments to be handled (as set by the `Count` property).
+- Parser - `ArgumentParser` - The same Parser that's configured on the builder.
 
 _Example Configuration:_
 
 ```
 Arguments =
 {
-	new CustomArgument<SendRequestRunInfo>
-	{
-		HelpToken = "<greeting> <name>",
-		Count = 2,
-		Handler = context =>
-		{
-			string greeting = context.ProgramArguments[0];
-			string name = context.ProgramArguments[1];
-			context.RunInfo.Message = $"{greeting} {name}!";
-			
-			return ProcessResult.Continue;
-		}
-	}
+    new CustomArgument<SendRequestRunInfo>
+    {
+        HelpToken = "<greeting> <name>",
+        Count = 2,
+        Handler = context =>
+        {
+            string greeting = context.ProgramArguments[0];
+            string name = context.ProgramArguments[1];
+            context.RunInfo.Message = $"{greeting} {name}!";
+            
+            return ProcessResult.Continue;
+        }
+    }
 }
 ```
 
@@ -413,19 +414,19 @@ _Example Configuration:_
 ```
 Arguments =
 {
-	new SequenceArgument<RunInfo, int>
-	{
-		HelpToken = "<...int>",
-		ListProperty = ri => ri.ListOfNumbers,
-		OnParsed = value =>
-		{
-			if (value < 10) 
-			{
-				return ProcessResult.End;
-			}
-			return ProcessResult.Continue;
-		}
-	}
+    new SequenceArgument<RunInfo, int>
+    {
+        HelpToken = "<...int>",
+        ListProperty = ri => ri.ListOfNumbers,
+        OnParsed = value =>
+        {
+            if (value < 10) 
+            {
+                return ProcessResult.End;
+            }
+            return ProcessResult.Continue;
+        }
+    }
 }
 ```
 
@@ -458,20 +459,20 @@ Properties:
 ```
 Options =
 {
-	new Option<RunInfo, int>
-	{
-		Key = "minutes | m"
-		HelpToken = "[--minutes|-m]",
-		Property = ri => ri.DelayMinutes,
-		OnParsed = value =>
-		{
-			if (value < 10) 
-			{
-				return ProcessResult.End;
-			}
-			return ProcessResult.Continue;
-		}
-	}
+    new Option<RunInfo, int>
+    {
+        Key = "minutes | m"
+        HelpToken = "[--minutes|-m]",
+        Property = ri => ri.DelayMinutes,
+        OnParsed = value =>
+        {
+            if (value < 10) 
+            {
+                return ProcessResult.End;
+            }
+            return ProcessResult.Continue;
+        }
+    }
 }
 ```
 
@@ -502,23 +503,29 @@ The following types are automatically handled out-of-the-box, using the standard
 Configuring the parser is easy, the following methods are provided to do so:
 
 __`ArgumentParser EnumParsingIgnoresCase()`__
+
 The parser automatically handles enum types. By default, it does a _case-sensitive_ comparison of the program argument to the enum values. Calling this method will set all future comparisons to be _case-insensitive_.
 
 __`ArgumentParser SetPredicateForType<T>(Func<string, (bool isValid, T parsed)> predicateFunc)`__
+
 This method allows you to extend the parser to handle additional types (or re-configure how an already-handled `Type` should be parsed).
 
 You provide a `Func` that takes in the program argument as its single argument, and it returns a `ValueTuple` where the first item represents whether the parsing was successful, and the second item being the parsed object. The custom predicates set using this method are used internally, and the second item (value) in the tuple is _always_ ignored if the parsing failed.
 
 __`bool TryParseAs(Type type, string value, out object parsed)`__
+
 Attempts to parse the value as the specified type. The method returns a `bool` indicating a successful parse, with the parsed object being returned as an `out` parameter.
 
 __`bool TryParseAs<T>(string value, out T parsed)`__
+
 The same as above, but the `Type` is specified generically.
 
 __`bool HandlesType(Type type)`__
+
 Returns a `bool`, indicating whether the parser handles the given `Type`.
 
 __`HandlesType<T>()`__
+
 The same as above, but the `Type` is specified generically.
 
 ---
@@ -532,9 +539,10 @@ Setting these hooks is done on the `BuildHooks` object, found as the property `H
 The following methods are provided:
 
 __`BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)`__
+
 Set a callback that receives the program arguments as it's single argument. This is invoked as the very first thing, immediately after the builder's `Build(args)` method is called.
 
-_Hooks are kind of an experimental feature for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments, and drawing a boundary between that and allowing for too much app specific code to be injected in._
+_Hooks are kind of an experimental thing for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments (drawing a boundary between that and allowing for too much app specific code to be injected in)._
 
 ---
 
@@ -542,5 +550,8 @@ _Hooks are kind of an experimental feature for now, I can't gauge how useful it 
 
 Providing a help menu is essential to any program with a CLI, so this library provides some nice default behavior in that area.
 
-The help menu is configured on the `HelpManager` object, found as the property `Help` on the `RunInfoBuilder` class.
+The help menu is configured on the `HelpManager` object, found as the property `Help` on the `RunInfoBuilder` class. The following methods are provided:
 
+__`HelpManager SetProgramName(string name)`__
+
+asfsadf
