@@ -292,9 +292,9 @@ Property argument's take the next single program argument, then attempts to pars
 _An exception is thrown if the program argument cannot be parsed into a `TProperty` type._
 
 Properties:
-- `HelpToken` (`string`) - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
-- `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
-- `OnParsed` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
+- HelpToken `string` - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
+- Property `Expression<Func<TRunInfo, TProperty>>` - An expression representing the `RunInfo` property the parsed value will be bound to.
+- OnParsed `Func<TProperty, ProcessStageResult>` - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
 
 _Example Configuration:_
 
@@ -387,6 +387,7 @@ Arguments =
 		}
 	}
 }
+```
 
 In this example, the custom argument will handle two program arguments: the first representing a greeting (eg "hello"), and the second representing the name of the recipient (eg "bob"). The callback simply concatenates the two values to use as the message (`"hello bob!"`).
 
