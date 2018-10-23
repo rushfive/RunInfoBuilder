@@ -59,22 +59,22 @@ var builder = new RunInfoBuilder();
 // add the 'sendhttp' command to the store
 builder.Commands.Add(new Command<SendRequestRunInfo>
 {
-	Key = "sendhttp",
-	Arguments =
-	{
-		new PropertyArgument<SendRequestRunInfo, string>
-		{
-			Property = ri => ri.RequestUrl
-		},
-		new PropertyArgument<SendRequestRunInfo, string>
-		{
-			Property = ri => ri.Message
-		},
-		new PropertyArgument<SendRequestRunInfo, int>
-		{
-			Property = ri => ri.DelayMinutes
-		}
-	}
+    Key = "sendhttp",
+    Arguments =
+    {
+        new PropertyArgument<SendRequestRunInfo, string>
+        {
+            Property = ri => ri.RequestUrl
+        },
+        new PropertyArgument<SendRequestRunInfo, string>
+        {
+            Property = ri => ri.Message
+        },
+        new PropertyArgument<SendRequestRunInfo, int>
+        {
+            Property = ri => ri.DelayMinutes
+        }
+    }
 });
 
 // build the run info object by passing args (led by the command's key)
