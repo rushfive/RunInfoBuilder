@@ -5,10 +5,21 @@ using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
 {
+	/// <summary>
+	/// Handles n number of consecutive program arguments using a custom callback.
+	/// </summary>
+	/// <typeparam name="TRunInfo">The RunInfo type the argument's associated to.</typeparam>
 	public class CustomArgument<TRunInfo> : ArgumentBase<TRunInfo>
 		where TRunInfo : class
 	{
+		/// <summary>
+		/// The number of program arguments handled.
+		/// </summary>
 		public int Count { get; set; }
+
+		/// <summary>
+		/// The custom callback that handles the program arguments.
+		/// </summary>
 		public Func<CustomHandlerContext<TRunInfo>, ProcessStageResult> Handler { get; set; }
 
 		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Custom.Rules(this);

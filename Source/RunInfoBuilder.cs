@@ -5,8 +5,7 @@ using System.Linq;
 namespace R5.RunInfoBuilder
 {
 	/// <summary>
-	/// Provides members for various configurations and 
-	/// a build method to start the parsing process.
+	/// Provides members for various configurations and a build method to start the parsing process.
 	/// </summary>	
 	public class RunInfoBuilder
 	{
