@@ -118,6 +118,7 @@ Topics covered below:
 - [Parser](#parser)
 - [Hooks](#hooks)
 - [Help Menu](#help-menu)
+- [Version](#version)
 
 
 ---
@@ -500,7 +501,7 @@ The following types are automatically handled out-of-the-box, using the standard
 - double
 - int
 
-Configuring the parser is easy, the following methods are provided to do so:
+Configuring the parser is easy, the following methods are available:
 
 __`ArgumentParser EnumParsingIgnoresCase()`__
 
@@ -536,13 +537,13 @@ The builder provides hooks (currently only one) to invoke custom functionality a
 
 Setting these hooks is done on the `BuildHooks` object, found as the property `Hooks` on the `RunInfoBuilder` class.
 
-The following methods are provided:
+The following methods are available:
 
 __`BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)`__
 
 Set a callback that receives the program arguments as it's single argument. This is invoked as the very first thing, immediately after the builder's `Build(args)` method is called.
 
-_Hooks are kind of an experimental thing for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments (drawing a boundary between that and allowing for too much app specific code to be injected in)._
+_Hooks are kind of an experimental thing for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments (drawing a boundary against having this library run a lot of app specific code)._
 
 ---
 
@@ -550,8 +551,90 @@ _Hooks are kind of an experimental thing for now, I can't gauge how useful it re
 
 Providing a help menu is essential to any program with a CLI, so this library provides some nice default behavior in that area.
 
-The help menu is configured on the `HelpManager` object, found as the property `Help` on the `RunInfoBuilder` class. The following methods are provided:
+The help menu is configured on the `HelpManager` object, found as the property `Help` on the `RunInfoBuilder` class. 
+
+Here's an example of a help menu that's displayed by default (taken from the _GitCloneSample_ project):
+
+```
+add - Add file contents to the index.
+  Usage: git add [--dry-run|-n] [--verbose|-v] [--ignore-errors] [--refresh]
+
+branch - List, create, or delete branches.
+  Usage: git branch <branchname> [--delete|-d] [--force|-f] [--ignore-case|-i]
+
+checkout - Switch branches or restore working tree files.
+  Usage: git checkout <branch> [--quiet|-q] [--force|-f] [--track|-t]
+
+commit - Stores the current contents of the index in a new commit along with a log message from the user describing the changes.
+  Usage: git commit [--all|-a] [--patch|-p] [--branch]
+
+diff - Switch branches or restore working tree files.
+  Usage: git diff [first-branch]...[second-branch] [--no-patch|-s] [--raw] [--minimal]
+
+init - Create an empty Git repository or reinitialize an existing one.
+  Usage: git init [--quiet|-q] [--bare]
+```
+
+The following methods are available:
 
 __`HelpManager SetProgramName(string name)`__
 
-asfsadf
+Sets the name of your program. This will most likely be the name of your program's executable file. For example, if the file is `git.exe`, you'd want to set your program name as `git`. If set, the name is displayed in the help menu.
+
+__`HelpManager SetTriggers(params string[] triggers)`__
+
+Sets the triggers that will display the help menu. 
+
+The help menu displays if the very first argument matches one of the triggers. By default, the following triggers are set:
+
+`"--help", "-h", "/help"`
+
+You can replace the default triggers by passing in a comma-separated list of strings:
+
+```
+builder.Help.SetTriggers("--?", "/h");
+```
+
+__`HelpManager DisplayOnBuildFail()`__
+
+By default, the help menu is only displayed if explicitly called by the user's program argument. This method will configure the builder to automatically display the help on _any_ exceptions thrown.
+
+_Note: this also suppresses any exceptions from bubbling up to the client._
+
+__`HelpManager OnTrigger(Action customCallback)`__
+
+If you need something other than the default help menu, you can set your own callback that is invoked instead. The callback is simple an `Action`, so you'll need to handle everything including the displaying of help text.
+
+```
+builder.Help.OnTrigger(() => {
+    Console.WriteLine("my custom help menu.");
+});
+```
+
+---
+
+### Version
+
+Users should be able to quickly note the version of the program. The setup is similar to that of the help menu, and default behavior is provided as well.
+
+The version is configured on the `VersionManager` object, found as the property `Version` on the `RunInfoBuilder` class. 
+
+The following methods are available:
+
+__`VersionManager Set(string version)`__
+
+Set the version string that is displayed. The default is `"1.0.0"`.
+
+__`VersionManager SetTriggers(params string[] triggers)`__
+
+Sets the triggers that will display the version. 
+
+The version displays if the very first argument matches one of the triggers. By default, the following triggers are set:
+
+`"--version", "-v", "/version"`
+
+You can replace the default triggers by passing in a comma-separated list of strings:
+
+```
+builder.Version.SetTriggers("--v", "/v");
+```
