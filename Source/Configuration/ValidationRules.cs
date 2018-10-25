@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace R5.RunInfoBuilder.Configuration
 {
@@ -59,8 +58,7 @@ namespace R5.RunInfoBuilder.Configuration
 					return new List<Action<int>>
 					{
 						CountMustBeGreaterThanZero(argument),
-						HandlerMustBeSet(argument),
-						HelpTokenMustBeSet(argument)
+						HandlerMustBeSet(argument)
 					};
 				}
 
@@ -86,19 +84,6 @@ namespace R5.RunInfoBuilder.Configuration
 						{
 							throw new CommandValidationException("Custom Argument is missing its handler callback.",
 								CommandValidationError.NullCustomHandler, commandLevel);
-						}
-					};
-				}
-
-				private static Action<int> HelpTokenMustBeSet<TRunInfo>(CustomArgument<TRunInfo> argument)
-					where TRunInfo : class
-				{
-					return commandLevel =>
-					{
-						if (string.IsNullOrWhiteSpace(argument.HelpToken))
-						{
-							throw new CommandValidationException("Custom Arguments must explicitly set their own help token string.",
-								CommandValidationError.NullHelpToken, commandLevel);
 						}
 					};
 				}

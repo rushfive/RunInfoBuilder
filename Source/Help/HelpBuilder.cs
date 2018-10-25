@@ -76,7 +76,6 @@ namespace R5.RunInfoBuilder.Help
 			}
 
 			string result = string.Join(" ", helpTokens.Select(t => t.Trim()));
-			//sb.AppendLine(PaddingRepeated(2) + result);
 
 			if (command.SubCommands.Any())
 			{
@@ -88,7 +87,6 @@ namespace R5.RunInfoBuilder.Help
 			}
 			else
 			{
-				//sb.AppendLine(result);
 				sb.AppendLine(PaddingRepeated(2) + result);
 			}
 

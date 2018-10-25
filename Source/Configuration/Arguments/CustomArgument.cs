@@ -31,7 +31,7 @@ namespace R5.RunInfoBuilder
 
 		internal override string GetHelpToken()
 		{
-			return HelpToken;
+			return string.IsNullOrWhiteSpace(HelpToken) ? "<custom>" : HelpToken;
 		}
 	}
 }
