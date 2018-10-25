@@ -1,6 +1,7 @@
 # Command Line Parser for NetStandard
 
-[![Build status](https://ci.appveyor.com/api/projects/status/swyqov7lwwv52cg3?svg=true)](https://ci.appveyor.com/project/rushfive/runinfobuilder)
+[![Build status](https://img.shields.io/appveyor/ci/rushfive/runinfobuilder.svg)](https://ci.appveyor.com/project/rushfive/runinfobuilder)
+[![Nuget](https://img.shields.io/nuget/v/r5.runinfobuilder.svg)](https://www.nuget.org/packages/R5.RunInfoBuilder/)
 
 This library provides a clean and simple API for parsing program arguments into a `RunInfo` object.
 
