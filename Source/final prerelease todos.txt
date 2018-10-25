@@ -1,1 +1,0 @@
-custom argument help token should ONLY be required IF a custom help callback has NOT been set

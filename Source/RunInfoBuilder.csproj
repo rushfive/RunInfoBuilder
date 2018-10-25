@@ -6,6 +6,9 @@
 		<RootNamespace>R5.RunInfoBuilder</RootNamespace>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<Configurations>Debug;Release;Test</Configurations>
+		<Authors>Isaiah Lee</Authors>
+		<Company />
+		<Description>A Command Line Parser utilizing object trees for command configurations.</Description>
 	</PropertyGroup>
 
 	<ItemGroup>

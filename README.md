@@ -10,9 +10,7 @@ This library provides a clean and simple API for parsing program arguments into 
 - Provides a cleanly formatted `help` menu by default, with options to configure further.
 - Several `hooks` which provide custom extensibility points in various stages of the build process.
 
-### Configuration over Convention
-
-This library prefers _configuration_ over _convention_ (you'll see more further down in the docs). 
+### Code Configuration over Attributes
 
 There are no attributes used to mark the resulting `RunInfo` class properties. Rather, you configure commands by providing a `Command` object as a representation of an object tree. C# provides a clean way to express nested objects through its object initializers so RunInfoBuilder makes use of that.
 
@@ -25,11 +23,11 @@ Using attributes to _tell_ a command line parser how to interpret things works f
 Install via __NuGet__ or __DotNet__:
 
 ```
-Install-Package aaa.aaa.aaa
+Install-Package R5.RunInfoBuilder
 ```
 
 ```
-dotnet add package aaa.aaa.aaa
+dotnet add package R5.RunInfoBuilder
 ```
 
 ---
