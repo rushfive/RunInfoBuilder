@@ -1,5 +1,7 @@
 # Command Line Parser for NetStandard
 
+[![Build status](https://ci.appveyor.com/api/projects/status/swyqov7lwwv52cg3?svg=true)](https://ci.appveyor.com/project/rushfive/runinfobuilder)
+
 This library provides a clean and simple API for parsing program arguments into a `RunInfo` object.
 
 ### Core Features at a Glance
