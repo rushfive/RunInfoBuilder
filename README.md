@@ -36,9 +36,11 @@ dotnet add package aaa.aaa.aaa
 
 ### A Simple Example
 
-A program is desired that can read some message from the `args`, and then do one of many things as determined by a command.
+A program is desired that can read some message from the program arguments, and then do one of many things as determined by a command.
 
-For example, it may take the message and send it off to some HTTP endpoint. The required information for this has been collected into this `RunInfo` class:
+For example, it may take the message and send it off to some HTTP endpoint. Also, the user can _optionally_ specify that the request should be retried on fail.
+
+The required information for this has been collected into this `RunInfo` class:
 
 ```
 public class SendRequestRunInfo
@@ -46,10 +48,11 @@ public class SendRequestRunInfo
     public string RequestUrl { get; set; }
     public string Message { get; set; }
     public int DelayMinutes { get; set; }
+    public bool RetryOnFail { set; set; }
 }
 ```
 
-The program should take three `args` and simply bind them to the properties. 
+The program should take three program arguments and simply bind them to the properties. 
 To do this, a `Command` called `sendhttp` is added to the _CommandStore_:
 
 ```
@@ -74,11 +77,19 @@ builder.Commands.Add(new Command<SendRequestRunInfo>
         {
             Property = ri => ri.DelayMinutes
         }
+    },
+    Options =
+    {
+        new Option<SendRequestRunInfo, bool>
+        {
+            Key = "retry | r",
+            Property = ri => ri.RetryOnFail
+        }
     }
 });
 
-// build the run info object by passing args (led by the command's key)
-var args = new string[] { "sendhttp", "http://www.somewhere.com", "hello from program!", "3" };
+// build the run info object by passing program arguments (led by the command's key)
+var args = new string[] { "sendhttp", "http://www.somewhere.com", "hello from program!", "3", "--retry" };
 var runInfo = builder.Build(args);
 ```
 
@@ -88,13 +99,16 @@ The resulting `runInfo` variable will be of type `SendRequestRunInfo` with the e
 {
     RequestUrl: 'http://www.somewhere.com',
     Message: 'hello from program!',
-    DelayMinutes: 3
+    DelayMinutes: 3,
+    RetryOnFail: true
 }
 ```
 
-This is an overly simple and contrived example. It illustrates the most basic of binding requirements, simple 1-to-1 mappings of args to properties. 
+The values were parsed from the program arguments and bound to the RunInfo properties as configured. Also, the `RetryOnFail` property was set to `true` because the option was specified (`--retry`). The option could also have been specified by `-r` instead because a short key was configured for the option.
 
-There's a lot more that can be done and configured, but hopefully you can at least see how simple and expressive defining commands through an object is. You can take a quick look at any command configuration and immediately know how it handles and interacts with `args`.
+This is a very simple example, illustrating the most basic of binding requirements: simple 1-to-1 mappings of program arguments to properties. 
+
+There's a lot more that can be done and configured, but hopefully you can at least see how simple and expressive defining commands through an object is. You can take a quick look at any command configuration and immediately know how it parses the program arguments.
 
 If this has captured your interest, keep reading below for a deeper dive into all the features and areas of RunInfoBuilder.
 
@@ -133,32 +147,25 @@ Before diving into `Command` configuration, we need to understand the order in w
 
 Arguments are processed first, and in the same order they're defined in the `Command` object added to the store.
 
-They are also all required, so the builder will always try to take the next program argument and handle it using the configuration of the next `Argument` in the list.
+They are also all required, so an exception will be thrown if no more program arguments are found.
 
 #### 2. Options
 
-Any `Options` are processed immediately after the command's `Arguments` are, and can appear in any order. They are also.. optional.
-
-`Options` are bound to a property on the `RunInfo`, and its value is determined in one of two ways:
-
-- By parsing the right side of the `=` character in an option program argument: For example, if the program argument is `"--option=value"`, then the string `"value"` will be parsed into the expected type and bound to the property.
-- By parsing the next program argument: If an option was declared without the `=`, the builder will simply assume the next program argument is its intended value, and will parse and bind that to the property.
+Any `Options` are processed immediately after the command's `Arguments` are, and can appear in any order. They are optional and any number of them can be specified.
 
 #### 3. SubCommands
 
-A `Command` can contain nested `SubCommands` in a list, which are processed after `Options` (if any are found). 
+A `Command` can contain nested `SubCommands` in a list, which are processed after `Options`. 
 
-The structure of a `SubCommand` is exactly the same as the `Command`, and you use the same type in code: `Command<TRunInfo>`.
-
-This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
+A SubCommand is the exact same type as a Command. This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
 
 _To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, the matching `SubCommand` will be processed in the same manner. And so on and so forth._
 
-I know I stated that this library prefers configuration over convention, but I decided that enforcing a specific ordering for processing had more pros than cons. Having these assumptions in place will also help when you're designing your program's API.
+#### A Limitation of the Processing Flow
 
-_There are still some limitations however_. I'll illustrate by continuing off of the example from earlier. 
+There's a gotcha here due to the order of processing. I'll illustrate by continuing off of the example from earlier. 
 
-Lets imagine the `Command` expects a single `Argument` mapped to the `string` property `Message`. You also define some `Options` as so:
+Lets imagine the `Command` expects a single `Argument` mapped to the `string` property `Message`. You also define some `Options`:
 
 ```
 Arguments =
@@ -170,11 +177,11 @@ Arguments =
 },
 Options =
 {
-    // .. some options defined here (you'll learn about these further down) ..
+    // .. some options defined here ..
 }
 ```
 
-What happens when a user forgets to include a value for the `Argument` and passes these args:
+What happens when a user forgets to include a value for the `Argument` and passes these program arguments:
 
 ```
 [ "sendhttp", "--some-option" ]
@@ -443,9 +450,10 @@ Multiple `bool` options can be _stacked_ using the short syntax by combining the
 
 _`Options` can appear in any order in the `Command` configuration, unlike `Arguments` where order matters (because they're all required)._
 
-To set an option's value, the user can combine the option key with the value, separated by a `=` character (eg `"--hide=true"`) or use the next program argument. `Bool` options will implicitly use `true` if a value is not provided.
+`Options` are bound to a property on the `RunInfo`, and its value is determined in one of two ways:
 
-There is only one `Option` type, detailed below:
+- By parsing the right side of the `=` character in an option program argument: For example, if the program argument is `"--option=value"`, then the string `"value"` will be parsed into the expected type and bound to the property.
+- By parsing the next program argument: If an option was declared without the `=`, the builder will simply assume the next program argument is its intended value, and will parse and bind that to the property.
 
 Type: `Option<TRunInfo, TProperty>`
 - `TRunInfo` is the `RunInfo` class the option is associated to.
