@@ -199,39 +199,6 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 				Assert.Equal(CommandValidationError.NullCustomHandler, validationException.ErrorType);
 				Assert.Equal(0, validationException.CommandLevel);
 			}
-
-			[Theory]
-			[InlineData("")]
-			[InlineData(null)]
-			public void Null_HelpToken_Throws(string helpToken)
-			{
-				Action testCode = () =>
-				{
-					RunInfoBuilder builder = GetBuilder();
-
-					builder.Commands.Add(new Command<TestRunInfo>
-					{
-						Key = "command",
-						Arguments =
-						{
-							new CustomArgument<TestRunInfo>
-							{
-								Count = 1,
-								Handler = context => ProcessResult.Continue,
-								HelpToken = helpToken
-							}
-						}
-					});
-				};
-
-				Exception exception = Record.Exception(testCode);
-
-				var validationException = exception as CommandValidationException;
-
-				Assert.NotNull(validationException);
-				Assert.Equal(CommandValidationError.NullHelpToken, validationException.ErrorType);
-				Assert.Equal(0, validationException.CommandLevel);
-			}
 		}
 
 		public class SetArgumentTests
