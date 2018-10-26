@@ -5,6 +5,8 @@
 
 This library provides a clean and simple API for parsing program arguments into a `RunInfo` object.
 
+_Targets NET Standard 2.0_
+
 ### Core Features at a Glance
 
 - Supports core command line abstractions such as `Commands`, `Subcommands`, `Arguments`, `Options`, etc.
