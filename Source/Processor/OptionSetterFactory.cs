@@ -15,10 +15,27 @@ namespace R5.RunInfoBuilder.Processor
 
 			Action<TRunInfo, object> setter = (runInfo, value) =>
 			{
-				if (value.GetType() != valueType)
+				bool isNullableEnum = Nullable.GetUnderlyingType(valueType)?.IsEnum == true;
+
+				if (isNullableEnum)
 				{
-					throw new InvalidOperationException($"'{value}' is not a valid '{valueType}' type.");
+					if (value != null && value.GetType() != Nullable.GetUnderlyingType(valueType))
+					{
+						throw new InvalidOperationException($"'{value}' is not a valid '{valueType}' type.");
+					}
 				}
+				else
+				{
+					if (value.GetType() != valueType)
+					{
+						throw new InvalidOperationException($"'{value}' is not a valid '{valueType}' type.");
+					}
+				}
+
+				//if (!(isNullableEnum && value == null) && value.GetType() != valueType)
+				//{
+				//	throw new InvalidOperationException($"'{value}' is not a valid '{valueType}' type.");
+				//}
 
 				propertyInfo.SetValue(runInfo, value);
 			};

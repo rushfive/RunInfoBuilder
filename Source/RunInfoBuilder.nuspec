@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <package >
-  <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
-    <projectUrl>https://github.com/rushfive/RunInfoBuilder</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Initial release.</releaseNotes>
-    <copyright>Copyright 2018</copyright>
-    <tags>command parser cli</tags>
-  </metadata>
+	<metadata>
+		<id>R5.RunInfoBuilder</id>
+		<version>1.0.1</version>
+		<title>RunInfoBuilder</title>
+		<authors>Isaiah Lee</authors>
+		<owners>Isaiah Lee</owners>
+		<projectUrl>https://github.com/rushfive/RunInfoBuilder</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>A Command Line Parser utilizing object trees for command configurations.</description>
+		<releaseNotes>Add parser support for nullable enum types.</releaseNotes>
+		<copyright>Copyright 2018</copyright>
+		<tags>command parser cli</tags>
+	</metadata>
 </package>

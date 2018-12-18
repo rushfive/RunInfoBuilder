@@ -24,6 +24,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Models
 		public bool BoolFromCustomArg1 { get; set; }
 		public bool BoolFromCustomArg2 { get; set; }
 		public bool BoolFromCustomArg3 { get; set; }
+		public TestEnum? NullableEnum { get; set; }
 	}
 
 	public class TestCustomType

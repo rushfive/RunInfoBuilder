@@ -9,6 +9,8 @@
 		<Authors>Isaiah Lee</Authors>
 		<Company />
 		<Description>A Command Line Parser utilizing object trees for command configurations.</Description>
+		<Version>1.0.1</Version>
+		<PackageProjectUrl>https://github.com/rushfive/RunInfoBuilder</PackageProjectUrl>
 	</PropertyGroup>
 
 	<ItemGroup>

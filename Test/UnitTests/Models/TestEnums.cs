@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.RunInfoBuilder.FunctionalTests.Models
+namespace R5.RunInfoBuilder.UnitTests.Models
 {
 	public enum TestEnum
 	{
 		ValueA,
-		ValueB,
-		ValueC
+		ValueB
 	}
 }
