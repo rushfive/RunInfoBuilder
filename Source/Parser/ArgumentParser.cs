@@ -82,7 +82,28 @@ namespace R5.RunInfoBuilder.Parser
 
 			parsed = null;
 
-			if (type.IsEnum)
+			Type nullableType = Nullable.GetUnderlyingType(type);
+
+			if (nullableType != null && nullableType.IsEnum)
+			{
+				if (value == "")
+				{
+					parsed = null;
+					return true;
+				}
+
+				try
+				{
+					parsed = Enum.Parse(nullableType, value, ignoreCase: _enumParseIgnoreCase);
+					return true;
+				}
+				catch (Exception)
+				{
+					// ignore exception. Enum.TryParse with ignoreCase not available in netstandard2.0
+					return false;
+				}
+			}
+			else if (type.IsEnum)
 			{
 				try
 				{
@@ -134,8 +155,28 @@ namespace R5.RunInfoBuilder.Parser
 			parsed = default;
 
 			Type type = typeof(T);
+			Type nullableType = Nullable.GetUnderlyingType(type);
 
-			if (type.IsEnum)
+			if (nullableType != null && nullableType.IsEnum)
+			{
+				if (value == "")
+				{
+					parsed = default;
+					return true;
+				}
+
+				try
+				{
+					parsed = (T)Enum.Parse(nullableType, value, ignoreCase: _enumParseIgnoreCase);
+					return true;
+				}
+				catch (Exception)
+				{
+					// ignore exception. Enum.TryParse with ignoreCase not available in netstandard2.0
+					return false;
+				}
+			}
+			else if (type.IsEnum)
 			{
 				try
 				{
