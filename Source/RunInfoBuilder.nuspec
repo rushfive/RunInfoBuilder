@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/rushfive/RunInfoBuilder</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release.</releaseNotes>
+    <releaseNotes>Add parser support for nullable enum types.</releaseNotes>
     <copyright>Copyright 2018</copyright>
     <tags>command parser cli</tags>
   </metadata>
