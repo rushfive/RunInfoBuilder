@@ -126,7 +126,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.ComplexScenarios
 						},
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "StringSubCommand",
 								Options = Options(),
@@ -157,7 +157,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.ComplexScenarios
 									}
 								}
 							},
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "DoubleSubCommand",
 								Arguments =

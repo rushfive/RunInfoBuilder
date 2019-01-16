@@ -1,14 +1,11 @@
 ﻿using R5.RunInfoBuilder.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace R5.RunInfoBuilder
 {
-	/// <summary>
-	/// The command configuration object. All other configurations like arguments start from here.
-	/// </summary>
-	/// <typeparam name="TRunInfo">The RunInfo type that's built from the command.</typeparam>
-	public class Command<TRunInfo> : StackableCommand<TRunInfo>
+	public class SubCommand<TRunInfo> : StackableCommand<TRunInfo>
 		where TRunInfo : class
 	{
 		///// <summary>
@@ -25,6 +22,6 @@ namespace R5.RunInfoBuilder
 		///// </summary>
 		//public List<SubCommand<TRunInfo>> SubCommands { get; set; } = new List<SubCommand<TRunInfo>>();
 
-		internal override List<Action<int>> Rules() => ValidationRules.Commands.Command.Rules(this);
+		internal override List<Action<int>> Rules() => ValidationRules.Commands.SubCommand.Rules(this);
 	}
 }

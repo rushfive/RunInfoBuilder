@@ -170,7 +170,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Arguments =
@@ -208,7 +208,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Arguments =
@@ -247,7 +247,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Arguments =
@@ -295,7 +295,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Arguments =

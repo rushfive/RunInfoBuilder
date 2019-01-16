@@ -67,7 +67,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 
 		private void InitializeProgramArgumentFunctions(CommandBase<TRunInfo> command)
 		{
-			var subCommands = command is Command<TRunInfo> cmd
+			var subCommands = command is StackableCommand<TRunInfo> cmd
 				? new HashSet<string>(cmd.SubCommands.Select(c => c.Key))
 				: new HashSet<string>();
 

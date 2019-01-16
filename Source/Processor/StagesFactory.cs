@@ -9,7 +9,7 @@ namespace R5.RunInfoBuilder.Processor
 	internal class StagesFactory
 	{
 		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(
-			Command<TRunInfo> command, Action<TRunInfo> postBuildCallback)
+			StackableCommand<TRunInfo> command, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
 			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command);
@@ -17,9 +17,9 @@ namespace R5.RunInfoBuilder.Processor
 			// recursively add subcommand pipelines
 			if (command.SubCommands.Any())
 			{
-				var subCommandInfoMap = new Dictionary<string, (Queue<Stage<TRunInfo>>, Command<TRunInfo>)>();
+				var subCommandInfoMap = new Dictionary<string, (Queue<Stage<TRunInfo>>, SubCommand<TRunInfo>)>();
 
-				foreach (Command<TRunInfo> subCommand in command.SubCommands)
+				foreach (SubCommand<TRunInfo> subCommand in command.SubCommands)
 				{
 					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand, postBuildCallback);
 					

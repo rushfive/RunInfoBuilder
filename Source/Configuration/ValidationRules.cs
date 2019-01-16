@@ -313,6 +313,36 @@ namespace R5.RunInfoBuilder.Configuration
 				}
 			}
 
+			internal static class SubCommand
+			{
+				// TODO: compare to default/commands and ensure all checks
+				internal static List<Action<int>> Rules<TRunInfo>(SubCommand<TRunInfo> command)
+					where TRunInfo : class
+				{
+					var rules = new List<Action<int>>
+					{
+						KeyIsNotNullOrEmpty(command)
+					};
+
+					rules.AddRange(Base.Rules(command));
+
+					return rules;
+				}
+
+				private static Action<int> KeyIsNotNullOrEmpty<TRunInfo>(SubCommand<TRunInfo> command)
+					where TRunInfo : class
+				{
+					return commandLevel =>
+					{
+						if (string.IsNullOrWhiteSpace(command.Key))
+						{
+							throw new CommandValidationException("Command key must be provided.",
+								CommandValidationError.KeyNotProvided, commandLevel);
+						}
+					};
+				}
+			}
+
 			internal static class Base
 			{
 				internal static List<Action<int>> Rules<TRunInfo>(CommandBase<TRunInfo> command)

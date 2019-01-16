@@ -162,7 +162,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						},
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand"
 							}
@@ -281,7 +281,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -325,7 +325,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -374,7 +374,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -417,7 +417,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand1",
 								Options =
@@ -435,7 +435,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 								},
 								SubCommands =
 								{
-									new Command<TestRunInfo>
+									new SubCommand<TestRunInfo>
 									{
 										Key = "subcommand2"
 									}
@@ -470,7 +470,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -514,7 +514,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =

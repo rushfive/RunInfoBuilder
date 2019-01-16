@@ -42,7 +42,7 @@ namespace R5.RunInfoBuilder.Help
 		}
 
 		private static void AppendCommandInfo<TRunInfo>(StringBuilder sb,
-			string rootCommandKey, bool isRoot, Command<TRunInfo> command, int commandDepth,
+			string rootCommandKey, bool isRoot, StackableCommand<TRunInfo> command, int commandDepth,
 			string programName)
 			where TRunInfo : class
 		{
@@ -91,7 +91,7 @@ namespace R5.RunInfoBuilder.Help
 			}
 
 			// recursively add subcommands with more padding
-			foreach(var subCommand in command.SubCommands)
+			foreach(SubCommand<TRunInfo> subCommand in command.SubCommands)
 			{
 				AppendCommandInfo(sb, rootCommandKey, isRoot: false, subCommand, commandDepth + 1, programName);
 			}
