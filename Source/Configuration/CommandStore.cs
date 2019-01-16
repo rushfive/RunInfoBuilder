@@ -76,12 +76,13 @@ namespace R5.RunInfoBuilder
 			
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
-				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(command, postBuildCallback);
+				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(
+					command, command.GlobalOptions.Any(), postBuildCallback);
 
 				// skip the first arg (command key)
 				args = args.Skip(1).ToArray();
 
-				return new Pipeline<TRunInfo>(stages, args, command, _parser);
+				return new Pipeline<TRunInfo>(stages, args, command, _parser, command.GlobalOptions);
 			};
 
 			_pipelineFactoryMap.Add(command.Key, pipelineFactory);
@@ -121,7 +122,7 @@ namespace R5.RunInfoBuilder
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
 				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand, postBuildCallback);
-				return new Pipeline<TRunInfo>(stages, args, defaultCommand, _parser);
+				return new Pipeline<TRunInfo>(stages, args, defaultCommand, _parser, globalOptions: null);
 			};
 
 			_pipelineFactoryMap.Add(CommandStore.DefaultKey, pipelineFactory);

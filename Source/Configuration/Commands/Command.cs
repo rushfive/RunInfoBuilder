@@ -25,6 +25,13 @@ namespace R5.RunInfoBuilder
 		///// </summary>
 		//public List<SubCommand<TRunInfo>> SubCommands { get; set; } = new List<SubCommand<TRunInfo>>();
 
+		/// <summary>
+		/// List of optional global Options associated to the command.
+		/// These are scoped to be accessible to any SubCommand in the tree.
+		/// </summary>
+		public List<OptionBase<TRunInfo>> GlobalOptions { get; set; } = new List<OptionBase<TRunInfo>>();
+
+
 		internal override List<Action<int>> Rules() => ValidationRules.Commands.Command.Rules(this);
 	}
 }

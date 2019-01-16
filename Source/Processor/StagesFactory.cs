@@ -9,10 +9,10 @@ namespace R5.RunInfoBuilder.Processor
 	internal class StagesFactory
 	{
 		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(
-			StackableCommand<TRunInfo> command, Action<TRunInfo> postBuildCallback)
+			StackableCommand<TRunInfo> command, bool hasGlobalOptions, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command);
+			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command, hasGlobalOptions);
 
 			// recursively add subcommand pipelines
 			if (command.SubCommands.Any())
@@ -21,7 +21,7 @@ namespace R5.RunInfoBuilder.Processor
 
 				foreach (SubCommand<TRunInfo> subCommand in command.SubCommands)
 				{
-					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand, postBuildCallback);
+					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand, hasGlobalOptions, postBuildCallback);
 					
 					subCommandInfoMap.Add(subCommand.Key, (subCommandPipeline, subCommand));
 				}
@@ -42,14 +42,15 @@ namespace R5.RunInfoBuilder.Processor
 			DefaultCommand<TRunInfo> defaultCommand, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(defaultCommand);
+			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(defaultCommand, hasGlobalOptions: false);
 
 			pipeline.Enqueue(new EndProcessStage<TRunInfo>(postBuildCallback));
 
 			return pipeline;
 		}
 
-		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages<TRunInfo>(CommandBase<TRunInfo> command)
+		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages<TRunInfo>(
+			CommandBase<TRunInfo> command, bool hasGlobalOptions)
 			 where TRunInfo : class
 		{
 			var pipeline = new Queue<Stage<TRunInfo>>();
@@ -59,7 +60,7 @@ namespace R5.RunInfoBuilder.Processor
 				pipeline.Enqueue(argument.ToStage());
 			}
 
-			if (command.Options.Any())
+			if (hasGlobalOptions || command.Options.Any())
 			{
 				pipeline.Enqueue(new OptionStage<TRunInfo>());
 			}
