@@ -263,5 +263,109 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 			Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
 			Assert.Equal(1, validationException.CommandLevel);
 		}
+
+		[Fact]
+		public void DuplicateFullKeys_GlobalVsSubcommand_NestedTwice_Throws()
+		{
+			Action testCode = () =>
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.Add(new Command<TestRunInfo>
+				{
+					Key = "command",
+					GlobalOptions =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "option",
+							Property = ri => ri.Bool1
+						}
+					},
+					SubCommands =
+					{
+						new SubCommand<TestRunInfo>
+						{
+							Key = "subcommand1",
+							SubCommands =
+							{
+								new SubCommand<TestRunInfo>
+								{
+									Key = "subcommand2",
+									Options =
+									{
+										new Option<TestRunInfo, bool>
+										{
+											Key = "option",
+											Property = ri => ri.Bool1
+										}
+									}
+								}
+							}
+						}
+					}
+				});
+			};
+
+			Exception exception = Record.Exception(testCode);
+
+			var validationException = exception as CommandValidationException;
+
+			Assert.NotNull(validationException);
+			Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+			Assert.Equal(2, validationException.CommandLevel);
+		}
+
+		[Fact]
+		public void DuplicateShortKeys_GlobalVsSubcommand_NestedTwice_Throws()
+		{
+			Action testCode = () =>
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.Add(new Command<TestRunInfo>
+				{
+					Key = "command",
+					GlobalOptions =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "option1 | a",
+							Property = ri => ri.Bool1
+						}
+					},
+					SubCommands =
+					{
+						new SubCommand<TestRunInfo>
+						{
+							Key = "subcommand",
+							SubCommands =
+							{
+								new SubCommand<TestRunInfo>
+								{
+									Key = "subcommand2",
+									Options =
+									{
+										new Option<TestRunInfo, bool>
+										{
+											Key = "option2 | a",
+											Property = ri => ri.Bool1
+										}
+									}
+								}
+							}
+						}
+					}
+				});
+			};
+
+			Exception exception = Record.Exception(testCode);
+
+			var validationException = exception as CommandValidationException;
+
+			Assert.NotNull(validationException);
+			Assert.Equal(CommandValidationError.DuplicateKey, validationException.ErrorType);
+			Assert.Equal(2, validationException.CommandLevel);
+		}
 	}
 }
