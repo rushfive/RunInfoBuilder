@@ -154,6 +154,49 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 
 				Assert.IsType<TestException>(processException.InnerException);
 			}
+
+			[Fact]
+			public void InvalidValue_Unparseable_OnParseErrorUseMessage_IsSet_ThrowsExpectedMessage()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						Arguments =
+						{
+							new PropertyArgument<TestRunInfo, TestCustomType>
+							{
+								Property = ri => ri.CustomType,
+								HelpToken = "<CustomType>",
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						}
+					});
+
+					builder.Parser.SetPredicateForType<TestCustomType>(value =>
+					{
+						if (value == "valid")
+						{
+							return (true, new TestCustomType());
+						}
+						return (false, default);
+					});
+
+					builder.Build(new string[] { "command", "invalid" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(0, processException.CommandLevel);
+				Assert.Equal("invalid from OnParseErrorUseMessage", processException.Message);
+			}
 		}
 
 		public class InNestedSubCommand
@@ -324,6 +367,56 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.PropertyArgument
 				Assert.Equal(ProcessError.GeneralFailure, processException.ErrorType);
 
 				Assert.IsType<TestException>(processException.InnerException);
+			}
+
+			[Fact]
+			public void InvalidValue_Unparseable_OnParseErrorUseMessage_IsSet_ThrowsExpectedMessage()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						SubCommands =
+						{
+							new SubCommand<TestRunInfo>
+							{
+								Key = "subcommand",
+								Arguments =
+								{
+									new PropertyArgument<TestRunInfo, TestCustomType>
+									{
+										Property = ri => ri.CustomType,
+										HelpToken = "<CustomType>",
+										OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+									}
+								}
+							}
+						}
+					});
+
+					builder.Parser.SetPredicateForType<TestCustomType>(value =>
+					{
+						if (value == "valid")
+						{
+							return (true, new TestCustomType());
+						}
+						return (false, default);
+					});
+
+					builder.Build(new string[] { "command", "subcommand", "invalid" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(1, processException.CommandLevel);
+				Assert.Equal("invalid from OnParseErrorUseMessage", processException.Message);
 			}
 		}
 	}

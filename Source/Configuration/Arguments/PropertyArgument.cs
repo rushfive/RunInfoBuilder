@@ -26,9 +26,12 @@ namespace R5.RunInfoBuilder
 		/// </remarks>
 		public Func<TProperty, ProcessStageResult> OnParsed { get; set; }
 
+
+		public Func<string, string> OnParseErrorUseMessage { get; set; }
+
 		internal override Stage<TRunInfo> ToStage()
 		{
-			return new PropertyArgumentStage<TRunInfo, TProperty>(Property, OnParsed);
+			return new PropertyArgumentStage<TRunInfo, TProperty>(Property, OnParsed, OnParseErrorUseMessage);
 		}
 
 		internal override string GetHelpToken()
