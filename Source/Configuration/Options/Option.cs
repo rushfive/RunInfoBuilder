@@ -32,6 +32,14 @@ namespace R5.RunInfoBuilder
 		/// </remarks>
 		public Func<TProperty, ProcessStageResult> OnParsed { get; set; }
 
+		/// <summary>
+		/// An optional function used to generate the error message on parsing error.
+		/// </summary>
+		/// <remarks>
+		/// The single argument to the Func is the option value that failed to parse.
+		/// </remarks>
+		public Func<string, string> OnParseErrorUseMessage { get; set; }
+
 		public Option() 
 			: base(typeof(TProperty)) { }
 
@@ -46,7 +54,7 @@ namespace R5.RunInfoBuilder
 		{
 			(Action<TRunInfo, object> Setter, Type Type) = OptionSetterFactory<TRunInfo>.CreateSetter(this);
 
-			return new OptionProcessInfo<TRunInfo>(Setter, Type, OnParsed);
+			return new OptionProcessInfo<TRunInfo>(Setter, Type, OnParsed, OnParseErrorUseMessage);
 		}
 
 		internal override string GetHelpToken()

@@ -257,6 +257,83 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.GlobalOption
 				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
 				Assert.Equal(0, processException.CommandLevel);
 			}
+
+			[Theory]
+			[InlineData("--bool1", "invalid")]
+			[InlineData("-bc", "invalid")]
+			public void InvalidValue_ForBoolOption_OnParseErrorUseMessage_IsSet_ThrowsExpectedMessage(
+				string option, string invalidBoolValue)
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool1 | b",
+								Property = ri=> ri.Bool1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool2 | c",
+								Property = ri=> ri.Bool2,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", option, invalidBoolValue });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(0, processException.CommandLevel);
+				Assert.Equal(invalidBoolValue + " from OnParseErrorUseMessage", processException.Message);
+			}
+
+			[Fact]
+			public void InvalidValueProgramArgument_ForNonBoolOption_OnParseErrorUseMessage_IsSet_ThrowsExpectedMessage()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int1 | i",
+								Property = ri=> ri.Int1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", "--int1", "invalid" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(0, processException.CommandLevel);
+				Assert.Equal("invalid from OnParseErrorUseMessage", processException.Message);
+			}
 		}
 
 		public class InNestedSubCommand
@@ -544,6 +621,96 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.GlobalOption
 				Assert.NotNull(processException);
 				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
 				Assert.Equal(1, processException.CommandLevel);
+			}
+
+			[Theory]
+			[InlineData("--bool1")]
+			[InlineData("-bc")]
+			public void InvalidValue_ForBoolOption_OnParseErrorUseMessage_IsSet_ThrowsExpectedMessage(string option)
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool1 | b",
+								Property = ri=> ri.Bool1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool2 | c",
+								Property = ri=> ri.Bool2,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						},
+						SubCommands =
+						{
+							new SubCommand<TestRunInfo>
+							{
+								Key = "subcommand"
+							}
+						}
+					});
+
+					var t = builder.Build(new string[] { "command", "subcommand", option, "invalid_bool_value" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(1, processException.CommandLevel);
+				Assert.Equal("invalid_bool_value from OnParseErrorUseMessage", processException.Message);
+			}
+
+			[Fact]
+			public void InvalidValueProgramArgument_ForNonBoolOption_OnParseErrorUseMessage_IsSet_ThrowsExpectedMessage()
+			{
+				Action testCode = () =>
+				{
+					RunInfoBuilder builder = GetBuilder();
+
+					builder.Commands.Add(new Command<TestRunInfo>
+					{
+						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int1 | i",
+								Property = ri=> ri.Int1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						},
+						SubCommands =
+						{
+							new SubCommand<TestRunInfo>
+							{
+								Key = "subcommand"
+							}
+						}
+					});
+
+					builder.Build(new string[] { "command", "subcommand", "--int1", "invalid" });
+				};
+
+				Exception exception = Record.Exception(testCode);
+
+				var processException = exception as ProcessException;
+
+				Assert.NotNull(processException);
+				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(1, processException.CommandLevel);
+				Assert.Equal("invalid from OnParseErrorUseMessage", processException.Message);
 			}
 		}
 	}
