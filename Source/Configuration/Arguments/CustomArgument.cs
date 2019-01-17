@@ -23,7 +23,7 @@ namespace R5.RunInfoBuilder
 		/// </summary>
 		public Func<CustomHandlerContext<TRunInfo>, ProcessStageResult> Handler { get; set; }
 
-		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Custom.Rules(this);
+		//internal override List<Action<int>> Rules() => ValidationRules.Arguments.Custom.Rules(this);
 
 		internal override Stage<TRunInfo> ToStage()
 		{

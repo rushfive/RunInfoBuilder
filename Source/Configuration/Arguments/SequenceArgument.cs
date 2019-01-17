@@ -32,7 +32,7 @@ namespace R5.RunInfoBuilder
 		/// </remarks>
 		public Func<TListProperty, ProcessStageResult> OnParsed { get; set; }
 
-		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Sequence.Rules(this);
+		//internal override List<Action<int>> Rules() => ValidationRules.Arguments.Sequence.Rules(this);
 
 		internal override Stage<TRunInfo> ToStage()
 		{

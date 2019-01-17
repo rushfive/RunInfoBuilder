@@ -7,7 +7,7 @@ namespace R5.RunInfoBuilder
 	/// The base abstract class Commands derive from.
 	/// </summary>
 	/// <typeparam name="TRunInfo">The RunInfo type the command's associated to.</typeparam>
-	public abstract class CommandBase<TRunInfo> : CoreConfigurable
+	public abstract class CommandBase<TRunInfo>// : CoreConfigurable
 		where TRunInfo : class
 	{
 		/// <summary>

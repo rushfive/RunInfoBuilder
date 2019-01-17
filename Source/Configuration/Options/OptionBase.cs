@@ -5,7 +5,7 @@ using System;
 
 namespace R5.RunInfoBuilder
 {
-	public abstract class OptionBase<TRunInfo> : CoreConfigurable
+	public abstract class OptionBase<TRunInfo>// : CoreConfigurable
 		where TRunInfo : class
 	{
 		public string Key { get; set; }

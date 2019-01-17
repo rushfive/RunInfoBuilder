@@ -37,7 +37,7 @@ namespace R5.RunInfoBuilder
 		public Option() 
 			: base(typeof(TProperty)) { }
 
-		internal override List<Action<int>> Rules() => ValidationRules.Options.Rules(this);
+		//internal override List<Action<int>> Rules() => ValidationRules.Options.Rules(this);
 
 		internal override void ValidateOption(int commandLevel)
 		{

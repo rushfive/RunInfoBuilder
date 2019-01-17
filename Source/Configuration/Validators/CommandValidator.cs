@@ -40,7 +40,7 @@ namespace R5.RunInfoBuilder.Configuration.Validators
 				CommandRules.Common.OptionKeysMustMatchRegex(command.GlobalOptions, 0);
 				CommandRules.Common.OptionKeysMustBeUnique(command.GlobalOptions, null, 0);
 
-				foreach (OptionBase<TRunInfo> option in command.Options)
+				foreach (OptionBase<TRunInfo> option in command.GlobalOptions)
 				{
 					option.ValidateOption(0);
 				}
@@ -87,7 +87,13 @@ namespace R5.RunInfoBuilder.Configuration.Validators
 
 			if (subCommand.SubCommands != null)
 			{
-				// TODO
+				CommandRules.SubCommand.SubCommandsCannotBeNull(subCommand, commandLevel);
+				CommandRules.SubCommand.SubCommandKeysMustBeUnique(subCommand, commandLevel);
+
+				foreach (SubCommand<TRunInfo> sc in subCommand.SubCommands)
+				{
+					ValidateSubCommand(sc, globalOptions, commandLevel + 1);
+				}
 			}
 		}
 	}

@@ -32,6 +32,6 @@ namespace R5.RunInfoBuilder
 		public List<OptionBase<TRunInfo>> GlobalOptions { get; set; } = new List<OptionBase<TRunInfo>>();
 
 
-		internal override List<Action<int>> Rules() => ValidationRules.Commands.Command.Rules(this);
+		//internal override List<Action<int>> Rules() => ValidationRules.Commands.Command.Rules(this);
 	}
 }

@@ -10,7 +10,7 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 	{
 		internal static class SubCommand
 		{
-			internal static void SubCommandsCannotBeNull<TRunInfo>(Command<TRunInfo> command,
+			internal static void SubCommandsCannotBeNull<TRunInfo>(StackableCommand<TRunInfo> command,
 				int commandLevel) where TRunInfo : class
 			{
 				int nullIndex = command.SubCommands.IndexOfFirstNull();
@@ -22,7 +22,7 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 				}
 			}
 
-			internal static void SubCommandKeysMustBeUnique<TRunInfo>(Command<TRunInfo> command,
+			internal static void SubCommandKeysMustBeUnique<TRunInfo>(StackableCommand<TRunInfo> command,
 				int commandLevel) where TRunInfo : class
 			{
 				bool hasDuplicate = command.SubCommands.Count != command.SubCommands.Select(c => c.Key).Distinct().Count();
@@ -34,13 +34,13 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 				}
 			}
 
-			internal static void SubCommandsAreValid<TRunInfo>(Command<TRunInfo> command,
-				List<OptionBase<TRunInfo>> globalOptions, int commandLevel)
-				where TRunInfo : class
-			{
-				//command.SubCommands.ForEach(c => c.Validate(++commandLevel));
-				command.SubCommands.ForEach(c => c.ValidateSub(++commandLevel, globalOptions));
-			}
+			//internal static void SubCommandsAreValid<TRunInfo>(Command<TRunInfo> command,
+			//	List<OptionBase<TRunInfo>> globalOptions, int commandLevel)
+			//	where TRunInfo : class
+			//{
+			//	//command.SubCommands.ForEach(c => c.Validate(++commandLevel));
+			//	command.SubCommands.ForEach(c => c.ValidateSub(++commandLevel, globalOptions));
+			//}
 		}
 
 		internal static class Common
@@ -67,11 +67,11 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 				}
 			}
 
-			internal static void ArgumentsAreValid<TRunInfo>(CommandBase<TRunInfo> command,
-				int commandLevel) where TRunInfo : class
-			{
-				command.Arguments.ForEach(a => a.Validate(commandLevel));
-			}
+			//internal static void ArgumentsAreValid<TRunInfo>(CommandBase<TRunInfo> command,
+			//	int commandLevel) where TRunInfo : class
+			//{
+			//	command.Arguments.ForEach(a => a.Validate(commandLevel));
+			//}
 
 			internal static void OptionsCannotBeNull<TRunInfo>(List<OptionBase<TRunInfo>> options,
 				int commandLevel) where TRunInfo : class
@@ -138,11 +138,11 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 				}
 			}
 
-			internal static void OptionsAreValid<TRunInfo>(List<OptionBase<TRunInfo>> options,
-				int commandLevel) where TRunInfo : class
-			{
-				options.ForEach(o => o.Validate(commandLevel));
-			}
+			//internal static void OptionsAreValid<TRunInfo>(List<OptionBase<TRunInfo>> options,
+			//	int commandLevel) where TRunInfo : class
+			//{
+			//	options.ForEach(o => o.Validate(commandLevel));
+			//}
 		}
 	}
 }

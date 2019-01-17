@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Parser;
+﻿using R5.RunInfoBuilder.Configuration.Validators;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
@@ -72,7 +73,8 @@ namespace R5.RunInfoBuilder
 					CommandValidationError.DuplicateKey, commandLevel: 0);
 			}
 
-			command.Validate(commandLevel: 0);
+			//command.Validate(commandLevel: 0);
+			CommandValidator.Validate(command);
 			
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
@@ -117,7 +119,8 @@ namespace R5.RunInfoBuilder
 					CommandValidationError.DuplicateKey, commandLevel: -1);
 			}
 
-			defaultCommand.Validate(commandLevel: -1);
+			//defaultCommand.Validate(commandLevel: -1);
+			DefaultCommandValidator.Validate(defaultCommand);
 
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{

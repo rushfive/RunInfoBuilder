@@ -27,7 +27,7 @@ namespace R5.RunInfoBuilder
 		public List<(string Label, TProperty Value)> Values { get; set; }
 			= new List<(string, TProperty)>();
 
-		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Set.Rules(this);
+		//internal override List<Action<int>> Rules() => ValidationRules.Arguments.Set.Rules(this);
 
 		internal override string GetHelpToken()
 		{
