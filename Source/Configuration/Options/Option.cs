@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
@@ -37,6 +38,13 @@ namespace R5.RunInfoBuilder
 			: base(typeof(TProperty)) { }
 
 		internal override List<Action<int>> Rules() => ValidationRules.Options.Rules(this);
+
+		internal override void ValidateOption(int commandLevel)
+		{
+			OptionRules.PropertyMappingIsSet(this, commandLevel);
+			OptionRules.MappedPropertyIsWritable(this, commandLevel);
+			OptionRules.OnProcessCallbackNotAllowedForBoolOptions(this, commandLevel);
+		}
 
 		internal override OptionProcessInfo<TRunInfo> GetProcessInfo()
 		{

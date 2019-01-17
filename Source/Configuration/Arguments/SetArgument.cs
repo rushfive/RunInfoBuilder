@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor.Stages;
 
 namespace R5.RunInfoBuilder
@@ -38,6 +39,16 @@ namespace R5.RunInfoBuilder
 		internal override Stage<TRunInfo> ToStage()
 		{
 			return new SetArgumentStage<TRunInfo, TProperty>(Property, Values);
+		}
+
+		internal override void ValidateArg(int commandLevel)
+		{
+			ArgumentRules.Set.MappedPropertyMustBeSet(this, commandLevel);
+			ArgumentRules.Set.MappedPropertyIsWritable(this, commandLevel);
+			ArgumentRules.Set.ValuesMustBeSet(this, commandLevel);
+			ArgumentRules.Set.ValuesMustContainAtLeastTwoItems(this, commandLevel);
+			ArgumentRules.Set.ValueLabelsMustBeUnique(this, commandLevel);
+			ArgumentRules.Set.ValueValuesMustBeUnique(this, commandLevel);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,12 @@ namespace R5.RunInfoBuilder
 		internal override string GetHelpToken()
 		{
 			return string.IsNullOrWhiteSpace(HelpToken) ? "<custom>" : HelpToken;
+		}
+
+		internal override void ValidateArg(int commandLevel)
+		{
+			ArgumentRules.Custom.CountMustBeGreaterThanZero(this, commandLevel);
+			ArgumentRules.Custom.HandlerMustBeSet(this, commandLevel);
 		}
 	}
 }

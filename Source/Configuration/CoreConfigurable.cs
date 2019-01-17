@@ -4,6 +4,8 @@ using System.Text;
 
 namespace R5.RunInfoBuilder.Configuration
 {
+	// todo DUMP4
+	[Obsolete]
 	public abstract class CoreConfigurable
 	{
 		internal abstract List<Action<int>> Rules();

@@ -1,4 +1,5 @@
 ﻿using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
@@ -42,6 +43,12 @@ namespace R5.RunInfoBuilder
 			}
 
 			return HelpTokenResolver.ForPropertyArgument<TProperty>();
+		}
+
+		internal override void ValidateArg(int commandLevel)
+		{
+			ArgumentRules.Property.PropertyMappingIsSet(this, commandLevel);
+			ArgumentRules.Property.MappedPropertyIsWritable(this, commandLevel);
 		}
 	}
 }

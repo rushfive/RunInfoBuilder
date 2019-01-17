@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Processor.Stages;
 
@@ -46,6 +47,12 @@ namespace R5.RunInfoBuilder
 			}
 
 			return HelpTokenResolver.ForSequenceArgument<TListProperty>();
+		}
+
+		internal override void ValidateArg(int commandLevel)
+		{
+			ArgumentRules.Sequence.MappedPropertyMustBeSet(this, commandLevel);
+			ArgumentRules.Sequence.MappedPropertyIsWritable(this, commandLevel);
 		}
 	}
 }

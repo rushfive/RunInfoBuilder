@@ -497,5 +497,147 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.GlobalOption
 				}
 			}
 		}
+
+		public class InNestedCommand
+		{
+			[Theory]
+			[InlineData("--bool")]
+			[InlineData("-b")]
+			public void GlobalOptions_AreAvailable_AtSubRootLevels(string option)
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.Add(new Command<TestRunInfo>
+				{
+					Key = "command",
+					SubCommands =
+					{
+						new SubCommand<TestRunInfo>
+						{
+							Key = "subcommand"
+						}
+					},
+					GlobalOptions =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "bool | b",
+							Property = ri => ri.Bool1
+						}
+					}
+				});
+
+				var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "subcommand", option });
+
+				Assert.True(runInfo.Bool1);
+			}
+
+			[Fact]
+			public void GlobalOptions_AreUseable_WithOther_CommandScopedOptions()
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.Add(new Command<TestRunInfo>
+				{
+					Key = "command",
+					Options =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "bool2 | c",
+							Property = ri => ri.Bool2
+						}
+					},
+					SubCommands =
+					{
+						new SubCommand<TestRunInfo>
+						{
+							Key = "subcommand",
+							Options =
+							{
+								new Option<TestRunInfo, bool>
+								{
+									Key = "bool3 | b",
+									Property = ri => ri.Bool3
+								}
+							}
+						}
+					},
+					GlobalOptions =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "bool1 | a",
+							Property = ri => ri.Bool1
+						}
+					}
+				});
+
+				var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "--bool2", "subcommand", "--bool3", "--bool1" });
+
+				Assert.True(runInfo.Bool1);
+				Assert.True(runInfo.Bool2);
+				Assert.True(runInfo.Bool3);
+
+				// move the global '--bool1' to before the subcommand
+				runInfo = (TestRunInfo)builder.Build(new string[] { "command", "--bool2", "--bool1", "subcommand", "--bool3" });
+				Assert.True(runInfo.Bool1);
+				Assert.True(runInfo.Bool2);
+				Assert.True(runInfo.Bool3);
+			}
+
+			[Fact]
+			public void GlobalOption_ShortKeysAreStackable_WithOther_CommandScopedOptions()
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Commands.Add(new Command<TestRunInfo>
+				{
+					Key = "command",
+					Options =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "bool2 | c",
+							Property = ri => ri.Bool2
+						}
+					},
+					SubCommands =
+					{
+						new SubCommand<TestRunInfo>
+						{
+							Key = "subcommand",
+							Options =
+							{
+								new Option<TestRunInfo, bool>
+								{
+									Key = "bool3 | b",
+									Property = ri => ri.Bool3
+								}
+							}
+						}
+					},
+					GlobalOptions =
+					{
+						new Option<TestRunInfo, bool>
+						{
+							Key = "bool1 | a",
+							Property = ri => ri.Bool1
+						}
+					}
+				});
+
+				var runInfo = (TestRunInfo)builder.Build(new string[] { "command", "subcommand", "-ab" });
+
+				Assert.True(runInfo.Bool1);
+				Assert.False(runInfo.Bool2);
+				Assert.True(runInfo.Bool3);
+
+				runInfo = (TestRunInfo)builder.Build(new string[] { "command", "-ac", "subcommand" });
+				Assert.True(runInfo.Bool1);
+				Assert.True(runInfo.Bool2);
+				Assert.False(runInfo.Bool3);
+			}
+		}
 	}
 }

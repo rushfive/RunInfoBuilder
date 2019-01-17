@@ -18,5 +18,7 @@ namespace R5.RunInfoBuilder
 		internal abstract Stage<TRunInfo> ToStage();
 
 		internal abstract string GetHelpToken();
+
+		internal abstract void ValidateArg(int commandLevel);
 	}
 }

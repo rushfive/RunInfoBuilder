@@ -22,6 +22,12 @@ namespace R5.RunInfoBuilder
 		///// </summary>
 		//public List<SubCommand<TRunInfo>> SubCommands { get; set; } = new List<SubCommand<TRunInfo>>();
 
-		internal override List<Action<int>> Rules() => ValidationRules.Commands.SubCommand.Rules(this);
+		internal override List<Action<int>> Rules() => null;// ValidationRules.Commands.SubCommand.Rules(this);
+
+		internal void ValidateSub(int commandLevel, List<OptionBase<TRunInfo>> globalOptions)
+		{
+			List<Action<int>> rules = ValidationRules.Commands.SubCommand.Rules(this, globalOptions);
+			rules.ForEach(r => r.Invoke(commandLevel));
+		}
 	}
 }

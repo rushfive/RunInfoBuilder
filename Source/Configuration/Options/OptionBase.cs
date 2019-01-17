@@ -19,5 +19,7 @@ namespace R5.RunInfoBuilder
 		internal abstract OptionProcessInfo<TRunInfo> GetProcessInfo();
 
 		internal abstract string GetHelpToken();
+
+		internal abstract void ValidateOption(int commandLevel);
 	}
 }
