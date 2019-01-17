@@ -65,7 +65,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 						{
 							new SequenceArgument<TestRunInfo, int>
 							{
-								ListProperty = ri => ri.IntList1
+								ListProperty = ri => ri.IntList1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
 							}
 						}
 					});
@@ -83,6 +84,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 				Assert.NotNull(processException);
 				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
 				Assert.Equal(0, processException.CommandLevel);
+				Assert.Equal("a from OnParseErrorUseMessage", processException.Message);
 			}
 		}
 
@@ -150,7 +152,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 								{
 									new SequenceArgument<TestRunInfo, int>
 									{
-										ListProperty = ri => ri.IntList1
+										ListProperty = ri => ri.IntList1,
+										OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
 									}
 								}
 							}
@@ -170,6 +173,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 				Assert.NotNull(processException);
 				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
 				Assert.Equal(1, processException.CommandLevel);
+				Assert.Equal("a from OnParseErrorUseMessage", processException.Message);
 			}
 		}
 	}

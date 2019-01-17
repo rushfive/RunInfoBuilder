@@ -26,7 +26,12 @@ namespace R5.RunInfoBuilder
 		/// </remarks>
 		public Func<TProperty, ProcessStageResult> OnParsed { get; set; }
 
-
+		/// <summary>
+		/// An optional function used to generate the error message on parsing error.
+		/// </summary>
+		/// <remarks>
+		/// The single argument to the Func is the program argument that failed to parse.
+		/// </remarks>
 		public Func<string, string> OnParseErrorUseMessage { get; set; }
 
 		internal override Stage<TRunInfo> ToStage()

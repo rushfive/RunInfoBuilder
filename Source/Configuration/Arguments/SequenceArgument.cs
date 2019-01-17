@@ -30,11 +30,18 @@ namespace R5.RunInfoBuilder
 		/// This is invoked before the parsed value is added to the list.
 		/// </remarks>
 		public Func<TListProperty, ProcessStageResult> OnParsed { get; set; }
-		
+
+		/// <summary>
+		/// An optional function used to generate the error message on parsing error.
+		/// </summary>
+		/// <remarks>
+		/// The single argument to the Func is the program argument that failed to parse.
+		/// </remarks>
+		public Func<string, string> OnParseErrorUseMessage { get; set; }
 
 		internal override Stage<TRunInfo> ToStage()
 		{
-			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnParsed);
+			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnParsed, OnParseErrorUseMessage);
 		}
 
 		internal override string GetHelpToken()
