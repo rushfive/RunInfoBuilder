@@ -9,32 +9,36 @@ namespace R5.RunInfoBuilder
 	/// </summary>
 	public class BuildHooks
 	{
-		private Action<string[]> _onStart { get; set; }
-
-		private ReturnsWithBase _nullOrEmptyReturns { get; set; }
+		internal Action<string[]> OnStart { get; private set; }
+		internal ReturnsWithBase NullOrEmptyReturns { get; private set; }
 
 		/// <summary>
 		/// Set the callback that's fired at the very beginning of building.
 		/// The program arguments are provided as the single argument to the callback.
 		/// </summary>
-		/// <param name="onStartCallback">The callback to be invoked.</param>
-		public BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)
+		/// <param name="callback">The callback to be invoked.</param>
+		public BuildHooks SetOnStartBuild(Action<string[]> callback)
 		{
-			_onStart = onStartCallback ?? 
-				throw new ArgumentNullException(nameof(onStartCallback), "Callback must be provided.");
+			OnStart = callback ?? 
+				throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
 
 			return this;
 		}
 
+		/// <summary>
+		/// Set the callback that's fired if program arguments is null or empty.
+		/// The builder will return the object returned from the callback.
+		/// </summary>
+		/// <param name="callback">The callback to be invoked.</param>
 		public BuildHooks SetNullOrEmptyReturns<TReturn>(Func<TReturn> callback)
 		{
-			// can probably fix this BY making the callback a generic object/class, instead of just a property
-			_nullOrEmptyReturns = callback;
-		}
+			if (callback == null)
+			{
+				throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
+			}
 
-		internal void InvokeOnStartIfSet(string[] args)
-		{
-			_onStart?.Invoke(args);
+			NullOrEmptyReturns = new ReturnsWith<TReturn>(callback);
+			return this;
 		}
 	}
 }

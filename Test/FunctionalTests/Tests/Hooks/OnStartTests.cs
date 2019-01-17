@@ -6,11 +6,26 @@ using Xunit;
 
 namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 {
-	public class HookTests
+	public class OnStartTests
 	{
 		private static RunInfoBuilder GetBuilder()
 		{
 			return new RunInfoBuilder();
+		}
+
+		[Fact]
+		public void NullCallback_Throws()
+		{
+			Action testCode = () =>
+			{
+				RunInfoBuilder builder = GetBuilder();
+
+				builder.Hooks.SetOnStartBuild(null);
+			};
+
+			Exception exception = Record.Exception(testCode);
+
+			Assert.IsType<ArgumentNullException>(exception);
 		}
 
 		[Fact]

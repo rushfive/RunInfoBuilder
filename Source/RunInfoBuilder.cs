@@ -56,7 +56,12 @@ namespace R5.RunInfoBuilder
 		/// </returns>
 		public object Build(string[] args)
 		{
-			Hooks.InvokeOnStartIfSet(args);
+			Hooks.OnStart?.Invoke(args);
+
+			if ((args == null || !args.Any()) && Hooks.NullOrEmptyReturns != null)
+			{
+				return Hooks.NullOrEmptyReturns.Invoke();
+			}
 
 			if (args == null)
 			{
