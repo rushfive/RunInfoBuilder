@@ -12,7 +12,18 @@ namespace R5.RunInfoBuilder.Processor
 			StackableCommand<TRunInfo> command, bool hasGlobalOptions, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command, hasGlobalOptions);
+			var pipeline = new Queue<Stage<TRunInfo>>();
+
+			if (command is Command<TRunInfo> rootCommand)
+			{
+				pipeline.Enqueue(rootCommand.ToStage());
+			}
+			
+			Queue<Stage<TRunInfo>> commonStages = BuildCommonPipelineStages(command, hasGlobalOptions);
+			while (commonStages.Any())
+			{
+				pipeline.Enqueue(commonStages.Dequeue());
+			}
 
 			// recursively add subcommand pipelines
 			if (command.SubCommands.Any())
@@ -42,7 +53,15 @@ namespace R5.RunInfoBuilder.Processor
 			DefaultCommand<TRunInfo> defaultCommand, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(defaultCommand, hasGlobalOptions: false);
+			var pipeline = new Queue<Stage<TRunInfo>>();
+
+			pipeline.Enqueue(defaultCommand.ToStage());
+			
+			Queue<Stage<TRunInfo>> commonStages = BuildCommonPipelineStages(defaultCommand, hasGlobalOptions: false);
+			while (commonStages.Any())
+			{
+				pipeline.Enqueue(commonStages.Dequeue());
+			}
 
 			pipeline.Enqueue(new EndProcessStage<TRunInfo>(postBuildCallback));
 

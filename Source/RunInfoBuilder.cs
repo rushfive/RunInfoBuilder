@@ -61,18 +61,18 @@ namespace R5.RunInfoBuilder
 				Hooks.InvokeOnStart(args);
 			}
 
-			if (args == null || !args.Any())
+			if (args == null)
 			{
 				throw new ArgumentNullException(nameof(args), "Program arguments must be provided.");
 			}
 
-			if (Help.IsTrigger(args.First()))
+			if (args.Any() && Help.IsTrigger(args.First()))
 			{
 				Help.Invoke();
 				return null;
 			}
 
-			if (Version.IsTrigger(args.First()))
+			if (args.Any() && Version.IsTrigger(args.First()))
 			{
 				Version.Invoke();
 				return null;
@@ -100,7 +100,7 @@ namespace R5.RunInfoBuilder
 
 				// if not ProcessException, wrap and throw
 				throw new ProcessException("Failed to process args.", 
-					ProcessError.GeneralFailure, -1, ex);
+					innerException: ex);
 			}
 		}
 	}

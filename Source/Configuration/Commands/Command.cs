@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using R5.RunInfoBuilder.Processor.Stages;
+using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
 {
@@ -14,5 +15,10 @@ namespace R5.RunInfoBuilder
 		/// These are scoped to be accessible to any SubCommand in the tree.
 		/// </summary>
 		public List<OptionBase<TRunInfo>> GlobalOptions { get; set; } = new List<OptionBase<TRunInfo>>();
+
+		internal Stage<TRunInfo> ToStage()
+		{
+			return new CommandStage<TRunInfo>(OnMatched);
+		}
 	}
 }

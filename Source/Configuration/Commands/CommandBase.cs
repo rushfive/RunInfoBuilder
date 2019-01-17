@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
 {
@@ -23,5 +24,13 @@ namespace R5.RunInfoBuilder
 		/// List of optional Options associated to the command.
 		/// </summary>
 		public List<OptionBase<TRunInfo>> Options { get; set; } = new List<OptionBase<TRunInfo>>();
+
+		/// <summary>
+		/// An optional callback that's invoked immediately after the command is matched and begins processing.
+		/// </summary>
+		/// <remarks>
+		/// This is the first thing processed in a command (eg before arguments, options, etc).
+		/// </remarks>
+		public Func<TRunInfo, ProcessStageResult> OnMatched { get; set; }
 	}
 }

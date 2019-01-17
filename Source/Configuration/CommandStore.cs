@@ -139,7 +139,7 @@ namespace R5.RunInfoBuilder
 			{
 				if (!_pipelineFactoryMap.ContainsKey(CommandStore.DefaultKey))
 				{
-					throw new Exception();
+					throw new ProcessException("A DefaultCommand is not configured and a Command key wasn't matched.");
 				}
 
 				dynamic defaultFactory = _pipelineFactoryMap[CommandStore.DefaultKey];
@@ -148,7 +148,7 @@ namespace R5.RunInfoBuilder
 
 			if (!_pipelineFactoryMap.ContainsKey(args[0]))
 			{
-				throw new Exception();
+				throw new ProcessException($"Failed to process command '{args[0]}', its pipeline could not be found.");
 			}
 
 			dynamic factory = _pipelineFactoryMap[args[0]];

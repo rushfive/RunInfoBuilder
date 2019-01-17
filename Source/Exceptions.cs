@@ -13,8 +13,8 @@ namespace R5.RunInfoBuilder
 
 		public ProcessException(
 			string message,
-			ProcessError errorType,
-			int commandLevel,
+			ProcessError errorType = ProcessError.GeneralFailure,
+			int commandLevel = -1,
 			Exception innerException = null,
 			params object[] metadata)
 			: base(message)

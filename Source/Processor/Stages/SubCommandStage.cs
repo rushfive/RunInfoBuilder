@@ -33,6 +33,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 			(Queue<Stage<TRunInfo>> subCommandStages, SubCommand<TRunInfo> command) = subCommandInfo;
 
+			ProcessStageResult onMatchedResult = command.OnMatched?.Invoke(context.RunInfo);
+			if (onMatchedResult == ProcessResult.End)
+			{
+				return ProcessResult.End;
+			}
+
 			context.Stages.ExtendPipelineWith(subCommandStages);
 			
 			resetContextFunc(command);
