@@ -18,7 +18,7 @@ namespace R5.RunInfoBuilder.Configuration.Validators
 
 				foreach (ArgumentBase<TRunInfo> argument in command.Arguments)
 				{
-					argument.ValidateArg(0);
+					argument.Validate(0);
 				}
 			}
 
@@ -69,7 +69,7 @@ namespace R5.RunInfoBuilder.Configuration.Validators
 
 				foreach (ArgumentBase<TRunInfo> argument in subCommand.Arguments)
 				{
-					argument.ValidateArg(commandLevel);
+					argument.Validate(commandLevel);
 				}
 			}
 

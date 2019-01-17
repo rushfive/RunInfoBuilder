@@ -1,11 +1,9 @@
-﻿using R5.RunInfoBuilder.Configuration;
-using R5.RunInfoBuilder.Processor.Functions;
-using R5.RunInfoBuilder.Processor.Models;
+﻿using R5.RunInfoBuilder.Processor.Models;
 using System;
 
 namespace R5.RunInfoBuilder
 {
-	public abstract class OptionBase<TRunInfo>// : CoreConfigurable
+	public abstract class OptionBase<TRunInfo>
 		where TRunInfo : class
 	{
 		public string Key { get; set; }

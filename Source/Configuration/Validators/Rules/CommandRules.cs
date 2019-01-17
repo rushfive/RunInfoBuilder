@@ -1,8 +1,6 @@
 ﻿using R5.RunInfoBuilder.Processor;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 {
@@ -33,14 +31,6 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 						CommandValidationError.DuplicateKey, commandLevel);
 				}
 			}
-
-			//internal static void SubCommandsAreValid<TRunInfo>(Command<TRunInfo> command,
-			//	List<OptionBase<TRunInfo>> globalOptions, int commandLevel)
-			//	where TRunInfo : class
-			//{
-			//	//command.SubCommands.ForEach(c => c.Validate(++commandLevel));
-			//	command.SubCommands.ForEach(c => c.ValidateSub(++commandLevel, globalOptions));
-			//}
 		}
 
 		internal static class Common
@@ -66,12 +56,6 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 						CommandValidationError.NullObject, commandLevel, nullIndex);
 				}
 			}
-
-			//internal static void ArgumentsAreValid<TRunInfo>(CommandBase<TRunInfo> command,
-			//	int commandLevel) where TRunInfo : class
-			//{
-			//	command.Arguments.ForEach(a => a.Validate(commandLevel));
-			//}
 
 			internal static void OptionsCannotBeNull<TRunInfo>(List<OptionBase<TRunInfo>> options,
 				int commandLevel) where TRunInfo : class
@@ -137,12 +121,6 @@ namespace R5.RunInfoBuilder.Configuration.Validators.Rules
 						CommandValidationError.DuplicateKey, commandLevel);
 				}
 			}
-
-			//internal static void OptionsAreValid<TRunInfo>(List<OptionBase<TRunInfo>> options,
-			//	int commandLevel) where TRunInfo : class
-			//{
-			//	options.ForEach(o => o.Validate(commandLevel));
-			//}
 		}
 	}
 }

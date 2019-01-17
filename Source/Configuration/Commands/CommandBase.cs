@@ -1,5 +1,4 @@
-﻿using R5.RunInfoBuilder.Configuration;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
 {
@@ -7,7 +6,7 @@ namespace R5.RunInfoBuilder
 	/// The base abstract class Commands derive from.
 	/// </summary>
 	/// <typeparam name="TRunInfo">The RunInfo type the command's associated to.</typeparam>
-	public abstract class CommandBase<TRunInfo>// : CoreConfigurable
+	public abstract class CommandBase<TRunInfo>
 		where TRunInfo : class
 	{
 		/// <summary>

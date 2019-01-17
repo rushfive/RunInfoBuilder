@@ -1,9 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
 {
+	/// <summary>
+	/// The base abstract class Commands and SubCommands derive from.
+	/// <remarks>
+	/// These Commands can be nested into a tree structure, unlike the DefaultCommand type.
+	/// </remarks>
+	/// </summary>
+	/// <typeparam name="TRunInfo">The RunInfo type the command's associated to.</typeparam>
 	public abstract class StackableCommand<TRunInfo> : CommandBase<TRunInfo>
 		where TRunInfo : class
 	{

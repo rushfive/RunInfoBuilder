@@ -72,8 +72,7 @@ namespace R5.RunInfoBuilder
 					$"Command with key '{command.Key} has already been configured.",
 					CommandValidationError.DuplicateKey, commandLevel: 0);
 			}
-
-			//command.Validate(commandLevel: 0);
+			
 			CommandValidator.Validate(command);
 			
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
@@ -118,8 +117,7 @@ namespace R5.RunInfoBuilder
 					"Default command has already been configured.",
 					CommandValidationError.DuplicateKey, commandLevel: -1);
 			}
-
-			//defaultCommand.Validate(commandLevel: -1);
+			
 			DefaultCommandValidator.Validate(defaultCommand);
 
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>

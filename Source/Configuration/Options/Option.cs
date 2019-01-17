@@ -1,9 +1,7 @@
-﻿using R5.RunInfoBuilder.Configuration;
-using R5.RunInfoBuilder.Configuration.Validators.Rules;
+﻿using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace R5.RunInfoBuilder
@@ -36,8 +34,6 @@ namespace R5.RunInfoBuilder
 
 		public Option() 
 			: base(typeof(TProperty)) { }
-
-		//internal override List<Action<int>> Rules() => ValidationRules.Options.Rules(this);
 
 		internal override void ValidateOption(int commandLevel)
 		{

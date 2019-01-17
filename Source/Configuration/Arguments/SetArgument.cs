@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using R5.RunInfoBuilder.Configuration;
 using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor.Stages;
 
@@ -27,8 +26,6 @@ namespace R5.RunInfoBuilder
 		public List<(string Label, TProperty Value)> Values { get; set; }
 			= new List<(string, TProperty)>();
 
-		//internal override List<Action<int>> Rules() => ValidationRules.Arguments.Set.Rules(this);
-
 		internal override string GetHelpToken()
 		{
 			string result = "<";
@@ -41,7 +38,7 @@ namespace R5.RunInfoBuilder
 			return new SetArgumentStage<TRunInfo, TProperty>(Property, Values);
 		}
 
-		internal override void ValidateArg(int commandLevel)
+		internal override void Validate(int commandLevel)
 		{
 			ArgumentRules.Set.MappedPropertyMustBeSet(this, commandLevel);
 			ArgumentRules.Set.MappedPropertyIsWritable(this, commandLevel);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using R5.RunInfoBuilder.Configuration;
 using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Processor.Stages;
@@ -31,8 +30,7 @@ namespace R5.RunInfoBuilder
 		/// This is invoked before the parsed value is added to the list.
 		/// </remarks>
 		public Func<TListProperty, ProcessStageResult> OnParsed { get; set; }
-
-		//internal override List<Action<int>> Rules() => ValidationRules.Arguments.Sequence.Rules(this);
+		
 
 		internal override Stage<TRunInfo> ToStage()
 		{
@@ -49,7 +47,7 @@ namespace R5.RunInfoBuilder
 			return HelpTokenResolver.ForSequenceArgument<TListProperty>();
 		}
 
-		internal override void ValidateArg(int commandLevel)
+		internal override void Validate(int commandLevel)
 		{
 			ArgumentRules.Sequence.MappedPropertyMustBeSet(this, commandLevel);
 			ArgumentRules.Sequence.MappedPropertyIsWritable(this, commandLevel);
