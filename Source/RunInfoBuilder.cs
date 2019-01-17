@@ -56,10 +56,7 @@ namespace R5.RunInfoBuilder
 		/// </returns>
 		public object Build(string[] args)
 		{
-			if (Hooks.OnStartIsSet)
-			{
-				Hooks.InvokeOnStart(args);
-			}
+			Hooks.InvokeOnStartIfSet(args);
 
 			if (args == null)
 			{

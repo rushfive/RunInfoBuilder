@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.RunInfoBuilder.Hooks;
+using System;
 
 namespace R5.RunInfoBuilder
 {
@@ -9,7 +10,8 @@ namespace R5.RunInfoBuilder
 	public class BuildHooks
 	{
 		private Action<string[]> _onStart { get; set; }
-		internal bool OnStartIsSet => _onStart != null;
+
+		private ReturnsWithBase _nullOrEmptyReturns { get; set; }
 
 		/// <summary>
 		/// Set the callback that's fired at the very beginning of building.
@@ -24,7 +26,13 @@ namespace R5.RunInfoBuilder
 			return this;
 		}
 
-		internal void InvokeOnStart(string[] args)
+		public BuildHooks SetNullOrEmptyReturns<TReturn>(Func<TReturn> callback)
+		{
+			// can probably fix this BY making the callback a generic object/class, instead of just a property
+			_nullOrEmptyReturns = callback;
+		}
+
+		internal void InvokeOnStartIfSet(string[] args)
 		{
 			_onStart?.Invoke(args);
 		}
