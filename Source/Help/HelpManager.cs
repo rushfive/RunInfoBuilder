@@ -27,11 +27,8 @@ namespace R5.RunInfoBuilder
 
 		internal HelpManager()
 		{
-			InvokeOnFail = false;
 			_triggers = new List<string>(_defaultTriggers);
-			_customCallback = null;
 			_commandInfos = new List<string>();
-			_defaultCommandInfo = null;
 		}
 
 		/// <summary>
@@ -73,7 +70,7 @@ namespace R5.RunInfoBuilder
 		/// </summary>
 		/// <param name="suppressException">If true, will only display help text while suppressing the exception from bubbling to the client.</param>
 		/// <returns>The HelpManager instance.</returns>
-		public HelpManager DisplayOnBuildFail(bool suppressException)
+		public HelpManager InvokeOnBuildFail(bool suppressException)
 		{
 			InvokeOnFail = true;
 			SuppressException = suppressException;
@@ -88,12 +85,7 @@ namespace R5.RunInfoBuilder
 		/// <returns>The HelpManager instance.</returns>
 		public HelpManager OnTrigger(Action customCallback)
 		{
-			if (customCallback == null)
-			{
-				throw new ArgumentNullException(nameof(customCallback), "A valid custom help callback must be provided.");
-			}
-
-			_customCallback = customCallback;
+			_customCallback = customCallback ?? throw new ArgumentNullException(nameof(customCallback), "A valid custom help callback must be provided.");
 			return this;
 		}
 

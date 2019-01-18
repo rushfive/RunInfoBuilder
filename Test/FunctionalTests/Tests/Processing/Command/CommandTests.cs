@@ -94,7 +94,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Command
 				}
 
 				[Fact]
-				public void ContinueResult_StopsFurtherProcessing()
+				public void ContinueResult_CorrectlySetsFlag()
 				{
 					RunInfoBuilder builder = GetBuilder();
 
@@ -235,7 +235,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Command
 				}
 
 				[Fact]
-				public void ContinueResult_StopsFurtherProcessing()
+				public void ContinueResult_CorrectlySetsFlag()
 				{
 					RunInfoBuilder builder = GetBuilder();
 

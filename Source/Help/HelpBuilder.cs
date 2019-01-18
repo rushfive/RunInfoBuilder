@@ -46,7 +46,6 @@ namespace R5.RunInfoBuilder.Help
 			string programName)
 			where TRunInfo : class
 		{
-			//var helpTokens = new List<string> { rootCommandKey };
 			var helpTokens = new List<string>();
 			
 			if (!string.IsNullOrWhiteSpace(programName))
