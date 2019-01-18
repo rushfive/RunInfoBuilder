@@ -17,6 +17,7 @@ namespace R5.RunInfoBuilder
 		};
 
 		internal bool InvokeOnFail { get; private set; }
+		internal bool SuppressException { get; private set; }
 
 		private string _programName { get; set; }
 		private List<string> _triggers { get; }
@@ -70,10 +71,12 @@ namespace R5.RunInfoBuilder
 		/// <summary>
 		/// Configures the builder to automatically display the help menu (or invoke callback) on fail.
 		/// </summary>
+		/// <param name="suppressException">If true, will only display help text while suppressing the exception from bubbling to the client.</param>
 		/// <returns>The HelpManager instance.</returns>
-		public HelpManager DisplayOnBuildFail()
+		public HelpManager DisplayOnBuildFail(bool suppressException)
 		{
 			InvokeOnFail = true;
+			SuppressException = suppressException;
 			return this;
 		}
 
@@ -102,13 +105,22 @@ namespace R5.RunInfoBuilder
 				return;
 			}
 
+			Console.WriteLine(GetHelpText());
+		}
+
+		private string GetHelpText()
+		{
+			var sb = new StringBuilder();
+
 			if (!string.IsNullOrWhiteSpace(_defaultCommandInfo))
 			{
-				Console.WriteLine(_defaultCommandInfo);
-				Console.WriteLine();
+				sb.AppendLine(_defaultCommandInfo);
+				sb.AppendLine();
 			}
 
-			_commandInfos.ForEach(Console.WriteLine);
+			_commandInfos.ForEach(i => sb.AppendLine(i));
+
+			return sb.ToString();
 		}
 
 		internal bool IsTrigger(string token)
@@ -123,12 +135,19 @@ namespace R5.RunInfoBuilder
 			_commandInfos.Add(helpText);
 		}
 
-
 		internal void ConfigureForDefaultCommand<TRunInfo>(DefaultCommand<TRunInfo> defaultCommand)
 			where TRunInfo : class
 		{
 			string helpText = HelpBuilder.BuildFor(defaultCommand, _programName);
 			_defaultCommandInfo = helpText;
+		}
+
+		/// <summary>
+		/// Returns the same help text that's displayed when help is invoked.
+		/// </summary>
+		public override string ToString()
+		{
+			return GetHelpText();
 		}
 	}
 }

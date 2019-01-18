@@ -92,7 +92,13 @@ namespace R5.RunInfoBuilder
 				if (Help.InvokeOnFail)
 				{
 					Help.Invoke();
-					return null;
+
+					if (Help.SuppressException)
+					{
+						return null;
+					}
+
+					throw;
 				}
 
 				if (ex is ProcessException processException)
@@ -101,7 +107,7 @@ namespace R5.RunInfoBuilder
 				}
 
 				// if not ProcessException, wrap and throw
-				throw new ProcessException("Failed to process args.", 
+				throw new ProcessException("Failed to process args. See the inner exception for more details.", 
 					innerException: ex);
 			}
 		}

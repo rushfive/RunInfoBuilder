@@ -13,7 +13,7 @@ namespace R5.RunInfoBuilder.Samples.HelpExamples
 
 			builder.Help
 				.SetProgramName("git")
-				.DisplayOnBuildFail();
+				.DisplayOnBuildFail(suppressException: false);
 
 			ConfigureCommands(builder);
 

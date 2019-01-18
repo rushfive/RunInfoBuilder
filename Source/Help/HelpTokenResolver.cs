@@ -57,10 +57,7 @@ namespace R5.RunInfoBuilder.Help
 				return "date";
 			}
 
-			throw new CommandValidationException(
-				$"Failed to resolve help token for type '{type.Name}'. "
-				+ "Explicitly set it during command configuration.",
-				CommandValidationError.InvalidType, -1);
+			return type.Name;
 		}
 	}
 }

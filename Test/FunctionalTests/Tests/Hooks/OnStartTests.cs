@@ -20,7 +20,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 			{
 				RunInfoBuilder builder = GetBuilder();
 
-				builder.Hooks.SetOnStartBuild(null);
+				builder.Hooks.OnStartBuild(null);
 			};
 
 			Exception exception = Record.Exception(testCode);
@@ -35,7 +35,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 
 			bool setFromCallback = false;
 
-			builder.Hooks.SetOnStartBuild(args =>
+			builder.Hooks.OnStartBuild(args =>
 			{
 				setFromCallback = true;
 			});

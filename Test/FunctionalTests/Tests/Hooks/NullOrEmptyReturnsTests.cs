@@ -20,7 +20,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 			{
 				RunInfoBuilder builder = GetBuilder();
 
-				builder.Hooks.SetNullOrEmptyReturns<object>(null);
+				builder.Hooks.ArgsNullOrEmptyReturns<object>(null);
 			};
 
 			Exception exception = Record.Exception(testCode);
@@ -33,7 +33,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 		{
 			RunInfoBuilder builder = GetBuilder();
 
-			builder.Hooks.SetNullOrEmptyReturns<int>(() => 100);
+			builder.Hooks.ArgsNullOrEmptyReturns<int>(() => 100);
 
 			var result = builder.Build(null);
 
@@ -45,7 +45,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 		{
 			RunInfoBuilder builder = GetBuilder();
 
-			builder.Hooks.SetNullOrEmptyReturns<int>(() => 100);
+			builder.Hooks.ArgsNullOrEmptyReturns<int>(() => 100);
 
 			var result = builder.Build(new string[] { });
 
@@ -57,7 +57,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Hooks
 		{
 			RunInfoBuilder builder = GetBuilder();
 
-			builder.Hooks.SetNullOrEmptyReturns<int>(() => throw new TestException());
+			builder.Hooks.ArgsNullOrEmptyReturns<int>(() => throw new TestException());
 
 			builder.Commands.Add(new Command<TestRunInfo>
 			{

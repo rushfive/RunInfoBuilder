@@ -17,7 +17,7 @@ namespace R5.RunInfoBuilder
 		/// The program arguments are provided as the single argument to the callback.
 		/// </summary>
 		/// <param name="callback">The callback to be invoked.</param>
-		public BuildHooks SetOnStartBuild(Action<string[]> callback)
+		public BuildHooks OnStartBuild(Action<string[]> callback)
 		{
 			OnStart = callback ?? 
 				throw new ArgumentNullException(nameof(callback), "Callback must be provided.");
@@ -30,7 +30,7 @@ namespace R5.RunInfoBuilder
 		/// The builder will return the object returned from the callback.
 		/// </summary>
 		/// <param name="callback">The callback to be invoked.</param>
-		public BuildHooks SetNullOrEmptyReturns<TReturn>(Func<TReturn> callback)
+		public BuildHooks ArgsNullOrEmptyReturns<TReturn>(Func<TReturn> callback)
 		{
 			if (callback == null)
 			{
