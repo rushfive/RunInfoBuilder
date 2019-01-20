@@ -160,7 +160,7 @@ Any `Options` are processed immediately after the command's `Arguments` are, and
 
 A `Command` can contain nested `SubCommands` in a list, which are processed after `Options`. 
 
-A SubCommand is the exact same type as a Command. This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
+A SubCommand is essentially the same type as a Command (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
 
 _To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, the matching `SubCommand` will be processed in the same manner. And so on and so forth._
 
@@ -219,9 +219,19 @@ To end early: `return ProcessResult.End`.
 All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods with the following interface:
 
 ```
-CommandStore Add(Command<TRunInfo> command);
-CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
+CommandStore Add(Command<TRunInfo> command, Action<TRunInfo> postBuildCallback = null);
+CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand), Action<TRunInfo> postBuildCallback = null;
 ```
+
+If the optional `postBuildCallback` action is set, it will be called after the program arguments are done processing, receiving the resolved `RunInfo` object as its single argument:
+
+```
+builder.Commands.Add(command, runInfo =>
+{
+	// do something with the resolved runInfo
+});
+```
+
 
 #### Command
 
@@ -235,7 +245,13 @@ Properties:
 - Description - `string` - Text that's displayed in the help menu.
 - Arguments - `List<ArgumentBase<TRunInfo>>` - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
 - Options - `List<OptionBase<TRunInfo>>` - A list of `Options` associated to the `Command`.
-- SubCommands - `List<Command<TRunInfo>>` - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
+- SubCommands - `List<SubCommand<TRunInfo>>` - A list of `SubCommands`. The `SubCommand<TRunInfo>` type has the same properties as `Command<TRunInfo>`, with the exception of `GlobalOptions`.
+- GlobalOptions - `List<OptionBase<TRunInfo>>` - A list of `Options` that are available to the `Command` and any of its nested `SubCommands`.
+
+[![Build Status](https://semaphoreapp.com/api/v1/projects/d4cca506-99be-44d2-b19e-176f36ec8cf1/128505/badge.svg)](https://semaphoreapp.com/boennemann/badges)
+[![Build Status](https://semaphoreapp.com/api/v1/projects/d4cca506-99be-44d2-b19e-176f36ec8cf1/128505/badge.svg)](https://semaphoreapp.com/boennemann/badges)
+[![start with why](https://img.shields.io/badge/start%20with-why%3F-brightgreen.svg?style=flat)](http://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action)
+[![start with why 222](https://img.shields.io/badge/start%20with-why22%3F-brightgreen.svg?style=flat)](http://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action)
 
 `Commands` are really nothing more than a container for its child items, which does all the real processing and binding.
 
@@ -307,6 +323,7 @@ Properties:
 - HelpToken - `string` - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
 - Property - `Expression<Func<TRunInfo, TProperty>>` - An expression representing the `RunInfo` property the parsed value will be bound to.
 - OnParsed - `Func<TProperty, ProcessStageResult>` - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
+- OnParseErrorUseMessage - `Func<string, string>` - An optional function used to generate the error message on parsing error. The single argument is the program argument that failed to parse.
 
 _Example Configuration:_
 
@@ -324,7 +341,8 @@ Arguments =
                 throw new Exception("Shouldn't send!");
             }
             return ProcessResult.Continue;
-        }
+        },
+		OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -419,6 +437,7 @@ Properties:
 - `HelpToken` (`string`) - The token that appears in the help menu representing this `SequenceArgument`. Example: `"<...int>"` .
 - `ListProperty` (`Expression<Func<TRunInfo, List<TListProperty>>>`) - An expression representing the `RunInfo` list property the values will be added to.
 - `OnParsed` (`Func<TListProperty, ProcessStageResult>`) - An optional custom callback that is invoked for every value after they are parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is added to the property. 
+- `OnParseErrorUseMessage` (`Func<string, string>`) - An optional function used to generate the error message on parsing error. The single argument is the program argument that failed to parse.
 
 _Example Configuration:_
 
@@ -436,7 +455,8 @@ Arguments =
                 return ProcessResult.End;
             }
             return ProcessResult.Continue;
-        }
+        },
+		OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -466,7 +486,7 @@ Properties:
 - `Key` (`string`) - A string representing the option key. For example, if it's set as `"hide"`, it would be called as `"--hide"` in a program argument. You can optionally set a short key by delimiting the string with a `|` character. If the key is set to `"hide | h"`, then you could use this option with either `"--hide"` or `"-h"`.
 - `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
 - `HelpToken` (`string`) - The token that appears in the help menu representing this option. Example: `"[--hide|-h]"`.
-- `OnParsed` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after the program argument is successfully parsed. The callback received the parsed value as its only argument, and is invoked before any bindings take place.
+- `OnParseErrorUseMessage` (`Func<string, string>`) - An optional function used to generate the error message on parsing error. The single argument is the program argument (representing option's value) that failed to parse.
 
 ```
 Options =
@@ -483,7 +503,8 @@ Options =
                 return ProcessResult.End;
             }
             return ProcessResult.Continue;
-        }
+        },
+		OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
