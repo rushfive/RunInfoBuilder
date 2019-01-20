@@ -158,7 +158,17 @@ Any `Options` are processed immediately after the command's `Arguments` are, and
 
 #### 3. SubCommands
 
-A `Command` can contain nested `SubCommands` in a list, which are processed after `Options`. 
+A `Command` can contain nested `SubCommands` in a list, which are processed after `Options`. If any are configured, it is required that one is matched by the next program argument.
+
+For example, if a command called `search` has two subCommands configured, `outside` and `inside`, then the two valid methods of calling the `search` command would be
+
+`search outside` or `search inside` (we're ignoring any arguments or options for brevity here)
+
+Here's a few examples of the `search` command being called incorrectly:
+
+`search` - an exception will be thrown because subCommands have been configured but one wasn't specified.
+`search everywhere` - an exception will be thrown because `everywhere` doesn't match a valid subCommand.
+`search outside inside` - this simply makes no sense. It's not possible to call more than one subCommand from the list. One, and only one, must be matched.
 
 A SubCommand is essentially the same type as a Command (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
 
@@ -232,28 +242,27 @@ builder.Commands.Add(command, runInfo =>
 });
 ```
 
-
 #### Command
 
 Type: `Command<TRunInfo>`
 - `TRunInfo`parameter is the `RunInfo` class the command is associated to.
 
-The `Command` is really the core entity of this library, as everything else is nested within it.
+The `Command` is the core entity, as everything else is nested within it.
 
 Properties:
 - Key - `string` - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
 - Description - `string` - Text that's displayed in the help menu.
 - Arguments - `List<ArgumentBase<TRunInfo>>` - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
 - Options - `List<OptionBase<TRunInfo>>` - A list of `Options` associated to the `Command`.
-- SubCommands - `List<SubCommand<TRunInfo>>` - A list of `SubCommands`. The `SubCommand<TRunInfo>` type has the same properties as `Command<TRunInfo>`, with the exception of `GlobalOptions`.
+- SubCommands - `List<SubCommand<TRunInfo>>` - A list of `SubCommands` associated to the `Command`. 
 - GlobalOptions - `List<OptionBase<TRunInfo>>` - A list of `Options` that are available to the `Command` and any of its nested `SubCommands`.
+- OnMatched - `Func<TRunInfo, ProcessStageResult>` - An optional callback that's invoked immediately after the command is matched and begins processing (happens before anything else like arguments, options, etc).
 
-[![Build Status](https://semaphoreapp.com/api/v1/projects/d4cca506-99be-44d2-b19e-176f36ec8cf1/128505/badge.svg)](https://semaphoreapp.com/boennemann/badges)
-[![Build Status](https://semaphoreapp.com/api/v1/projects/d4cca506-99be-44d2-b19e-176f36ec8cf1/128505/badge.svg)](https://semaphoreapp.com/boennemann/badges)
-[![start with why](https://img.shields.io/badge/start%20with-why%3F-brightgreen.svg?style=flat)](http://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action)
-[![start with why 222](https://img.shields.io/badge/else%20something-why22%3F-brightgreen.svg?style=flat)](http://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action)
+Descriptions and example configurations for `Arguments` and `Options` can be found later in their respective sections.
 
-`Commands` are really nothing more than a container for its child items, which does all the real processing and binding.
+The `SubCommand<TRunInfo>` type has the same properties as `Command<TRunInfo>`, with the exception of `GlobalOptions` which is only available on the root `Command` object. Once a global option is configured, it's made available to the `Command` and any of its `SubCommands`, whereas normal options are scoped to the `Command` or `SubCommand` it's configured in. 
+
+The global option keys must also be unique, relative to any of the options configured in the `Command` or `SubCommands`. 
 
 An arbitrary number of `Commands` can be added to the store:
 
@@ -264,16 +273,45 @@ builder.Commands.Add(new Command<TRunInfo>
     Description = "command description",
     Arguments =
     {
-        // ... arguments ...
+        // arguments for this command
     },
     Options =
     {
-        // ... options ...
+        // options scoped specifically to this command
     },
     SubCommands =
     {
-        // ... subcommands ...
-    }
+        new SubCommand<TRunInfo>
+		{
+			Key = "subcommand",
+			Arguments =
+			{
+				// arguments for this subcommand
+			},
+			Options = 
+			{
+				// options scoped specifically to this subCommand
+			},
+			SubCommands = 
+			{
+				// need another level of subCommands? Sure, add em here!
+			},
+			OnMatched = runInfo =>
+			{
+				// immediately fires if this subCommand is matched
+			}
+		},
+		// add as many SubCommands as needed
+    },
+    GlobalOptions =
+    {
+        // options scoped to be accessible from this command or any subcommand in the tree
+    },
+	OnMatched = runInfo => 
+	{
+		// do something with runInfo
+		return ProcessResult.Continue;
+	}
 });
 ```
 
@@ -282,9 +320,9 @@ builder.Commands.Add(new Command<TRunInfo>
 Type: `DefaultCommand<TRunInfo>`
 - `TRunInfo` is the `RunInfo` class the default command is associated to.
 
-You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
+You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include the `Key`, `SubCommands`, or `GlobalOptions` properties. It's a simple single-level command that can only process `Arguments`, `Options`, and the `OnMatched` callback.
 
-The idea is to offer default behavior that's simple and lightweight. If your program requires a scenario that doesn't necessarily fit into the group of `SubCommands`, providing this default behavior could be useful.
+This can be useful if your program doesn't require more than a single command. Or even if it does have a list of commands, it could be useful to provide some default behavior if it doesn't fit within your program's definition of a command.
 
 Only a single `DefaultCommand` can be configured:
 
@@ -299,7 +337,12 @@ builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
     Options =
     {
         // ... options ...
-    }
+    },
+	OnMatched = runInfo => 
+	{
+		// do something with runInfo
+		return ProcessResult.Continue;
+	}
 });
 ```
 
@@ -487,6 +530,9 @@ Properties:
 - `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
 - `HelpToken` (`string`) - The token that appears in the help menu representing this option. Example: `"[--hide|-h]"`.
 - `OnParseErrorUseMessage` (`Func<string, string>`) - An optional function used to generate the error message on parsing error. The single argument is the program argument (representing option's value) that failed to parse.
+
+*******TODO: explain how bool global options are stackable with other options.
+			show an example of what's valid stacking vs not (ie trying to stack 2 bool optinos from dfiferent command/subcommand scopes)'
 
 ```
 Options =

@@ -20,7 +20,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			if (!context.ProgramArguments.HasMore())
 			{
-				return ProcessResult.End;
+				throw new ProcessException("Expected an argument but reached the end of program args.",
+					ProcessError.ExpectedProgramArgument, context.CommandLevel);
 			}
 
 			string subCommand = context.ProgramArguments.Dequeue();
