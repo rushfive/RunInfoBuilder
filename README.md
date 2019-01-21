@@ -136,6 +136,7 @@ Topics covered below:
 - [Hooks](#hooks)
 - [Help Menu](#help-menu)
 - [Version](#version)
+- [Gotchas and Limitations](#gotchas-and-limitations)
 
 
 ---
@@ -174,7 +175,7 @@ Here's a few examples of the `search` command being called incorrectly:
 
 `search outside inside` - this simply makes no sense. It's not possible to call more than one subCommand from the list. One, and only one, must be matched.
 
-A SubCommand is essentially the same type as a Command (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep:
+A `SubCommand` is essentially the same type as a `Command` (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep:
 
 ![alt text](/Documentation/Images/command_tree_diagram.png)
 
@@ -183,40 +184,6 @@ Observing the command tree diagram above, when you create a `Command`, a valid p
 Although it's technically possible to create a `Command` with an arbitrary number of layers, it's probably best to limit it. Else, you risk the program having a confusing API.
 
 _To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, _if_ any `SubCommands` exist, the matching one will be processed in the same manner. And so on and so forth._
-
-#### A Limitation of the Processing Flow
-
-There's a gotcha here due to the order of processing. I'll illustrate by continuing off of the example from earlier. 
-
-Lets imagine the `Command` expects a single `Argument` mapped to the `string` property `Message`. You also define some `Options`:
-
-```
-Arguments =
-{
-    new PropertyArgument<SendRequestRunInfo, string>
-    {
-        Property = ri => ri.Message
-    }
-},
-Options =
-{
-    // .. some options defined here ..
-}
-```
-
-What happens when a user forgets to include a value for the `Argument` and passes these program arguments:
-
-```
-[ "sendhttp", "--some-option" ]
-```
-
-Well, the builder has no way to know whether a given program argument is valid for the expected string `Argument`. So it would take the `"--some-option"` value and bind it to the `RunInfo`s `Message` property.
-
-What if the `Argument` was instead mapped to an `int` property? In this case, the build would throw an exception because the string `"--some-option"` is not parseable into an `int` type.
-
-Just be aware of this when designing your program, and let me know if you have any suggestions or ideas on how to circumvent this. It's a common issue for many command line parsing libraries, and might only be solvable through thoughtful design of your program.
-
-_Alright. Now that we understand the order in which items are processed, we'll take a look at the specifics of each core type available, starting with commands.
 
 ---
 
@@ -696,7 +663,7 @@ An example of when you'd select one over the other would be when you're creating
 
 If the tool is being used internally, then it probably makes sense not to suppress any exceptions such that your app code can handle and deal with it.
 
-However, if it's something being released publically, it's generally not good practice to have exceptions and details such as stack traces shown to the clients. You can switch things up during development anyways, then suppress them for releases.s and handling it themselves. Whereas
+However, if it's something being released publically, it's generally not good practice to have exceptions and details such as stack traces shown to the clients. You can switch things up during development anyways, then suppress them for releases.
 
 __`HelpManager OnTrigger(Action customCallback)`__
 
@@ -737,3 +704,39 @@ You can replace the default triggers by passing in a comma-separated list of str
 ```
 builder.Version.SetTriggers("--v", "/v");
 ```
+
+---
+
+### Gotchas and Limitations
+
+This section will go over any known limitations or gotchas that you should be aware of when using this library.
+
+#### A Limitation of the Processing Flow (when dealing with strings)
+
+Lets imagine a `Command` that expects a single `Argument` mapped to the `string` property `Message`. You also define some `Options`:
+
+```
+Arguments =
+{
+    new PropertyArgument<SendRequestRunInfo, string>
+    {
+        Property = ri => ri.Message
+    }
+},
+Options =
+{
+    // .. some options defined here ..
+}
+```
+
+What happens when a user forgets to include a value for the `Argument` and passes these program arguments:
+
+```
+[ "sendhttp", "--some-option" ]
+```
+
+Well, the builder has no way to know whether a given program argument is valid for the expected string `Argument`. So it would take the `"--some-option"` value and bind it to the `RunInfo`s `Message` property.
+
+What if the `Argument` was instead mapped to an `int` property? In this case, the build would throw an exception because the string `"--some-option"` is not parseable into an `int` type.
+
+The workaround or solution to this issue is to simply be aware of this scenario and design your `Command` to avoid it.
