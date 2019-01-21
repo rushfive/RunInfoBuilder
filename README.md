@@ -512,8 +512,6 @@ In the example above, the builder will continue to parse and add program argumen
 
 Options allow you to setup optional 1-to-1 bindings to a property on the `RunInfo`. The user specifies an option using the standard `--option` (full) or `-o` (short) syntax. 
 
-Multiple `bool` options can be _stacked_ using the short syntax by combining their single character short keys. Re-emphasis on the `bool` constraint: stacking short options are not allowed on any other types.
-
 _`Options` can appear in any order in the `Command` configuration, unlike `Arguments` where order matters (because they're all required)._
 
 `Options` are bound to a property on the `RunInfo`, and its value is determined in one of two ways:
@@ -531,8 +529,11 @@ Properties:
 - `HelpToken` (`string`) - The token that appears in the help menu representing this option. Example: `"[--hide|-h]"`.
 - `OnParseErrorUseMessage` (`Func<string, string>`) - An optional function used to generate the error message on parsing error. The single argument is the program argument (representing option's value) that failed to parse.
 
-*******TODO: explain how bool global options are stackable with other options.
-			show an example of what's valid stacking vs not (ie trying to stack 2 bool optinos from dfiferent command/subcommand scopes)'
+_Stacking `bool` options_
+
+Multiple `bool` options can be _stacked_ using the short syntax by combining their single character short keys. Re-emphasis on the `bool` constraint: stacking short options are not allowed on any other types.
+
+Global options can also be stacked with other options from the `Command` or any of its `SubCommands`. 
 
 ```
 Options =
@@ -611,17 +612,19 @@ The same as above, but the `Type` is specified generically.
 
 ### Hooks
 
-The builder provides hooks (currently only one) to invoke custom functionality at different phases of the build process. 
+The builder provides some hooks to invoke custom functionality at different phases of the build process. 
 
 Setting these hooks is done on the `BuildHooks` object, found as the property `Hooks` on the `RunInfoBuilder` class.
 
 The following methods are available:
 
-__`BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)`__
+__`BuildHooks OnStartBuild(Action<string[]> callback)`__
 
 Set a callback that receives the program arguments as it's single argument. This is invoked as the very first thing, immediately after the builder's `Build(args)` method is called.
 
-_Hooks are kind of an experimental thing for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments (drawing a boundary against having this library run a lot of app specific code)._
+__`BuildHooks ArgsNullOrEmptyReturns<TReturn>(Func<TReturn> callback)`__
+
+If you need to define what kind of resulting object is returned when the program arguments is `null` or empty, use this hook by defining a `Func<TReturn>` callback. Running the build will return whatever the custom callback returns.
 
 ---
 
@@ -673,11 +676,17 @@ You can replace the default triggers by passing in a comma-separated list of str
 builder.Help.SetTriggers("--?", "/h");
 ```
 
-__`HelpManager DisplayOnBuildFail()`__
+__`HelpManager InvokeOnBuildFail(bool suppressException)`__
 
 By default, the help menu is only displayed if explicitly called by the user's program argument. This method will configure the builder to automatically display the help on _any_ exceptions thrown.
 
-_Note: this also suppresses any exceptions from bubbling up to the client._
+The `suppressException` parameter allows you to configure whether exceptions thrown during the build process are suppressed. If true, will only display help text while suppressing the exception from bubbling to the client.
+
+An example of when you'd select one over the other would be when you're creating a program/tool for internal use versus one for public release.
+
+If the tool is being used internally, then it probably makes sense not to suppress any exceptions such that your app code can handle and deal with it.
+
+However, if it's something being released publically, it's generally not good practice to have exceptions and details such as stack traces shown to the clients. You can switch things up during development anyways, then suppress them for releases.s and handling it themselves. Whereas
 
 __`HelpManager OnTrigger(Action customCallback)`__
 
@@ -688,6 +697,8 @@ builder.Help.OnTrigger(() => {
     Console.WriteLine("my custom help menu.");
 });
 ```
+
+The help manager's `ToString` method has been overridden to return the help text (especially useful during development if you're building out your own custom help text).
 
 ---
 
