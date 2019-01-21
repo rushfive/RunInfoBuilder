@@ -167,7 +167,9 @@ For example, if a command called `search` has two subCommands configured, `outsi
 Here's a few examples of the `search` command being called incorrectly:
 
 `search` - an exception will be thrown because subCommands have been configured but one wasn't specified.
+
 `search everywhere` - an exception will be thrown because `everywhere` doesn't match a valid subCommand.
+
 `search outside inside` - this simply makes no sense. It's not possible to call more than one subCommand from the list. One, and only one, must be matched.
 
 A SubCommand is essentially the same type as a Command (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
@@ -238,7 +240,7 @@ If the optional `postBuildCallback` action is set, it will be called after the p
 ```
 builder.Commands.Add(command, runInfo =>
 {
-	// do something with the resolved runInfo
+    // do something with the resolved runInfo
 });
 ```
 
@@ -282,36 +284,36 @@ builder.Commands.Add(new Command<TRunInfo>
     SubCommands =
     {
         new SubCommand<TRunInfo>
-		{
-			Key = "subcommand",
-			Arguments =
-			{
-				// arguments for this subcommand
-			},
-			Options = 
-			{
-				// options scoped specifically to this subCommand
-			},
-			SubCommands = 
-			{
-				// need another level of subCommands? Sure, add em here!
-			},
-			OnMatched = runInfo =>
-			{
-				// immediately fires if this subCommand is matched
-			}
-		},
-		// add as many SubCommands as needed
+        {
+            Key = "subcommand",
+            Arguments =
+            {
+                // arguments for this subcommand
+            },
+            Options = 
+            {
+                // options scoped specifically to this subCommand
+            },
+            SubCommands = 
+            {
+                // need another level of subCommands? Sure, add em here!
+            },
+            OnMatched = runInfo =>
+            {
+                // immediately fires if this subCommand is matched
+            }
+        },
+        // add as many SubCommands as needed
     },
     GlobalOptions =
     {
         // options scoped to be accessible from this command or any subcommand in the tree
     },
-	OnMatched = runInfo => 
-	{
-		// do something with runInfo
-		return ProcessResult.Continue;
-	}
+    OnMatched = runInfo => 
+    {
+        // do something with runInfo
+        return ProcessResult.Continue;
+    }
 });
 ```
 
@@ -338,11 +340,11 @@ builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
     {
         // ... options ...
     },
-	OnMatched = runInfo => 
-	{
-		// do something with runInfo
-		return ProcessResult.Continue;
-	}
+    OnMatched = runInfo => 
+    {
+        // do something with runInfo
+        return ProcessResult.Continue;
+    }
 });
 ```
 
@@ -385,7 +387,7 @@ Arguments =
             }
             return ProcessResult.Continue;
         },
-		OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
+        OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -499,7 +501,7 @@ Arguments =
             }
             return ProcessResult.Continue;
         },
-		OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
+        OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -551,7 +553,7 @@ Options =
             }
             return ProcessResult.Continue;
         },
-		OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
+        OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
