@@ -1,7 +1,6 @@
-﻿using R5.RunInfoBuilder.Configuration;
+﻿using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
-using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
 {
@@ -22,8 +21,6 @@ namespace R5.RunInfoBuilder
 		/// </summary>
 		public Func<CustomHandlerContext<TRunInfo>, ProcessStageResult> Handler { get; set; }
 
-		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Custom.Rules(this);
-
 		internal override Stage<TRunInfo> ToStage()
 		{
 			return new CustomArgumentStage<TRunInfo>(Count, Handler);
@@ -32,6 +29,12 @@ namespace R5.RunInfoBuilder
 		internal override string GetHelpToken()
 		{
 			return string.IsNullOrWhiteSpace(HelpToken) ? "<custom>" : HelpToken;
+		}
+
+		internal override void Validate(int commandLevel)
+		{
+			ArgumentRules.Custom.CountMustBeGreaterThanZero(this, commandLevel);
+			ArgumentRules.Custom.HandlerMustBeSet(this, commandLevel);
 		}
 	}
 }

@@ -270,11 +270,11 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 						Key = "key",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "duplicate"
 							},
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "duplicate"
 							}
@@ -306,7 +306,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Validations
 						Key = "key",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = null
 							}

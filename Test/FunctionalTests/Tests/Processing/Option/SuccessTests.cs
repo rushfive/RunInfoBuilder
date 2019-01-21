@@ -416,7 +416,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -446,7 +446,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -476,7 +476,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -506,7 +506,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -536,7 +536,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -566,7 +566,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -597,7 +597,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -633,7 +633,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -669,7 +669,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -708,7 +708,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -738,7 +738,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -768,7 +768,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -798,7 +798,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -830,7 +830,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =
@@ -868,7 +868,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 						Key = "command",
 						SubCommands =
 						{
-							new Command<TestRunInfo>
+							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand",
 								Options =

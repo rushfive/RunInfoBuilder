@@ -54,7 +54,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SetArgument
 					Key = "command",
 					SubCommands =
 					{
-						new Command<TestRunInfo>
+						new SubCommand<TestRunInfo>
 						{
 							Key = "subcommand",
 							Arguments =

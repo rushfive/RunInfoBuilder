@@ -135,7 +135,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
-			object value = GetParsedValue(processInfo.Type, valueString, context);
+			object value = GetParsedValue(processInfo.Type, valueString, context, processInfo.OnParseErrorUseMessage);
 
 			if (processInfo.OnParsed != null)
 			{
@@ -159,7 +159,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			OptionProcessInfo<TRunInfo> processInfo = context.Options.GetOptionProcessInfo(key);
 
-			object value = GetParsedValue(processInfo.Type, valueString, context);
+			object value = GetParsedValue(processInfo.Type, valueString, context, processInfo.OnParseErrorUseMessage);
 			
 			if (processInfo.OnParsed != null)
 			{
@@ -183,7 +183,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 		{
 			List<OptionProcessInfo<TRunInfo>> processInfos = context.Options.GetOptionProcessInfos(keys);
 
-			object value = GetParsedValue(processInfos.First().Type, valueString, context);
+			object value = GetParsedValue(processInfos.First().Type, valueString, 
+				context, processInfos.First().OnParseErrorUseMessage);
 
 			foreach(Action<TRunInfo, object> setter in processInfos.Select(i => i.Setter))
 			{
@@ -193,7 +194,8 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			return ProcessResult.Continue;
 		}
 
-		private object GetParsedValue(Type valueType, string valueString, ProcessContext<TRunInfo> context)
+		private object GetParsedValue(Type valueType, string valueString, 
+			ProcessContext<TRunInfo> context, Func<string, string> onParseErrorUseMessage)
 		{
 			int commandLevel = context.CommandLevel;
 			ArgumentParser parser = context.Parser;
@@ -220,8 +222,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (!parser.TryParseAs(valueString, out bool parsed))
 				{
-					throw new ProcessException($"'{valueString}' could not be parsed as a 'bool' type.",
-						ProcessError.ParserInvalidValue, commandLevel);
+					string message = onParseErrorUseMessage != null
+						? onParseErrorUseMessage(valueString)
+						: $"'{valueString}' could not be parsed as a 'bool' type.";
+
+					throw new ProcessException(message, ProcessError.ParserInvalidValue, commandLevel);
 				}
 				return parsed;
 			}
@@ -230,8 +235,11 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			{
 				if (!parser.TryParseAs(valueType, valueString, out object parsed))
 				{
-					throw new ProcessException($"'{valueString}' could not be parsed as a '{valueType.Name}' type.",
-						ProcessError.ParserInvalidValue, commandLevel);
+					string message = onParseErrorUseMessage != null
+						? onParseErrorUseMessage(valueString)
+						: $"'{valueString}' could not be parsed as a '{valueType.Name}' type.";
+
+					throw new ProcessException(message, ProcessError.ParserInvalidValue, commandLevel);
 				}
 
 				return parsed;

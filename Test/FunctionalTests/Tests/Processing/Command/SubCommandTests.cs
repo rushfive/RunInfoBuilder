@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
+namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Command
 {
-	public class SequenceArgumentFailTests
+	public class SubCommandTests
 	{
 		private static RunInfoBuilder GetBuilder()
 		{
 			return new RunInfoBuilder();
 		}
 
-		public class InSingleCommand
+		public class RootCommandLevel
 		{
 			[Fact]
-			public void ExpectedArgument_ButNoMore_ProgramArguments_Throws()
+			public void SubCommandsConfigured_NoMoreArgs_Throws()
 			{
 				Action testCode = () =>
 				{
@@ -25,13 +25,13 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Arguments =
+						SubCommands =
+					{
+						new SubCommand<TestRunInfo>
 						{
-							new SequenceArgument<TestRunInfo, string>
-							{
-								ListProperty = ri => ri.StringList1
-							}
+							Key = "subcommand"
 						}
+					}
 					});
 
 					builder.Build(new string[] { "command" });
@@ -46,13 +46,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 				Assert.Equal(0, processException.CommandLevel);
 			}
 
-			[Theory]
-			[InlineData("a")]
-			[InlineData("a", "1")]
-			[InlineData("1", "a")]
-			[InlineData("1", "2", "a")]
-			[InlineData("1", "a", "2")]
-			public void ProgramArguments_ContainsUnparseableValues_Throws(params string[] sequenceValues)
+			[Fact]
+			public void SubCommandsConfigured_NextArg_DoestMatch_Throws()
 			{
 				Action testCode = () =>
 				{
@@ -61,20 +56,16 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Arguments =
+						SubCommands =
+					{
+						new SubCommand<TestRunInfo>
 						{
-							new SequenceArgument<TestRunInfo, int>
-							{
-								ListProperty = ri => ri.IntList1,
-								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
-							}
+							Key = "subcommand"
 						}
+					}
 					});
 
-					var programArgs = new List<string> { "command" };
-					programArgs.AddRange(sequenceValues);
-
-					builder.Build(programArgs.ToArray());
+					builder.Build(new string[] { "command", "invalid_match" });
 				};
 
 				Exception exception = Record.Exception(testCode);
@@ -82,16 +73,15 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 				var processException = exception as ProcessException;
 
 				Assert.NotNull(processException);
-				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(ProcessError.InvalidSubCommand, processException.ErrorType);
 				Assert.Equal(0, processException.CommandLevel);
-				Assert.Equal("a from OnParseErrorUseMessage", processException.Message);
 			}
 		}
 
-		public class InNestedSubCommand
+		public class BelowRootCommandLevel
 		{
 			[Fact]
-			public void ExpectedArgument_ButNoMore_ProgramArguments_Throws()
+			public void SubCommandsConfigured_NoMoreArgs_Throws()
 			{
 				Action testCode = () =>
 				{
@@ -104,19 +94,19 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Arguments =
+								Key = "sub1",
+								SubCommands =
 								{
-									new SequenceArgument<TestRunInfo, string>
+									new SubCommand<TestRunInfo>
 									{
-										ListProperty = ri => ri.StringList1
+										Key = "sub2"
 									}
 								}
 							}
 						}
 					});
 
-					builder.Build(new string[] { "command", "subcommand" });
+					builder.Build(new string[] { "command", "sub1" });
 				};
 
 				Exception exception = Record.Exception(testCode);
@@ -128,13 +118,8 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 				Assert.Equal(1, processException.CommandLevel);
 			}
 
-			[Theory]
-			[InlineData("a")]
-			[InlineData("a", "1")]
-			[InlineData("1", "a")]
-			[InlineData("1", "2", "a")]
-			[InlineData("1", "a", "2")]
-			public void ProgramArguments_ContainsUnparseableValues_Throws(params string[] sequenceValues)
+			[Fact]
+			public void SubCommandsConfigured_NextArg_DoestMatch_Throws()
 			{
 				Action testCode = () =>
 				{
@@ -147,23 +132,19 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Arguments =
+								Key = "sub1",
+								SubCommands =
 								{
-									new SequenceArgument<TestRunInfo, int>
+									new SubCommand<TestRunInfo>
 									{
-										ListProperty = ri => ri.IntList1,
-										OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+										Key = "sub2"
 									}
 								}
 							}
 						}
 					});
 
-					var programArgs = new List<string> { "command", "subcommand" };
-					programArgs.AddRange(sequenceValues);
-
-					builder.Build(programArgs.ToArray());
+					builder.Build(new string[] { "command", "sub1", "invalid_match" });
 				};
 
 				Exception exception = Record.Exception(testCode);
@@ -171,10 +152,11 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 				var processException = exception as ProcessException;
 
 				Assert.NotNull(processException);
-				Assert.Equal(ProcessError.ParserInvalidValue, processException.ErrorType);
+				Assert.Equal(ProcessError.InvalidSubCommand, processException.ErrorType);
 				Assert.Equal(1, processException.CommandLevel);
-				Assert.Equal("a from OnParseErrorUseMessage", processException.Message);
 			}
 		}
+
+		
 	}
 }

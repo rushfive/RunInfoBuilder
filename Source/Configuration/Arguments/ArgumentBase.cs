@@ -7,7 +7,7 @@ namespace R5.RunInfoBuilder
 	/// The base abstract class Arguments derive from.
 	/// </summary>
 	/// <typeparam name="TRunInfo">The RunInfo type the argument's associated to.</typeparam>
-	public abstract class ArgumentBase<TRunInfo> : CoreConfigurable
+	public abstract class ArgumentBase<TRunInfo>
 		where TRunInfo : class
 	{
 		/// <summary>
@@ -18,5 +18,7 @@ namespace R5.RunInfoBuilder
 		internal abstract Stage<TRunInfo> ToStage();
 
 		internal abstract string GetHelpToken();
+
+		internal abstract void Validate(int commandLevel);
 	}
 }

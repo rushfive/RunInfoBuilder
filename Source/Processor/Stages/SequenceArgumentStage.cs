@@ -11,13 +11,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Expression<Func<TRunInfo, List<TListProperty>>> _listProperty { get; }
 		private Func<TListProperty, ProcessStageResult> _onParsed { get; }
+		private Func<string, string> _onParseErrorUseMessage { get; }
 
 		internal SequenceArgumentStage(
 			Expression<Func<TRunInfo, List<TListProperty>>> listProperty,
-			Func<TListProperty, ProcessStageResult> onParsed)
+			Func<TListProperty, ProcessStageResult> onParsed,
+			Func<string, string> onParseErrorUseMessage)
 		{
 			_listProperty = listProperty;
 			_onParsed = onParsed;
+			_onParseErrorUseMessage = onParseErrorUseMessage;
 		}
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
@@ -58,8 +61,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 
 				if (!context.Parser.TryParseAs(next, out TListProperty parsed))
 				{
-					throw new ProcessException($"Failed to parse '{next}' as type '{typeof(TListProperty).Name}'.",
-						ProcessError.ParserInvalidValue, context.CommandLevel);
+					string message = _onParseErrorUseMessage != null
+						? _onParseErrorUseMessage(next)
+						: $"Failed to process program argument '{next}' because it "
+								+ $"couldn't be parsed into a '{typeof(TListProperty).Name}'.";
+
+					throw new ProcessException(message, ProcessError.ParserInvalidValue, context.CommandLevel);
 				}
 
 				ProcessStageResult result = _onParsed?.Invoke(parsed);

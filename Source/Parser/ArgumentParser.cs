@@ -20,7 +20,6 @@ namespace R5.RunInfoBuilder.Parser
 
 		internal ArgumentParser()
 		{
-			_enumParseIgnoreCase = false;
 			_predicatesMap = new Dictionary<Type, object>();
 
 			this.AddSystemTypePredicates();

@@ -136,6 +136,7 @@ Topics covered below:
 - [Hooks](#hooks)
 - [Help Menu](#help-menu)
 - [Version](#version)
+- [Gotchas and Limitations](#gotchas-and-limitations)
 
 
 ---
@@ -143,6 +144,8 @@ Topics covered below:
 ### Command Processing Overview
 
 Before diving into `Command` configuration, we need to understand the order in which commands, and their child items like subcommands and options are processed.
+
+It doesn't matter if you have just a single `Command` or one with many levels of `SubCommands` nested within it. When the builder begins processing a `Command` or `SubCommand`, it will always go through the same steps in order as depicted below:
 
 ![alt text](/Documentation/Images/command_flow_diagram.png)
 
@@ -158,45 +161,29 @@ Any `Options` are processed immediately after the command's `Arguments` are, and
 
 #### 3. SubCommands
 
-A `Command` can contain nested `SubCommands` in a list, which are processed after `Options`. 
+A `Command` can contain nested `SubCommands` in a list, which are processed after `Options`. If any are configured, it is required that one is matched by the next program argument.
 
-A SubCommand is the exact same type as a Command. This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
+For example, if a command called `search` has two subCommands configured, `outside` and `inside`, then the two valid methods of calling the `search` command would be
 
-_To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, the matching `SubCommand` will be processed in the same manner. And so on and so forth._
+`search outside` or `search inside` (we're ignoring any arguments or options for brevity here)
 
-#### A Limitation of the Processing Flow
+Here's a few examples of the `search` command being called incorrectly:
 
-There's a gotcha here due to the order of processing. I'll illustrate by continuing off of the example from earlier. 
+`search` - an exception will be thrown because subCommands have been configured but one wasn't specified.
 
-Lets imagine the `Command` expects a single `Argument` mapped to the `string` property `Message`. You also define some `Options`:
+`search everywhere` - an exception will be thrown because `everywhere` doesn't match a valid subCommand.
 
-```
-Arguments =
-{
-    new PropertyArgument<SendRequestRunInfo, string>
-    {
-        Property = ri => ri.Message
-    }
-},
-Options =
-{
-    // .. some options defined here ..
-}
-```
+`search outside inside` - this simply makes no sense. It's not possible to call more than one subCommand from the list. One, and only one, must be matched.
 
-What happens when a user forgets to include a value for the `Argument` and passes these program arguments:
+A `SubCommand` is essentially the same type as a `Command` (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep:
 
-```
-[ "sendhttp", "--some-option" ]
-```
+![alt text](/Documentation/Images/command_tree_diagram.png)
 
-Well, the builder has no way to know whether a given program argument is valid for the expected string `Argument`. So it would take the `"--some-option"` value and bind it to the `RunInfo`s `Message` property.
+Observing the command tree diagram above, when you create a `Command`, a valid processing will always start at the root node and traverse downwards (think DFS-like) until it hits and finishes processing the last `SubCommand` (a leaf node).
 
-What if the `Argument` was instead mapped to an `int` property? In this case, the build would throw an exception because the string `"--some-option"` is not parseable into an `int` type.
+Although it's technically possible to create a `Command` with an arbitrary number of layers, it's probably best to limit it. Else, you risk the program having a confusing API.
 
-Just be aware of this when designing your program, and let me know if you have any suggestions or ideas on how to circumvent this. It's a common issue for many command line parsing libraries, and might only be solvable through thoughtful design of your program.
-
-_Alright. Now that we understand the order in which items are processed, we'll take a look at the specifics of each core type available, starting with commands.
+_To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, _if_ any `SubCommands` exist, the matching one will be processed in the same manner. And so on and so forth._
 
 ---
 
@@ -219,8 +206,17 @@ To end early: `return ProcessResult.End`.
 All `Commands` are configured on the builder's `CommandStore` object. The store provides two methods with the following interface:
 
 ```
-CommandStore Add(Command<TRunInfo> command);
-CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
+CommandStore Add(Command<TRunInfo> command, Action<TRunInfo> postBuildCallback = null);
+CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand), Action<TRunInfo> postBuildCallback = null;
+```
+
+If the optional `postBuildCallback` action is set, it will be called after the program arguments are done processing, receiving the resolved `RunInfo` object as its single argument:
+
+```
+builder.Commands.Add(command, runInfo =>
+{
+    // do something with the resolved runInfo
+});
 ```
 
 #### Command
@@ -228,16 +224,22 @@ CommandStore AddDefault(DefaultCommand<TRunInfo> defaultCommand);
 Type: `Command<TRunInfo>`
 - `TRunInfo`parameter is the `RunInfo` class the command is associated to.
 
-The `Command` is really the core entity of this library, as everything else is nested within it.
+The `Command` is the core entity, as everything else is nested within it.
 
 Properties:
 - Key - `string` - A unique keyword that represents the `Command`. This only needs to be unique within a given `Command`. For example, both a `Command` and one of its nested `SubCommands` can have the same key.
 - Description - `string` - Text that's displayed in the help menu.
 - Arguments - `List<ArgumentBase<TRunInfo>>` - A list of `Arguments` required by the `Command`. Details of the different `Argument` types are discussed later.
 - Options - `List<OptionBase<TRunInfo>>` - A list of `Options` associated to the `Command`.
-- SubCommands - `List<Command<TRunInfo>>` - A list of `SubCommands`, which are of the same `Command<TRunInfo>` type.
+- SubCommands - `List<SubCommand<TRunInfo>>` - A list of `SubCommands` associated to the `Command`. 
+- GlobalOptions - `List<OptionBase<TRunInfo>>` - A list of `Options` that are available to the `Command` and any of its nested `SubCommands`.
+- OnMatched - `Func<TRunInfo, ProcessStageResult>` - An optional callback that's invoked immediately after the command is matched and begins processing (happens before anything else like arguments, options, etc).
 
-`Commands` are really nothing more than a container for its child items, which does all the real processing and binding.
+Descriptions and example configurations for `Arguments` and `Options` can be found later in their respective sections.
+
+The `SubCommand<TRunInfo>` type has the same properties as `Command<TRunInfo>`, with the exception of `GlobalOptions` which is only available on the root `Command` object. Once a global option is configured, it's made available to the `Command` and any of its `SubCommands`, whereas normal options are scoped to the `Command` or `SubCommand` it's configured in. 
+
+The global option keys must also be unique, relative to any of the options configured in the `Command` or `SubCommands`. 
 
 An arbitrary number of `Commands` can be added to the store:
 
@@ -248,15 +250,44 @@ builder.Commands.Add(new Command<TRunInfo>
     Description = "command description",
     Arguments =
     {
-        // ... arguments ...
+        // arguments for this command
     },
     Options =
     {
-        // ... options ...
+        // options scoped specifically to this command
     },
     SubCommands =
     {
-        // ... subcommands ...
+        new SubCommand<TRunInfo>
+        {
+            Key = "subcommand",
+            Arguments =
+            {
+                // arguments for this subcommand
+            },
+            Options = 
+            {
+                // options scoped specifically to this subCommand
+            },
+            SubCommands = 
+            {
+                // need another level of subCommands? Sure, add em here!
+            },
+            OnMatched = runInfo =>
+            {
+                // immediately fires if this subCommand is matched
+            }
+        },
+        // add as many SubCommands as needed
+    },
+    GlobalOptions =
+    {
+        // options scoped to be accessible from this command or any subcommand in the tree
+    },
+    OnMatched = runInfo => 
+    {
+        // do something with runInfo
+        return ProcessResult.Continue;
     }
 });
 ```
@@ -266,9 +297,9 @@ builder.Commands.Add(new Command<TRunInfo>
 Type: `DefaultCommand<TRunInfo>`
 - `TRunInfo` is the `RunInfo` class the default command is associated to.
 
-You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include a `Key` or `SubCommands`. It's a simple single-level command that processes only `Arguments` and `Options`.
+You can optionally include a single `DefaultCommand`. This behaves exactly like a normal `Command`, except that it doesn't include the `Key`, `SubCommands`, or `GlobalOptions` properties. It's a simple single-level command that can only process `Arguments`, `Options`, and the `OnMatched` callback.
 
-The idea is to offer default behavior that's simple and lightweight. If your program requires a scenario that doesn't necessarily fit into the group of `SubCommands`, providing this default behavior could be useful.
+This can be useful if your program doesn't require more than a single command. Or even if it does have a list of commands, it could be useful to provide some default behavior if it doesn't fit within your program's definition of a command.
 
 Only a single `DefaultCommand` can be configured:
 
@@ -283,6 +314,11 @@ builder.Commands.AddDefault(new DefaultCommand<TRunInfo>
     Options =
     {
         // ... options ...
+    },
+    OnMatched = runInfo => 
+    {
+        // do something with runInfo
+        return ProcessResult.Continue;
     }
 });
 ```
@@ -307,6 +343,7 @@ Properties:
 - HelpToken - `string` - The text that appears in the help menu representing this `PropertyArgument`. It should be short and succinct. For example, a `HelpToken` could be `"<string>"`, indicating to the user that this `PropertyArgument` binds to a string property.
 - Property - `Expression<Func<TRunInfo, TProperty>>` - An expression representing the `RunInfo` property the parsed value will be bound to.
 - OnParsed - `Func<TProperty, ProcessStageResult>` - An optional custom callback that is invoked after a valid value has been parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is bound to the property.
+- OnParseErrorUseMessage - `Func<string, string>` - An optional function used to generate the error message on parsing error. The single argument is the program argument that failed to parse.
 
 _Example Configuration:_
 
@@ -324,7 +361,8 @@ Arguments =
                 throw new Exception("Shouldn't send!");
             }
             return ProcessResult.Continue;
-        }
+        },
+        OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -419,6 +457,7 @@ Properties:
 - `HelpToken` (`string`) - The token that appears in the help menu representing this `SequenceArgument`. Example: `"<...int>"` .
 - `ListProperty` (`Expression<Func<TRunInfo, List<TListProperty>>>`) - An expression representing the `RunInfo` list property the values will be added to.
 - `OnParsed` (`Func<TListProperty, ProcessStageResult>`) - An optional custom callback that is invoked for every value after they are parsed. The callback will be invoked with that value as its single argument, and return a `ProcessStageResult`. If the callback returns `ProcessResult.End`, processing will stop __before__ the parsed value is added to the property. 
+- `OnParseErrorUseMessage` (`Func<string, string>`) - An optional function used to generate the error message on parsing error. The single argument is the program argument that failed to parse.
 
 _Example Configuration:_
 
@@ -436,7 +475,8 @@ Arguments =
                 return ProcessResult.End;
             }
             return ProcessResult.Continue;
-        }
+        },
+        OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -448,8 +488,6 @@ In the example above, the builder will continue to parse and add program argumen
 ### Options
 
 Options allow you to setup optional 1-to-1 bindings to a property on the `RunInfo`. The user specifies an option using the standard `--option` (full) or `-o` (short) syntax. 
-
-Multiple `bool` options can be _stacked_ using the short syntax by combining their single character short keys. Re-emphasis on the `bool` constraint: stacking short options are not allowed on any other types.
 
 _`Options` can appear in any order in the `Command` configuration, unlike `Arguments` where order matters (because they're all required)._
 
@@ -466,7 +504,13 @@ Properties:
 - `Key` (`string`) - A string representing the option key. For example, if it's set as `"hide"`, it would be called as `"--hide"` in a program argument. You can optionally set a short key by delimiting the string with a `|` character. If the key is set to `"hide | h"`, then you could use this option with either `"--hide"` or `"-h"`.
 - `Property` (`Expression<Func<TRunInfo, TProperty>>`) - An expression representing the `RunInfo` property the parsed value will be bound to.
 - `HelpToken` (`string`) - The token that appears in the help menu representing this option. Example: `"[--hide|-h]"`.
-- `OnParsed` (`Func<TProperty, ProcessStageResult>`) - An optional custom callback that is invoked after the program argument is successfully parsed. The callback received the parsed value as its only argument, and is invoked before any bindings take place.
+- `OnParseErrorUseMessage` (`Func<string, string>`) - An optional function used to generate the error message on parsing error. The single argument is the program argument (representing option's value) that failed to parse.
+
+_Stacking `bool` options_
+
+Multiple `bool` options can be _stacked_ using the short syntax by combining their single character short keys. Re-emphasis on the `bool` constraint: stacking short options are not allowed on any other types.
+
+Global options can also be stacked with other options from the `Command` or any of its `SubCommands`. 
 
 ```
 Options =
@@ -483,7 +527,8 @@ Options =
                 return ProcessResult.End;
             }
             return ProcessResult.Continue;
-        }
+        },
+        OnParseErrorUseMessage = arg => $"Failed to parse program argument '{arg}' because ..."
     }
 }
 ```
@@ -544,17 +589,19 @@ The same as above, but the `Type` is specified generically.
 
 ### Hooks
 
-The builder provides hooks (currently only one) to invoke custom functionality at different phases of the build process. 
+The builder provides some hooks to invoke custom functionality at different phases of the build process. 
 
 Setting these hooks is done on the `BuildHooks` object, found as the property `Hooks` on the `RunInfoBuilder` class.
 
 The following methods are available:
 
-__`BuildHooks SetOnStartBuild(Action<string[]> onStartCallback)`__
+__`BuildHooks OnStartBuild(Action<string[]> callback)`__
 
 Set a callback that receives the program arguments as it's single argument. This is invoked as the very first thing, immediately after the builder's `Build(args)` method is called.
 
-_Hooks are kind of an experimental thing for now, I can't gauge how useful it really is. Mainly because I'd like this library to focus primarily on parsing program arguments (drawing a boundary against having this library run a lot of app specific code)._
+__`BuildHooks ArgsNullOrEmptyReturns<TReturn>(Func<TReturn> callback)`__
+
+If you need to define what kind of resulting object is returned when the program arguments is `null` or empty, use this hook by defining a `Func<TReturn>` callback. Running the build will return whatever the custom callback returns.
 
 ---
 
@@ -606,11 +653,17 @@ You can replace the default triggers by passing in a comma-separated list of str
 builder.Help.SetTriggers("--?", "/h");
 ```
 
-__`HelpManager DisplayOnBuildFail()`__
+__`HelpManager InvokeOnBuildFail(bool suppressException)`__
 
 By default, the help menu is only displayed if explicitly called by the user's program argument. This method will configure the builder to automatically display the help on _any_ exceptions thrown.
 
-_Note: this also suppresses any exceptions from bubbling up to the client._
+The `suppressException` parameter allows you to configure whether exceptions thrown during the build process are suppressed. If true, will only display help text while suppressing the exception from bubbling to the client.
+
+An example of when you'd select one over the other would be when you're creating a program/tool for internal use versus one for public release.
+
+If the tool is being used internally, then it probably makes sense not to suppress any exceptions such that your app code can handle and deal with it.
+
+However, if it's something being released publically, it's generally not good practice to have exceptions and details such as stack traces shown to the clients. You can switch things up during development anyways, then suppress them for releases.
 
 __`HelpManager OnTrigger(Action customCallback)`__
 
@@ -621,6 +674,8 @@ builder.Help.OnTrigger(() => {
     Console.WriteLine("my custom help menu.");
 });
 ```
+
+The help manager's `ToString` method has been overridden to return the help text (especially useful during development if you're building out your own custom help text).
 
 ---
 
@@ -649,3 +704,39 @@ You can replace the default triggers by passing in a comma-separated list of str
 ```
 builder.Version.SetTriggers("--v", "/v");
 ```
+
+---
+
+### Gotchas and Limitations
+
+This section will go over any known limitations or gotchas that you should be aware of when using this library.
+
+#### A Limitation of the Processing Flow (when dealing with strings)
+
+Lets imagine a `Command` that expects a single `Argument` mapped to the `string` property `Message`. You also define some `Options`:
+
+```
+Arguments =
+{
+    new PropertyArgument<SendRequestRunInfo, string>
+    {
+        Property = ri => ri.Message
+    }
+},
+Options =
+{
+    // .. some options defined here ..
+}
+```
+
+What happens when a user forgets to include a value for the `Argument` and passes these program arguments:
+
+```
+[ "sendhttp", "--some-option" ]
+```
+
+Well, the builder has no way to know whether a given program argument is valid for the expected string `Argument`. So it would take the `"--some-option"` value and bind it to the `RunInfo`s `Message` property.
+
+What if the `Argument` was instead mapped to an `int` property? In this case, the build would throw an exception because the string `"--some-option"` is not parseable into an `int` type.
+
+The workaround or solution to this issue is to simply be aware of this scenario and design your `Command` to avoid it.

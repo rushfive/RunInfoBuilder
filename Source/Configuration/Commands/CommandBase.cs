@@ -1,4 +1,4 @@
-﻿using R5.RunInfoBuilder.Configuration;
+﻿using System;
 using System.Collections.Generic;
 
 namespace R5.RunInfoBuilder
@@ -7,7 +7,7 @@ namespace R5.RunInfoBuilder
 	/// The base abstract class Commands derive from.
 	/// </summary>
 	/// <typeparam name="TRunInfo">The RunInfo type the command's associated to.</typeparam>
-	public abstract class CommandBase<TRunInfo> : CoreConfigurable
+	public abstract class CommandBase<TRunInfo>
 		where TRunInfo : class
 	{
 		/// <summary>
@@ -24,5 +24,13 @@ namespace R5.RunInfoBuilder
 		/// List of optional Options associated to the command.
 		/// </summary>
 		public List<OptionBase<TRunInfo>> Options { get; set; } = new List<OptionBase<TRunInfo>>();
+
+		/// <summary>
+		/// An optional callback that's invoked immediately after the command is matched and begins processing.
+		/// </summary>
+		/// <remarks>
+		/// This is the first thing processed in a command (eg before arguments, options, etc).
+		/// </remarks>
+		public Func<TRunInfo, ProcessStageResult> OnMatched { get; set; }
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using R5.RunInfoBuilder.Configuration;
+using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Help;
 using R5.RunInfoBuilder.Processor.Stages;
 
@@ -31,11 +31,17 @@ namespace R5.RunInfoBuilder
 		/// </remarks>
 		public Func<TListProperty, ProcessStageResult> OnParsed { get; set; }
 
-		internal override List<Action<int>> Rules() => ValidationRules.Arguments.Sequence.Rules(this);
+		/// <summary>
+		/// An optional function used to generate the error message on parsing error.
+		/// </summary>
+		/// <remarks>
+		/// The single argument to the Func is the program argument that failed to parse.
+		/// </remarks>
+		public Func<string, string> OnParseErrorUseMessage { get; set; }
 
 		internal override Stage<TRunInfo> ToStage()
 		{
-			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnParsed);
+			return new SequenceArgumentStage<TRunInfo, TListProperty>(ListProperty, OnParsed, OnParseErrorUseMessage);
 		}
 
 		internal override string GetHelpToken()
@@ -46,6 +52,12 @@ namespace R5.RunInfoBuilder
 			}
 
 			return HelpTokenResolver.ForSequenceArgument<TListProperty>();
+		}
+
+		internal override void Validate(int commandLevel)
+		{
+			ArgumentRules.Sequence.MappedPropertyMustBeSet(this, commandLevel);
+			ArgumentRules.Sequence.MappedPropertyIsWritable(this, commandLevel);
 		}
 	}
 }

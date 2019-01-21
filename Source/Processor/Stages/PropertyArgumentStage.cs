@@ -12,13 +12,16 @@ namespace R5.RunInfoBuilder.Processor.Stages
 	{
 		private Expression<Func<TRunInfo, TProperty>> _property { get; }
 		private Func<TProperty, ProcessStageResult> _onParsed { get; }
+		private Func<string, string> _onParseErrorUseMessage { get; }
 
 		internal PropertyArgumentStage(
 			Expression<Func<TRunInfo, TProperty>> property,
-			Func<TProperty, ProcessStageResult> onParsed)
+			Func<TProperty, ProcessStageResult> onParsed,
+			Func<string, string> onParseErrorUseMessage)
 		{
 			_property = property;
 			_onParsed = onParsed;
+			_onParseErrorUseMessage = onParseErrorUseMessage;
 		}
 
 		internal override ProcessStageResult ProcessStage(ProcessContext<TRunInfo> context,
@@ -41,9 +44,12 @@ namespace R5.RunInfoBuilder.Processor.Stages
 			
 			if (!context.Parser.TryParseAs(valueToken, out TProperty parsed))
 			{
-				throw new ProcessException($"Failed to process program argument '{valueToken}' because it "
-					+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.",
-					ProcessError.ParserInvalidValue, context.CommandLevel);
+				string message = _onParseErrorUseMessage != null
+					? _onParseErrorUseMessage(valueToken)
+					: $"Failed to process program argument '{valueToken}' because it "
+							+ $"couldn't be parsed into a '{typeof(TProperty).Name}'.";
+
+				throw new ProcessException(message, ProcessError.ParserInvalidValue, context.CommandLevel);
 			}
 
 			ProcessStageResult result = _onParsed?.Invoke(parsed);

@@ -1,8 +1,7 @@
-﻿using R5.RunInfoBuilder.Configuration;
+﻿using R5.RunInfoBuilder.Configuration.Validators.Rules;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace R5.RunInfoBuilder
@@ -33,16 +32,29 @@ namespace R5.RunInfoBuilder
 		/// </remarks>
 		public Func<TProperty, ProcessStageResult> OnParsed { get; set; }
 
+		/// <summary>
+		/// An optional function used to generate the error message on parsing error.
+		/// </summary>
+		/// <remarks>
+		/// The single argument to the Func is the option value that failed to parse.
+		/// </remarks>
+		public Func<string, string> OnParseErrorUseMessage { get; set; }
+
 		public Option() 
 			: base(typeof(TProperty)) { }
 
-		internal override List<Action<int>> Rules() => ValidationRules.Options.Rules(this);
+		internal override void ValidateOption(int commandLevel)
+		{
+			OptionRules.PropertyMappingIsSet(this, commandLevel);
+			OptionRules.MappedPropertyIsWritable(this, commandLevel);
+			OptionRules.OnProcessCallbackNotAllowedForBoolOptions(this, commandLevel);
+		}
 
 		internal override OptionProcessInfo<TRunInfo> GetProcessInfo()
 		{
 			(Action<TRunInfo, object> Setter, Type Type) = OptionSetterFactory<TRunInfo>.CreateSetter(this);
 
-			return new OptionProcessInfo<TRunInfo>(Setter, Type, OnParsed);
+			return new OptionProcessInfo<TRunInfo>(Setter, Type, OnParsed, OnParseErrorUseMessage);
 		}
 
 		internal override string GetHelpToken()

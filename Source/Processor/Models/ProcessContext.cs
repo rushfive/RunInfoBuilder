@@ -18,6 +18,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 
 		private Queue<Stage<TRunInfo>> _stages { get; }
 		private Queue<string> _programArguments { get; }
+		private List<OptionBase<TRunInfo>> _globalOptions { get; }
 
 		internal ProcessContext(
 			TRunInfo runInfo,
@@ -25,23 +26,31 @@ namespace R5.RunInfoBuilder.Processor.Models
 			ArgumentParser parser,
 			Queue<Stage<TRunInfo>> stages,
 			Queue<string> programArguments,
-			CommandBase<TRunInfo> command)
+			CommandBase<TRunInfo> command,
+			List<OptionBase<TRunInfo>> globalOptions)
 		{
 			RunInfo = runInfo;
 			CommandLevel = commandLevel;
 			Parser = parser;
 			_stages = stages;
 			_programArguments = programArguments;
+			_globalOptions = globalOptions;
+
+			List<OptionBase<TRunInfo>> options = command.Options;
+			if (globalOptions != null)
+			{
+				options = options.Concat(globalOptions).ToList();
+			}
 
 			InitializeStageFunctions();
-			InitializeOptionFunctions(command.Options);
+			InitializeOptionFunctions(options);
 			InitializeProgramArgumentFunctions(command);
 		}
 
 		internal ProcessContext<TRunInfo> RecreateForCommand(CommandBase<TRunInfo> command)
 		{
 			return new ProcessContext<TRunInfo>(
-				RunInfo, CommandLevel + 1, Parser, _stages, _programArguments, command);
+				RunInfo, CommandLevel + 1, Parser, _stages, _programArguments, command, _globalOptions);
 		}
 
 		private void InitializeStageFunctions()
@@ -67,7 +76,7 @@ namespace R5.RunInfoBuilder.Processor.Models
 
 		private void InitializeProgramArgumentFunctions(CommandBase<TRunInfo> command)
 		{
-			var subCommands = command is Command<TRunInfo> cmd
+			var subCommands = command is StackableCommand<TRunInfo> cmd
 				? new HashSet<string>(cmd.SubCommands.Select(c => c.Key))
 				: new HashSet<string>();
 

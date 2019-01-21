@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
+namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.GlobalOption
 {
-	public class OptionFailTests
+	public class FailTests
 	{
 		private static RunInfoBuilder GetBuilder()
 		{
@@ -33,7 +33,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, int>
 							{
@@ -70,7 +70,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, int>
 							{
@@ -112,7 +112,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, int>
 							{
@@ -147,7 +147,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, int>
 							{
@@ -194,7 +194,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, bool>
 							{
@@ -231,7 +231,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, int>
 							{
@@ -271,7 +271,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, bool>
 							{
@@ -311,7 +311,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
-						Options =
+						GlobalOptions =
 						{
 							new Option<TestRunInfo, int>
 							{
@@ -356,19 +356,19 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int | i",
+								Property = ri=> ri.Int1
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, int>
-									{
-										Key = "int | i",
-										Property = ri=> ri.Int1
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 					});
@@ -400,29 +400,29 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int | i",
+								Property = ri=> ri.Int1
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool1 | b",
+								Property = ri => ri.Bool1
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool2 | c",
+								Property = ri => ri.Bool2
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, int>
-									{
-										Key = "int | i",
-										Property = ri=> ri.Int1
-									},
-									new Option<TestRunInfo, bool>
-									{
-										Key = "bool1 | b",
-										Property = ri => ri.Bool1
-									},
-									new Option<TestRunInfo, bool>
-									{
-										Key = "bool2 | c",
-										Property = ri => ri.Bool2
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 					});
@@ -449,19 +449,19 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int | i",
+								Property = ri=> ri.Int1
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, int>
-									{
-										Key = "int | i",
-										Property = ri=> ri.Int1
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 
@@ -492,24 +492,24 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int | i",
+								Property = ri=> ri.Int1
+							},
+							new Option<TestRunInfo, int>
+							{
+								Key = "int1 | j",
+								Property = ri=> ri.Int2
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
 								Key = "subcommand1",
-								Options =
-								{
-									new Option<TestRunInfo, int>
-									{
-										Key = "int | i",
-										Property = ri=> ri.Int1
-									},
-									new Option<TestRunInfo, int>
-									{
-										Key = "int1 | j",
-										Property = ri=> ri.Int2
-									}
-								},
 								SubCommands =
 								{
 									new SubCommand<TestRunInfo>
@@ -545,24 +545,24 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool1 | b",
+								Property = ri=> ri.Bool1
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool2 | c",
+								Property = ri=> ri.Bool2
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, bool>
-									{
-										Key = "bool1 | b",
-										Property = ri=> ri.Bool1
-									},
-									new Option<TestRunInfo, bool>
-									{
-										Key = "bool2 | c",
-										Property = ri=> ri.Bool2
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 					});
@@ -589,24 +589,24 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int1 | i",
+								Property = ri=> ri.Int1
+							},
+							new Option<TestRunInfo, int>
+							{
+								Key = "int2 | j",
+								Property = ri=> ri.Int2
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, int>
-									{
-										Key = "int1 | i",
-										Property = ri=> ri.Int1
-									},
-									new Option<TestRunInfo, int>
-									{
-										Key = "int2 | j",
-										Property = ri=> ri.Int2
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 					});
@@ -635,26 +635,26 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool1 | b",
+								Property = ri=> ri.Bool1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							},
+							new Option<TestRunInfo, bool>
+							{
+								Key = "bool2 | c",
+								Property = ri=> ri.Bool2,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, bool>
-									{
-										Key = "bool1 | b",
-										Property = ri=> ri.Bool1,
-										OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
-									},
-									new Option<TestRunInfo, bool>
-									{
-										Key = "bool2 | c",
-										Property = ri=> ri.Bool2,
-										OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 					});
@@ -682,20 +682,20 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.Option
 					builder.Commands.Add(new Command<TestRunInfo>
 					{
 						Key = "command",
+						GlobalOptions =
+						{
+							new Option<TestRunInfo, int>
+							{
+								Key = "int1 | i",
+								Property = ri=> ri.Int1,
+								OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
+							}
+						},
 						SubCommands =
 						{
 							new SubCommand<TestRunInfo>
 							{
-								Key = "subcommand",
-								Options =
-								{
-									new Option<TestRunInfo, int>
-									{
-										Key = "int1 | i",
-										Property = ri=> ri.Int1,
-										OnParseErrorUseMessage = value => value + " from OnParseErrorUseMessage"
-									}
-								}
+								Key = "subcommand"
 							}
 						}
 					});

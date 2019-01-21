@@ -9,19 +9,30 @@ namespace R5.RunInfoBuilder.Processor
 	internal class StagesFactory
 	{
 		internal Queue<Stage<TRunInfo>> Create<TRunInfo>(
-			Command<TRunInfo> command, Action<TRunInfo> postBuildCallback)
+			StackableCommand<TRunInfo> command, bool hasGlobalOptions, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(command);
+			var pipeline = new Queue<Stage<TRunInfo>>();
+
+			if (command is Command<TRunInfo> rootCommand)
+			{
+				pipeline.Enqueue(rootCommand.ToStage());
+			}
+			
+			Queue<Stage<TRunInfo>> commonStages = BuildCommonPipelineStages(command, hasGlobalOptions);
+			while (commonStages.Any())
+			{
+				pipeline.Enqueue(commonStages.Dequeue());
+			}
 
 			// recursively add subcommand pipelines
 			if (command.SubCommands.Any())
 			{
-				var subCommandInfoMap = new Dictionary<string, (Queue<Stage<TRunInfo>>, Command<TRunInfo>)>();
+				var subCommandInfoMap = new Dictionary<string, (Queue<Stage<TRunInfo>>, SubCommand<TRunInfo>)>();
 
-				foreach (Command<TRunInfo> subCommand in command.SubCommands)
+				foreach (SubCommand<TRunInfo> subCommand in command.SubCommands)
 				{
-					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand, postBuildCallback);
+					Queue<Stage<TRunInfo>> subCommandPipeline = Create(subCommand, hasGlobalOptions, postBuildCallback);
 					
 					subCommandInfoMap.Add(subCommand.Key, (subCommandPipeline, subCommand));
 				}
@@ -42,14 +53,23 @@ namespace R5.RunInfoBuilder.Processor
 			DefaultCommand<TRunInfo> defaultCommand, Action<TRunInfo> postBuildCallback)
 			 where TRunInfo : class
 		{
-			Queue<Stage<TRunInfo>> pipeline = BuildCommonPipelineStages(defaultCommand);
+			var pipeline = new Queue<Stage<TRunInfo>>();
+
+			pipeline.Enqueue(defaultCommand.ToStage());
+			
+			Queue<Stage<TRunInfo>> commonStages = BuildCommonPipelineStages(defaultCommand, hasGlobalOptions: false);
+			while (commonStages.Any())
+			{
+				pipeline.Enqueue(commonStages.Dequeue());
+			}
 
 			pipeline.Enqueue(new EndProcessStage<TRunInfo>(postBuildCallback));
 
 			return pipeline;
 		}
 
-		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages<TRunInfo>(CommandBase<TRunInfo> command)
+		private Queue<Stage<TRunInfo>> BuildCommonPipelineStages<TRunInfo>(
+			CommandBase<TRunInfo> command, bool hasGlobalOptions)
 			 where TRunInfo : class
 		{
 			var pipeline = new Queue<Stage<TRunInfo>>();
@@ -59,7 +79,7 @@ namespace R5.RunInfoBuilder.Processor
 				pipeline.Enqueue(argument.ToStage());
 			}
 
-			if (command.Options.Any())
+			if (hasGlobalOptions || command.Options.Any())
 			{
 				pipeline.Enqueue(new OptionStage<TRunInfo>());
 			}

@@ -25,10 +25,7 @@ namespace R5.RunInfoBuilder.Processor.Stages
 					ProcessError.InvalidProgramArgument, context.CommandLevel);
 			}
 
-			if (_postBuildCallback != null)
-			{
-				_postBuildCallback(context.RunInfo);
-			}
+			_postBuildCallback?.Invoke(context.RunInfo);
 
 			return ProcessResult.End;
 		}

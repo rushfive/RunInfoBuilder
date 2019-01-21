@@ -16,18 +16,21 @@ namespace R5.RunInfoBuilder.Processor
 		private Queue<string> _programArguments { get; }
 		private CommandBase<TRunInfo> _initialCommand { get; }
 		private ArgumentParser _parser { get; }
+		private List<OptionBase<TRunInfo>> _globalOptions { get; }
 
 		internal Pipeline(
 			Queue<Stage<TRunInfo>> stages,
 			string[] args,
 			CommandBase<TRunInfo> initialCommand,
-			ArgumentParser parser)
+			ArgumentParser parser,
+			List<OptionBase<TRunInfo>> globalOptions)
 		{
 			_stages = stages;
 			_args = args;
 			_programArguments = new Queue<string>(args);
 			_initialCommand = initialCommand;
 			_parser = parser;
+			_globalOptions = globalOptions;
 		}
 
 		internal TRunInfo Process()
@@ -35,7 +38,7 @@ namespace R5.RunInfoBuilder.Processor
 			TRunInfo runInfo = (TRunInfo)Activator.CreateInstance(typeof(TRunInfo));
 
 			ProcessContext<TRunInfo> context = new ProcessContext<TRunInfo>(
-				runInfo, 0, _parser, _stages, _programArguments, _initialCommand);
+				runInfo, 0, _parser, _stages, _programArguments, _initialCommand, _globalOptions);
 
 			Action<CommandBase<TRunInfo>> resetContextFunc = cmd =>
 			{

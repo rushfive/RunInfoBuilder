@@ -1,4 +1,5 @@
-﻿using R5.RunInfoBuilder.Parser;
+﻿using R5.RunInfoBuilder.Configuration.Validators;
+using R5.RunInfoBuilder.Parser;
 using R5.RunInfoBuilder.Processor;
 using R5.RunInfoBuilder.Processor.Stages;
 using System;
@@ -71,17 +72,18 @@ namespace R5.RunInfoBuilder
 					$"Command with key '{command.Key} has already been configured.",
 					CommandValidationError.DuplicateKey, commandLevel: 0);
 			}
-
-			command.Validate(commandLevel: 0);
+			
+			CommandValidator.Validate(command);
 			
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
-				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(command, postBuildCallback);
+				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(
+					command, command.GlobalOptions.Any(), postBuildCallback);
 
 				// skip the first arg (command key)
 				args = args.Skip(1).ToArray();
 
-				return new Pipeline<TRunInfo>(stages, args, command, _parser);
+				return new Pipeline<TRunInfo>(stages, args, command, _parser, command.GlobalOptions);
 			};
 
 			_pipelineFactoryMap.Add(command.Key, pipelineFactory);
@@ -115,13 +117,13 @@ namespace R5.RunInfoBuilder
 					"Default command has already been configured.",
 					CommandValidationError.DuplicateKey, commandLevel: -1);
 			}
-
-			defaultCommand.Validate(commandLevel: -1);
+			
+			DefaultCommandValidator.Validate(defaultCommand);
 
 			Func<string[], Pipeline<TRunInfo>> pipelineFactory = args =>
 			{
 				Queue<Stage<TRunInfo>> stages = _stagesFactory.Create<TRunInfo>(defaultCommand, postBuildCallback);
-				return new Pipeline<TRunInfo>(stages, args, defaultCommand, _parser);
+				return new Pipeline<TRunInfo>(stages, args, defaultCommand, _parser, globalOptions: null);
 			};
 
 			_pipelineFactoryMap.Add(CommandStore.DefaultKey, pipelineFactory);
@@ -137,7 +139,7 @@ namespace R5.RunInfoBuilder
 			{
 				if (!_pipelineFactoryMap.ContainsKey(CommandStore.DefaultKey))
 				{
-					throw new Exception();
+					throw new ProcessException("A DefaultCommand is not configured and a Command key wasn't matched.");
 				}
 
 				dynamic defaultFactory = _pipelineFactoryMap[CommandStore.DefaultKey];
@@ -146,7 +148,7 @@ namespace R5.RunInfoBuilder
 
 			if (!_pipelineFactoryMap.ContainsKey(args[0]))
 			{
-				throw new Exception();
+				throw new ProcessException($"Failed to process command '{args[0]}', its pipeline could not be found.");
 			}
 
 			dynamic factory = _pipelineFactoryMap[args[0]];

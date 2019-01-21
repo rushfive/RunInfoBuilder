@@ -60,7 +60,7 @@ namespace R5.RunInfoBuilder.FunctionalTests.Tests.Processing.SequenceArgument
 					},
 					SubCommands =
 					{
-						new Command<TestRunInfo>
+						new SubCommand<TestRunInfo>
 						{
 							Key = "subcommand",
 							Arguments =
