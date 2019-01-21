@@ -2,15 +2,15 @@
 <package >
 	<metadata>
 		<id>R5.RunInfoBuilder</id>
-		<version>1.0.1</version>
+		<version>2.0.0</version>
 		<title>RunInfoBuilder</title>
 		<authors>Isaiah Lee</authors>
 		<owners>Isaiah Lee</owners>
 		<projectUrl>https://github.com/rushfive/RunInfoBuilder</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A Command Line Parser utilizing object trees for command configurations.</description>
-		<releaseNotes>Add parser support for nullable enum types.</releaseNotes>
-		<copyright>Copyright 2018</copyright>
+		<releaseNotes>Add several new features along with some useability updates.</releaseNotes>
+		<copyright>Copyright 2019</copyright>
 		<tags>command parser cli</tags>
 	</metadata>
 </package>
