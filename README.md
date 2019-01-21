@@ -144,6 +144,8 @@ Topics covered below:
 
 Before diving into `Command` configuration, we need to understand the order in which commands, and their child items like subcommands and options are processed.
 
+It doesn't matter if you have just a single `Command` or one with many levels of `SubCommands` nested within it. When the builder begins processing a `Command` or `SubCommand`, it will always go through the same steps in order as depicted below:
+
 ![alt text](/Documentation/Images/command_flow_diagram.png)
 
 #### 1. Arguments
@@ -172,9 +174,15 @@ Here's a few examples of the `search` command being called incorrectly:
 
 `search outside inside` - this simply makes no sense. It's not possible to call more than one subCommand from the list. One, and only one, must be matched.
 
-A SubCommand is essentially the same type as a Command (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep. However, you'd want to limit the levels of nesting or the program will probably end up with a confusing API.
+A SubCommand is essentially the same type as a Command (just without the `GlobalOptions` property, more on that later). This results in a `Command` definition being a recursive tree structure, which can be nested arbitrarily deep:
 
-_To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, the matching `SubCommand` will be processed in the same manner. And so on and so forth._
+![alt text](/Documentation/Images/command_tree_diagram.png)
+
+Observing the command tree diagram above, when you create a `Command`, a valid processing will always start at the root node and traverse downwards (think DFS-like) until it hits and finishes processing the last `SubCommand` (a leaf node).
+
+Although it's technically possible to create a `Command` with an arbitrary number of layers, it's probably best to limit it. Else, you risk the program having a confusing API.
+
+_To recap: All `Arguments` and `Options` for a given `Command` are processed first, in that order. After which, _if_ any `SubCommands` exist, the matching one will be processed in the same manner. And so on and so forth._
 
 #### A Limitation of the Processing Flow
 
